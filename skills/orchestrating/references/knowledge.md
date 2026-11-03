@@ -38,7 +38,7 @@ Sources: `bootstrap`, `user`, or `T<n> / PR #<n>`.
 Apply to every entry you draft, at bootstrap and at every wrap-up:
 
 1. **No secrets, credentials, identifiers, records or personal data.** State the rule, never the value: "MRNs may contain dashes", not "MRN 4471-882 failed". Drop any drafted entry that contains such a value, and tell the user what you removed and why.
-2. **Don't copy `CLAUDE.md`.** If a rule is already there, refer to it (`see CLAUDE.md: <rule>`) instead of adding an entry.
+2. **Don't copy `CLAUDE.md`.** If a rule is already there, refer to it (`see CLAUDE.md: <rule>`) instead of restating it, in all four files. A review-checklist item for such a rule reads `Check CLAUDE.md: <rule>`; add only what `CLAUDE.md` doesn't say (e.g. "also in error messages").
 3. **Stay within budget.** An addition that would push a file over its budget comes with merges or removals in the same proposal.
 
 ## Precedence
@@ -50,7 +50,7 @@ A task's brief > `CLAUDE.md` > knowledge files. When knowledge contradicts `CLAU
 Run at intake when the base branch has no `.claude/orchestrator/`, before the feature breakdown.
 
 1. **Scan.** In one message, start parallel `orch-scout` subagents to read the README, `docs/`, `CLAUDE.md`, the folder structure, the test layout and the last 50 commits. Ask each for draft entries with `path:line` sources.
-2. **Interview.** Ask the user at most **5** questions, **one at a time**, picking from: rules that aren't written down; risky or regulated areas; terms with a specific meaning here; what reviewers must always check; work that has gone wrong before.
+2. **Interview.** Ask the user at most **5** questions, **one at a time** — each one thing to answer, never a bundle of sub-questions — picking from: rules that aren't written down; risky or regulated areas; terms with a specific meaning here; what reviewers must always check; work that has gone wrong before.
 3. **Draft.** Fill the four files from the templates, applying the content rules.
 4. **Approve.** Show the drafts and ask the user to approve or edit them. Write nothing to the repo before they do.
 5. **PR.** Commit the folder in its own worktree and open a PR:
