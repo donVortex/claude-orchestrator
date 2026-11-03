@@ -72,7 +72,7 @@ Brief (for that one task) > `CLAUDE.md` > knowledge files. A contradiction betwe
 
 ## 3. Bootstrap
 
-Runs at intake when the repo has no `.claude/orchestrator/` on its base branch.
+Runs at the intake of a fresh orchestration (never on resume) when the repo has no `.claude/orchestrator/` on its base branch **and no knowledge PR is open**. If a knowledge PR is open, its files are used for the run instead, and its checklist items are quoted into briefs.
 
 1. **Scan.** Parallel `orch-scout` subagents read the README, `docs/`, `CLAUDE.md`, the folder structure, test layout, and the last 50 commits. They return draft content for `map.md` and the written-down parts of `domain.md` and `review-checklist.md`, each claim with a `path:line` source.
 2. **Interview.** The orchestrator asks the user **at most 5** questions, one at a time, choosing from: rules that aren't written down, risky or regulated areas, terms with a specific meaning here, what reviewers must always check, and work that has gone wrong before.
@@ -122,7 +122,10 @@ Updating the plugin must never interfere with what a project has already learned
 - It never renames, reformats, restructures, re-templates or adds budgets to existing knowledge, and never proposes that as part of a feature.
 - It bootstraps only when the folder is missing.
 - Knowledge changes only through the approved knowledge diff, for content the retros justify; layout changes only when the user asks.
-- Guarded by eval `orch-knowledge-compat`: a project with an older, different layout is used as it is, without migration.
+- Every file in the folder is read; budgets apply only to files with their own budget header; new entries go into the existing file whose purpose fits, and no template file is created in an existing folder without asking.
+- Extending an open knowledge PR drafts against that PR's branch and applies the changes as edits, never whole-file writes, so pending changes and teammates' review commits are kept.
+- Content rules cover everything that leaves the machine: entries, sources, reasons, PR text and commit messages.
+- Guarded by evals `orch-knowledge-compat` (intake on an older layout) and `orch-knowledge-compat-wrapup` (wrap-up on an older layout: no budget trimming, no new files, no reformatting).
 
 ## 7. Failure handling
 

@@ -11,8 +11,8 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - Goal: <one or two sentences, with the concrete names and values the work needs: field names, setting names, request/response and error shapes>
 - Acceptance: <checkable criteria, each with how it is verified>
 - Style reference: <an existing file whose patterns to follow, or "none">
-- Project rules: <the `.claude/orchestrator/domain.md` entries relevant to this task, quoted, or "none"> (binding, like the off-limits list)
-- Review checklist: `.claude/orchestrator/review-checklist.md` — sections: Always check, <the areas this task touches> (or "none" if the project has no knowledge folder)
+- Project rules: <the project's rule entries relevant to this task, quoted (never one that contradicts `CLAUDE.md`), or "none"> (binding, like the off-limits list)
+- Review checklist: <the project's checklist file — sections: its always-check section, the areas this task touches>; if the knowledge isn't on the base branch yet, quote the items themselves; "none" if the project has no knowledge
 - Owned files: <files/globs, including their test files>
 - Off-limits: every other file (name tempting neighbours explicitly, e.g. `src/db/schema.ts`)
 - Commands: test `<cmd>`, lint `<cmd>`, build `<cmd>`

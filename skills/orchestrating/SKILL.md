@@ -15,10 +15,11 @@ You are the session the user talks to. You plan with them, split the work into P
 - Check before planning: `git remote get-url origin` and `gh auth status` work (one PR per task needs both); the test, lint and build commands are known.
 - Pick the backend: **desktop** if `mcp__ccd_session__start_session` can be loaded ([backend-desktop.md](references/backend-desktop.md)); else **cli** if `claude --version` works ([backend-cli.md](references/backend-cli.md)); else stop and tell the user what's missing.
 - Set up `.orchestration/` in the main checkout per [ledger.md](references/ledger.md) — not in your own worktree, if you run in one.
-- **Project knowledge** ([knowledge.md](references/knowledge.md)): read `.claude/orchestrator/` from the base branch.
-  - **Missing** → run the [bootstrap](references/knowledge.md#bootstrap) **before any feature breakdown**: scan the repo with parallel scouts, then interview the user, then show the drafts for approval. In the message that starts the interview, tell the user that **nothing is written to the repo until they approve the drafts**, and ask **only the first question**: one thing to answer, not a list of sub-questions. Each further question (5 at most in total) waits for the previous answer.
-  - Drafts never restate a `CLAUDE.md` rule, in any of the four files: they refer to it ([content rules](references/knowledge.md#content-rules)).
-  - **Present** → use it exactly as it is, whatever its layout; the project owns it and plugin updates never migrate or reformat it ([the project owns it](references/knowledge.md#the-project-owns-it)). Tell the user which entries bear on the goal. If an entry contradicts `CLAUDE.md` or the code, say so and follow `CLAUDE.md` or the code (precedence: brief > `CLAUDE.md` > knowledge).
+- **Project knowledge** ([knowledge.md](references/knowledge.md)): read **every file** in `.claude/orchestrator/` from the base branch ([how](references/knowledge.md#reading-from-the-base-branch)).
+  - **Missing, but a knowledge PR is open** (`gh pr list --state open --search "head:orch/knowledge-"`) → don't bootstrap again. Use that PR's files for this run, tell the user it is awaiting merge, and quote its checklist items into briefs.
+  - **Missing, no PR open, fresh orchestration** (never on resume) → run the [bootstrap](references/knowledge.md#bootstrap) **before any feature breakdown**: scan the repo with parallel scouts, then interview the user, then show the drafts for approval. In the message that starts the interview, tell the user that **nothing is written to the repo until they approve the drafts**, and ask **only the first question**: one thing to answer, not a list of sub-questions. Each further question (5 at most in total) waits for the previous answer.
+  - Drafts never restate a `CLAUDE.md` rule, in any file: they refer to it ([content rules](references/knowledge.md#content-rules)). Before writing the bootstrap PR's worktree, ask the user to `/add-dir <$root>-wt` if they haven't.
+  - **Present** → use it exactly as it is, whatever its layout; the project owns it and plugin updates never migrate or reformat it ([the project owns it](references/knowledge.md#the-project-owns-it)). Tell the user which entries bear on the goal. If an entry contradicts `CLAUDE.md` or the code, say so, record it in the ledger's Events, follow `CLAUDE.md` or the code (precedence: brief > `CLAUDE.md` > knowledge), and never quote the contradicted entry into a brief.
 
 ## 2. Break down
 
@@ -48,7 +49,7 @@ For each report with a PR:
    # run test and lint there
    git worktree remove "$root-wt/review-T<n>"
    ```
-3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric).
+3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric), giving it the brief's Review checklist items.
 4. Problems → send them to the same worker and mark `changes-requested`; clean → `reviewed`.
 
 Batch the `reviewed` PRs and ask the user to merge them. **Never merge yourself.** After merges, start the tasks they unblocked (step 4).
@@ -58,7 +59,11 @@ Batch the `reviewed` PRs and ask the user to merge them. **Never merge yourself.
 When every task is `merged`, `failed` or `dropped`:
 1. Results: each task, its PR, its outcome.
 2. Retro digest: group all points in `retros.md` by tag; call out patterns that repeat across tasks.
-3. **Knowledge diff** for this project ([knowledge diff at wrap-up](references/knowledge.md#knowledge-diff-at-wrap-up)): additions, edits and removals to `.claude/orchestrator/`, each with its source (`T<n> / PR #<n>`), within each file's budget (replace or remove outdated entries), with no identifiers or personal data (state the rule, never the value, and say what you left out). It goes to an already open knowledge PR if there is one, otherwise a new `orch/knowledge-<date>` PR.
+3. **Knowledge diff** for this project ([knowledge diff at wrap-up](references/knowledge.md#knowledge-diff-at-wrap-up)): additions, edits and removals, each with its source (`T<n> / PR #<n>`).
+   - **In the project's own files and headings.** Entries go into the existing file whose purpose fits; never create a template file or rename, reformat or add budgets on your own. If nothing fits, ask.
+   - **Budgets only where a file has its own budget header**; a file without one is never trimmed for length.
+   - **No secrets, record identifiers or personal data** in entries, reasons, PR text or commit messages: state the rule, never the value, and tell the user what kind of value you left out.
+   - **An open knowledge PR is extended, not duplicated:** draft against its branch's files and apply the changes there as edits, never whole-file writes. Otherwise open a new `orch/knowledge-<date>` PR.
 4. Plugin edits, only for lessons that aren't about this project: a concrete change to a named plugin file — `model-tiers.md`, `splitting.md`, `brief-template.md`, or a skill. The user applies them in the plugin's source repo.
 5. Ask the user to approve the knowledge diff and any plugin edits. **Change nothing until they do.** Then open or extend the knowledge PR and set the ledger to `done`.
 
