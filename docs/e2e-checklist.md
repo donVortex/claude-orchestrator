@@ -50,7 +50,8 @@ Run on 2026-11-03 in `donVortex/orch-sandbox` (PRs #1–#3).
 - [x] `self` task (T3) done in its own worktree with a PR
 - [x] Wrap-up: results, retros grouped by tag, concrete edits to named plugin files, nothing changed before approval
 - [ ] After merge, `cli-worker.sh remove` cleans up the worktree (not observed for T1/T2; T3's worktree was removed)
-- [ ] Parallel subagents inside a worker observed (not checked in this run)
+- [x] Parallel subagents inside a worker: observed in the third (desktop) run, PR #8. Three implementers were sent in one response (sonnet, haiku, haiku), followed by one review.
+- [x] Small-task path: observed in the third run, PR #7. It posted a one-line plan, saw the red check first, and ran one sonnet review subagent.
 
 ## Results
 
