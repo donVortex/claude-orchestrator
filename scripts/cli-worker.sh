@@ -52,6 +52,7 @@ run_claude() {
   mkdir -p "$state/reports" || die 1 "cannot create $state/reports"
   cd "$dir" || die 1 "cannot enter $dir"
   use_git_bash
+  export ORCH_ROLE=worker   # keeps the project-default hook from telling a worker to orchestrate
   # The allowlist's shell rules are Bash(...) rules; PowerShell would match none of them.
   exec "$CLAUDE_BIN" -p "$@" --output-format json --permission-mode acceptEdits \
     --settings "$ORCH_ALLOWLIST" --add-dir "$state" --disallowedTools PowerShell < "$prompt_file"

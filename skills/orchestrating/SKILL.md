@@ -1,6 +1,6 @@
 ---
 name: orchestrating
-description: Use when the user wants work planned and split across multiple Claude sessions, invokes /session-orchestrator:orchestrate, or the repo has an active .orchestration/ledger.md to continue.
+description: Use when the user wants work planned and split across multiple Claude sessions, invokes /session-orchestrator:orchestrate, asks for feature work in a project that uses session-orchestrator (it has .claude/orchestrator/), or the repo has an active .orchestration/ledger.md to continue.
 ---
 
 # Orchestrating

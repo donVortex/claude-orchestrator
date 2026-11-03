@@ -148,6 +148,14 @@ Updating the plugin must never interfere with what a project has already learned
    - `orch-knowledge-secrets`: a retro containing a fake patient identifier; the proposed diff must not contain it, and the response says it was dropped.
 3. **End to end** on the sandbox: bootstrap, then two features in a row. The second must visibly use something the first one taught (a rule quoted in a brief, or a checklist item in a review).
 
+## 8a. Default workflow (added at the user's request)
+
+A project with `.claude/orchestrator/` has opted in. A SessionStart hook (`startup`, `clear`) tells every new session there that the project uses the orchestrator: feature work goes through the orchestrating skill; questions, explanations, reviews and one-file fixes stay normal work; an in-progress ledger is continued.
+
+- **Off for a project:** `ORCH_DEFAULT=off`, e.g. via the project's `.claude/settings.json` `env`.
+- **Workers are excluded:** CLI workers run with `ORCH_ROLE=worker`, which silences the hook; desktop workers can't be given an environment variable, so the note itself tells a session started with a `session-orchestrator:working` brief to ignore it.
+- **Tests:** `tests/test_project_default.sh`; evals `orch-default-feature` (a feature request starts an orchestration) and `orch-default-question` (a question gets a plain answer).
+
 ## 9. Later (not in this design)
 
 - Publishing a mature `domain.md` as a project skill under `.claude/skills/`, so sessions that don't use the orchestrator also benefit.

@@ -63,6 +63,7 @@ check_started() {
   assert_contains "$(arg_after --settings)" "worker-allowlist.json" "$label: allowlist settings"
   assert_not_contains "$log" "bypassPermissions" "$label: never bypass"
   assert_eq "PowerShell" "$(arg_after --disallowedTools)" "$label: PowerShell tool off (allow rules are Bash rules)"
+  assert_contains "$log" "ORCH_ROLE=worker" "$label: worker role set (project-default hook stays silent)"
   if command -v cygpath >/dev/null 2>&1; then
     gb=$(grep -m1 '^GIT_BASH_PATH=' "$STUB_LOG" | sed 's/^GIT_BASH_PATH=//')
     [ -n "$gb" ] || fail "$label: Git Bash path set for the worker on Windows"

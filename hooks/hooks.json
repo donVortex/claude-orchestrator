@@ -1,5 +1,5 @@
 {
-  "description": "Re-inject the active orchestration ledger after compaction or resume.",
+  "description": "Re-inject the active orchestration ledger after compaction or resume; make the orchestrator the default workflow in projects with knowledge.",
   "hooks": {
     "SessionStart": [
       {
@@ -17,6 +17,24 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/ledger-context.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/project-default.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/project-default.sh\""
           }
         ]
       }

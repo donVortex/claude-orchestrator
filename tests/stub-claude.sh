@@ -3,6 +3,7 @@
 {
   echo "PWD=$(pwd)"
   echo "GIT_BASH_PATH=${CLAUDE_CODE_GIT_BASH_PATH:-}"
+  echo "ORCH_ROLE=${ORCH_ROLE:-}"
   for a in "$@"; do echo "ARG=$a"; done
   echo "STDIN=$(cat)"
 } >> "$STUB_LOG"

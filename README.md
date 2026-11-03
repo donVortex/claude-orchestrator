@@ -32,6 +32,14 @@ Requirements: `git`, `gh` (logged in), and a GitHub remote on the project you or
 /session-orchestrator:orchestrate <goal>
 ```
 
+**After the first run, it's the project's default.** Once a project has `.claude/orchestrator/` (created by the first orchestration's bootstrap), every new session there is told the project uses the orchestrator. Describe a feature ("add a refund flow") and it plans, asks for your approval and delegates, with no command needed. Questions, explanations, reviews and small one-file fixes stay normal, quick work.
+
+To keep a project manual, add this to its `.claude/settings.json`:
+
+```json
+{ "env": { "ORCH_DEFAULT": "off" } }
+```
+
 ## Project knowledge
 
 Each project keeps what the orchestrator has learned about it in `.claude/orchestrator/`, committed to the project's repo: domain rules and glossary, a codebase map, a review checklist, and tier and split calibration. A healthcare team's orchestrator becomes expert in their healthcare product; an insurtech team's in theirs.
