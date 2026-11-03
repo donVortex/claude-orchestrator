@@ -1,0 +1,13 @@
+{
+  "name": "claude-orchestrator",
+  "owner": {
+    "name": "donVortex"
+  },
+  "plugins": [
+    {
+      "name": "claude-orchestrator",
+      "source": "./",
+      "description": "Orchestrator session that delegates PR-sized tasks to worker sessions using tiered, parallel subagents."
+    }
+  ]
+}
