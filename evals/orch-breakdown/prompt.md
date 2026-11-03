@@ -13,6 +13,7 @@ This is a planning check. The repository is not checked out here, so use these i
 - Remote: `origin` → github.com/acme/app; `gh` is logged in; default branch `main`.
 - Backend: desktop (session tools available).
 - Commands: test `npm test`, lint `npm run lint`, build `npm run build`.
+- Project knowledge: `.claude/orchestrator/` exists on `main`; none of its entries bear on this goal.
 - Repository tree:
 
 ```

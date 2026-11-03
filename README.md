@@ -1,15 +1,28 @@
 # session-orchestrator
 
-A Claude Code plugin that turns the session you talk to into an **orchestrator**. It plans the work with you, splits it into PR-sized tasks, and runs them in **worker sessions** (desktop app sessions, or headless `claude -p` runs). Workers build with subagents whose model is picked by effort, run independent subagents in parallel, open one PR per task, and report back with a short retro. The orchestrator does critical tasks itself, reviews every PR, leaves merging to you, and proposes improvements from the retros.
+A Claude Code plugin that turns the session you talk to into an **orchestrator**. It plans the work with you, splits it into PR-sized tasks, and runs them in **worker sessions** (desktop app sessions, or headless `claude -p` runs). Workers build with subagents whose model is picked by effort, run independent subagents in parallel, open one PR per task, and report back with a short retro. The orchestrator does critical tasks itself, reviews every PR, and leaves merging to you. Each project it works on builds up its own knowledge, so it gets better at that project with every feature.
 
-Design: [docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md](docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md)
+Design: [plugin](docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md) · [project knowledge](docs/superpowers/specs/2026-11-03-project-knowledge-design.md)
 
 ## Install
 
+The repo is private, so first give git access to it on the machine (once):
+
 ```bash
-claude plugin marketplace add D:/dev/claude-orchestrator
-claude plugin install session-orchestrator@session-orchestrator
+gh auth login
+gh auth setup-git
 ```
+
+Then install from GitHub:
+
+```bash
+claude plugin marketplace add donVortex/claude-orchestrator
+claude plugin install session-orchestrator@session-orchestrator --scope user
+```
+
+`--scope user` makes it available in every project, in both the desktop app and the `claude` CLI on that machine. Restart the desktop app afterwards. Plugins don't load in cloud sessions (claude.ai/code).
+
+**Updates:** turn on auto-update under `/plugin` → Marketplaces → `session-orchestrator`. Machines receive a new version when the `version` in `.claude-plugin/plugin.json` changes.
 
 Requirements: `git`, `gh` (logged in), and a GitHub remote on the project you orchestrate. The CLI backend also needs `claude` on PATH.
 
@@ -18,6 +31,17 @@ Requirements: `git`, `gh` (logged in), and a GitHub remote on the project you or
 ```
 /session-orchestrator:orchestrate <goal>
 ```
+
+## Project knowledge
+
+Each project keeps what the orchestrator has learned about it in `.claude/orchestrator/`, committed to the project's repo: domain rules and glossary, a codebase map, a review checklist, and tier and split calibration. A healthcare team's orchestrator becomes expert in their healthcare product; an insurtech team's in theirs.
+
+- **First run in a project:** scouts read the repo, the orchestrator asks you up to 5 domain questions (one at a time), shows you the drafts, and opens a knowledge PR after you approve.
+- **Every run:** briefs quote the relevant rules, reviews use the checklist, and splits follow the codebase map.
+- **Every wrap-up:** proposes additions, edits and removals, each with its source. After you approve, it opens (or extends) a knowledge PR for the team to review.
+- **Hand edits are welcome** and always win. Never put secrets, identifiers or personal data in it.
+
+**The project owns its knowledge.** Plugin updates never rewrite, reformat or migrate it, whatever its layout. The plugin's templates only shape a brand-new bootstrap; after that, the knowledge changes only through PRs you approve.
 
 ## CLI workers and permissions
 

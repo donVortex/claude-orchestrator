@@ -18,7 +18,7 @@ You are the session the user talks to. You plan with them, split the work into P
 - **Project knowledge** ([knowledge.md](references/knowledge.md)): read `.claude/orchestrator/` from the base branch.
   - **Missing** → run the [bootstrap](references/knowledge.md#bootstrap) **before any feature breakdown**: scan the repo with parallel scouts, then interview the user, then show the drafts for approval. In the message that starts the interview, tell the user that **nothing is written to the repo until they approve the drafts**, and ask **only the first question**: one thing to answer, not a list of sub-questions. Each further question (5 at most in total) waits for the previous answer.
   - Drafts never restate a `CLAUDE.md` rule, in any of the four files: they refer to it ([content rules](references/knowledge.md#content-rules)).
-  - **Present** → tell the user which entries bear on the goal. If an entry contradicts `CLAUDE.md` or the code, say so and follow `CLAUDE.md` or the code (precedence: brief > `CLAUDE.md` > knowledge).
+  - **Present** → use it exactly as it is, whatever its layout; the project owns it and plugin updates never migrate or reformat it ([the project owns it](references/knowledge.md#the-project-owns-it)). Tell the user which entries bear on the goal. If an entry contradicts `CLAUDE.md` or the code, say so and follow `CLAUDE.md` or the code (precedence: brief > `CLAUDE.md` > knowledge).
 
 ## 2. Break down
 

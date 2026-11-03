@@ -114,6 +114,16 @@ Project knowledge never leaves the project. Plugin edits keep their existing pat
 | `skills/working/SKILL.md` | Review subagents get the checklist named in the brief; `[domain]` retro tag |
 | `skills/working/report-format.md` | `domain` added to the tag list |
 
+### 6a. The project owns its knowledge (added at the user's request)
+
+Updating the plugin must never interfere with what a project has already learned:
+
+- The orchestrator uses an existing knowledge folder exactly as it is, whatever its headings, file names, extra files or missing budgets. The §2 layout only shapes a **new** bootstrap.
+- It never renames, reformats, restructures, re-templates or adds budgets to existing knowledge, and never proposes that as part of a feature.
+- It bootstraps only when the folder is missing.
+- Knowledge changes only through the approved knowledge diff, for content the retros justify; layout changes only when the user asks.
+- Guarded by eval `orch-knowledge-compat`: a project with an older, different layout is used as it is, without migration.
+
 ## 7. Failure handling
 
 | Situation | Response |

@@ -22,6 +22,15 @@ Each project keeps what the orchestrator has learned about it in `.claude/orches
 
 The first line of each file states its budget: `<!-- budget: N lines -->`. Starter files are in [knowledge-templates/](knowledge-templates/README.md): [domain.md](knowledge-templates/domain.md), [map.md](knowledge-templates/map.md), [review-checklist.md](knowledge-templates/review-checklist.md), [calibration.md](knowledge-templates/calibration.md).
 
+## The project owns it
+
+The knowledge belongs to the project, not to the plugin. Plugin updates never change it:
+
+- **Read what's there.** Use the project's files exactly as they are, whatever their headings, file names, extra files or missing budgets. The layout above is only what a **new** bootstrap creates.
+- **Never migrate.** Don't rename, reformat, restructure, re-template or add budget headers to existing knowledge, and don't propose it as part of a feature, even if the plugin's templates have changed.
+- **Bootstrap only when the folder is missing.** An existing folder, however different, is never bootstrapped again.
+- **Changes only through the knowledge diff**, approved by the user, and only for content the retros justify. A layout change happens only if the user asks for it.
+
 ## Entry format
 
 One line, or a short block, ending with its source and date:
