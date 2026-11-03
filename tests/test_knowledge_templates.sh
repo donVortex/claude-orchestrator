@@ -21,7 +21,7 @@ check_template() {
 check_template domain.md 150 "## Rules" "## Glossary"
 check_template map.md 100 "## Areas" "## Feature flows"
 check_template review-checklist.md 60 "## Always check" "## When touching <area>"
-check_template calibration.md 60 "## Tiers by task type" "## Split patterns" "## Briefs need"
+check_template calibration.md 120 "## Tiers by task type" "## Split patterns" "## Briefs need" "## Recipes" "## Learned defaults" "## Pre-flight"
 
 readme=$(cat "$T/README.md" 2>/dev/null)
 assert_file "$T/README.md" "README.md exists"
@@ -49,5 +49,8 @@ assert_contains "$brief" "- Project rules:" "brief has a Project rules field"
 assert_contains "$brief" "- Review checklist:" "brief has a Review checklist field"
 assert_contains "$(cat skills/working/report-format.md 2>/dev/null)" '| `domain` |' "report format has the domain tag"
 assert_contains "$(cat skills/working/SKILL.md 2>/dev/null)" "Review checklist" "worker skill passes the review checklist to reviews"
+
+# the layout table gives new calibration files a 120-line budget
+assert_contains "$(grep '^| `calibration.md`' skills/orchestrating/references/knowledge.md 2>/dev/null)" "| 120 |" "knowledge.md: calibration budget 120"
 
 finish

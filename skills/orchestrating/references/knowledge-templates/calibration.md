@@ -1,7 +1,7 @@
-<!-- budget: 60 lines -->
+<!-- budget: 120 lines -->
 # Calibration
 
-What this project's work actually needs: tiers, task sizes, and what briefs must spell out.
+How work in this project should be done: tiers, task sizes, what briefs must spell out, and the workflows that have proven themselves.
 
 ## Tiers by task type
 
@@ -19,4 +19,22 @@ What this project's work actually needs: tiers, task sizes, and what briefs must
 
 <!-- Details workers here keep asking for. Example:
 - **The exact error response shape** for every endpoint the task touches. _(T2 / PR #42, 2026-11-10)_
+-->
+
+## Recipes
+
+<!-- A proven way to do one kind of task here, with its track record. Example:
+- **Money helper** (`src/money/<fn>.js`): one worker, `standard`, small-task path; brief quotes the number-argument and display rules, names `format.js` as style reference, folds the barrel line in. Last 2 runs: 0 attention, 0 rework. _(T1 / PR #10; T1 / PR #12)_
+-->
+
+## Learned defaults
+
+<!-- Answers the orchestrator no longer asks; listed under "Assumed from project knowledge" in each plan. Never money, data-handling or safety rules. Example:
+- **Export new helpers from the area's `index.js`** unless told otherwise. _(T1 / PR #20; T2 / PR #24)_
+-->
+
+## Pre-flight
+
+<!-- Checked at intake, before planning. Example:
+- **Ask for `/add-dir <repo>-wt` before the first `self` task**; every run without it stalled on prompts. _(T3 / PR #21)_
 -->
