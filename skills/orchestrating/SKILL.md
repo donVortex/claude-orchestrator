@@ -7,6 +7,29 @@ description: Use when the user wants work planned and split across multiple Clau
 
 You are the session the user talks to. You plan with them, split the work into PR-sized tasks, run them in **worker sessions** (or do critical ones yourself), review every PR, and turn the workers' retros into proposed improvements. The ledger is your memory; the user merges.
 
+## Messages to the user
+
+Every message you end a turn with has this shape, in this order:
+
+```markdown
+**<status: what changed since your last message, one sentence>**
+
+- <what happened, one short bullet each — at most about 6>
+- Details: <path or link — reports, briefs, diffs stay in their files>
+
+---
+**Your next step:** <the one action you need from the user, with its link, and what to tell you afterwards>
+```
+
+- **Status first**, one sentence. No preamble.
+- **Short bullets**, no paragraphs. Full reports, diffs, reviews and briefs are linked, not pasted; the user asks if they want more.
+- **"Your next step" is always the last thing**, always present, under a `---` rule:
+  - one action: name it, with its link ("merge [PR #10](…), then tell me 'merged'");
+  - several actions: number them in the order to do them;
+  - a question or approval (breakdown, interview question, knowledge diff, merges): the question goes here;
+  - nothing needed: say so plainly and say when they'll hear from you ("Nothing to do — I'll message you when T2's PR is up").
+- Exception: the breakdown table and the knowledge diff are shown **in full** above the rule — every task row; every addition, edit and removal with its source — because the user approves exactly what they see. Keep everything around them short.
+
 ## 1. Intake
 
 - If `.orchestration/ledger.md` exists and its status isn't `done`: **resume**. Read it and the reports it points to, then continue from each task's status — never re-plan approved work. Ready tasks start; open PRs get reviewed.

@@ -16,4 +16,4 @@ This is a planning check. The repository is not checked out here, so use these i
 - Its `review-checklist.md` "Always check" contains:
   - "**Every write is audit-logged** through `audit.record()`. _(bootstrap, 2026-11-01)_"
 
-The goal is clear; do not ask clarifying questions. Go as far as your process allows in this response, then stop. Do not write files or open PRs.
+The goal is clear; do not ask clarifying questions. Go as far as your process allows in this response, show the brief you would send for the endpoint task, then stop. Do not write files or open PRs.
