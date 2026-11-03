@@ -19,6 +19,6 @@ Welcome. What's on the base branch is what the orchestrator uses, so hand edits 
 
 ## Rules
 
-- **Never put secrets, credentials, identifiers, records or personal data here.** Entries describe rules and structure, never real data.
+- **Never put secrets, credentials, records, personal data or record identifiers here** (patient, customer, account or claim numbers). Entries describe rules and structure, never real data; code names such as `redact()` or `src/phi/` are fine.
 - **Don't copy `CLAUDE.md`.** Link to it instead.
 - **If sources disagree:** a task's brief wins for that task, then `CLAUDE.md`, then these files.

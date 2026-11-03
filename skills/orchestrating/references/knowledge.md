@@ -82,10 +82,14 @@ Never `cd` into a worktree under `$root-wt/` in your own shell: it moves your se
 Only at the intake of a **fresh** orchestration (never on resume), and only when the base branch has no `.claude/orchestrator/`. First check for an open knowledge PR:
 
 ```bash
-gh pr list --state open --search "head:orch/knowledge-" --json number,headRefName
+gh pr list --state open --search "head:orch/knowledge-" --json number,headRefName,createdAt \
+  --jq '[.[] | select(.headRefName | startswith("orch/knowledge-"))] | sort_by(.createdAt) | reverse'
 ```
 
+GitHub's `head:` search can match more loosely than the prefix; the `--jq` filter keeps only branches that really start with `orch/knowledge-`, newest first.
+
 - **One is open** (from an earlier bootstrap or wrap-up): don't bootstrap. Read its branch's files (see Reading from the base branch), use them for this run, tell the user the PR is still awaiting merge, and quote the checklist items into briefs (workers' worktrees won't have the file).
+- **More than one is open:** treat the newest as the knowledge PR (as above), and list the others to the user, suggesting they merge or close them. Never open another knowledge PR while any is open.
 - **None is open:** bootstrap.
 
 1. **Scan.** In one message, start parallel `orch-scout` subagents to read the README, `docs/`, `CLAUDE.md`, the folder structure, the test layout and the last 50 commits. Ask each for draft entries with `path:line` sources.
@@ -115,7 +119,7 @@ If the user declines the bootstrap, run without knowledge for this orchestration
 ## Knowledge diff at wrap-up
 
 1. Group the retros by tag; `[domain]` points are knowledge candidates, and so are repeated `[brief]`, `[split]` and `[tier]` patterns, plus contradictions recorded at intake.
-2. Find an open knowledge PR (same `gh pr list` as in Bootstrap). If one is open, read its branch's files: you will draft against them, not against the base branch.
+2. Find an open knowledge PR (same `gh pr list` as in Bootstrap). If one is open, read its branch's files: you will draft against them, not against the base branch. If more than one is open, use the newest and list the others to the user, suggesting they merge or close them.
 3. Draft the **knowledge diff**: additions, edits and removals, each in the existing file whose purpose fits (see The project owns it), with its source and a one-line reason. Apply the content rules. For files with a budget header, show the line count against it.
 4. Ask the user to approve or edit the diff. Change nothing before they do.
 5. Apply it:

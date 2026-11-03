@@ -34,7 +34,7 @@ For `Status: blocked`, add a `## Question` section after `## Result` with the on
 | `tooling` | commands, permissions, scripts, CI |
 | `codebase` | the code itself made the work harder or easier |
 | `process` | anything about the working loop itself |
-| `domain` | a rule, term or codebase fact the project's knowledge (`.claude/orchestrator/`) should record |
+| `domain` | a rule, term or codebase fact the project's knowledge (`.claude/orchestrator/`) should record — state the rule, not the value: "MRNs may contain dashes", never a real record ID or personal data |
 
 ## Rules
 

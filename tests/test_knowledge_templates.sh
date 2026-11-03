@@ -29,6 +29,20 @@ for f in domain.md map.md review-checklist.md calibration.md; do
   assert_contains "$readme" "$f" "README mentions $f"
 done
 
+# identifiers mean record IDs, not code names
+assert_contains "$readme" "record identifiers" "README says record identifiers"
+assert_contains "$readme" "code names" "README says code names are fine"
+
+# knowledge PR lookup is exact, and several open PRs are handled
+knowledge=$(cat skills/orchestrating/references/knowledge.md 2>/dev/null)
+filter='startswith("orch/knowledge-")'
+assert_contains "$knowledge" "$filter" "knowledge.md filters PR branches by exact prefix"
+assert_contains "$(cat skills/orchestrating/SKILL.md 2>/dev/null)" "$filter" "SKILL.md filters PR branches by exact prefix"
+assert_contains "$knowledge" "More than one is open" "knowledge.md handles several open knowledge PRs"
+
+# workers state the rule, not the value, in [domain] points
+assert_contains "$(cat skills/working/report-format.md 2>/dev/null)" "state the rule, not the value" "report format: domain points state the rule"
+
 # wiring into briefs, reports and the worker skill
 brief=$(cat skills/orchestrating/references/brief-template.md 2>/dev/null)
 assert_contains "$brief" "- Project rules:" "brief has a Project rules field"
