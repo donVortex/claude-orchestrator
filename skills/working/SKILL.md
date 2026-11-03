@@ -26,6 +26,14 @@ Before dispatching anything, post the plan:
 
 followed by the line: `The full test suite runs after each batch, before the next one starts.`
 
+**Small task** — the plan has exactly **one** subtask: skip the batch loop below.
+1. Post a one-line plan: the subtask, its files, and `small task: I write it; one review`.
+2. Write it yourself, test-first (red run before any implementation, then green).
+3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance and code quality in a single pass. Fix its findings.
+4. Continue at step 5. Review is never skipped, however small the change.
+
+Two or more subtasks always use the batch loop.
+
 ## 3. Run each batch
 
 1. **Implement** — send all of the batch's Agent calls **in one message**; that is what runs them in parallel. Every call passes `model` from the rubric:
@@ -64,6 +72,7 @@ Review fixes from the orchestrator arrive in this same conversation: fix on the 
 | A subagent changed a file it doesn't own | Revert that change; redo the subtask inside its files |
 | "Tests should pass" | Run them; quote the real result |
 | Implementation written before a red test run | Delete it, run the test, see it fail, then implement |
+| "It's tiny, I'll skip the review" | One subtask → the small-task path, which still has one review. No path has zero |
 | The brief requires exact source text (escapes like `̀`, exact strings) | Grep the file for that text before committing; file-writing tools can turn escapes into the literal characters |
 | Changed a test, lint or build script and only saw it pass | Show it failing on a deliberately bad input too |
 | Guessing on an unclear brief | Ask (step 1) |

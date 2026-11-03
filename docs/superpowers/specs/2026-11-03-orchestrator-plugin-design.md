@@ -167,6 +167,7 @@ Every brief (`brief-template.md`) contains: task id and goal; acceptance criteri
    - Read-only work (scouts, reviews) is always parallel.
    - Each subtask: implementer (TDD) → spec-compliance review → code-quality review, each on the rubric's model.
    - After each batch, run the full test suite before the next batch.
+   - **Small-task exception:** a plan with exactly one subtask skips the batch loop. The worker writes it itself, test-first, then runs one combined review subagent (`orch-specialist`, sonnet or above). Review is never skipped. Two or more subtasks always use the batch loop.
 4. **Escalate** per §6.
 5. **Verify.** Full test, lint and build. The passing output must be shown before claiming done.
 6. **PR.** Push with `git push -u origin HEAD:orch/<task-id>` (a desktop worktree's local branch has an app-chosen name) and open a PR with `gh pr create --base <base> --head orch/<task-id>`. Never force-push or push to the base branch. The body lists: goal, what changed, how it was verified, risks.
