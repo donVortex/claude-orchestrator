@@ -73,6 +73,15 @@ d=$(make_tmp); write_ledger "$d" running
 out=$(CLAUDE_PROJECT_DIR="$d" bash "$HOOK" 2>&1)
 assert_contains "$out" "| T2 |" "project_dir_env: reads CLAUDE_PROJECT_DIR"
 
+# worktree_session: ledger lives in the main checkout, session runs in a worktree
+d=$(make_tmp)/repo; mkdir -p "$d"
+git -C "$d" init -q -b main
+git -C "$d" -c user.name=t -c user.email=t@t commit -q --allow-empty -m init
+write_ledger "$d" running
+git -C "$d" worktree add -q -b wt "$d-wt" 2>/dev/null
+run_hook "$d-wt"
+assert_contains "$out" "| T2 |" "worktree_session: finds the main checkout's ledger"
+
 # hooks_json
 hooks=$(cat hooks/hooks.json 2>/dev/null)
 assert_contains "$hooks" '"compact"' "hooks_json: compact matcher"

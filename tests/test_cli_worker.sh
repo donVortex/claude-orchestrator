@@ -28,7 +28,7 @@ arg_after() {
 # cw <repo> <args...>: runs the launcher from inside <repo>; sets out, code.
 cw() {
   r=$1; shift
-  out=$(cd "$r" && bash "$CW" "$@" 2>/dev/null)
+  out=$(cd "$r" && bash "$CW" "$@" 2>/dev/null < /dev/null)
   code=$?
 }
 
@@ -52,7 +52,10 @@ check_started() {
   stub_pwd=$(grep -m1 '^PWD=' "$STUB_LOG" | sed 's/^PWD=//')
   assert_eq "$(toplevel "$wt")" "$(toplevel "$stub_pwd")" "$label: claude runs in the worktree"
   assert_contains "$log" "ARG=-p" "$label: -p"
-  assert_eq "Implement T1: the brief text" "$(arg_after -p)" "$label: brief is the prompt"
+  assert_contains "$log" "STDIN=Implement T1: the brief text" "$label: brief arrives on stdin"
+  assert_not_contains "$log" "ARG=Implement T1" "$label: brief is not an argument"
+  assert_contains "$(arg_after --add-dir)" "/.orchestration" "$label: state dir added for the report"
+  [ -d "$repo/.orchestration/reports" ] || fail "$label: reports dir exists in the main checkout"
   assert_eq "sonnet" "$(arg_after --model)" "$label: model"
   assert_eq "medium" "$(arg_after --effort)" "$label: effort"
   assert_eq "json" "$(arg_after --output-format)" "$label: output format"
@@ -120,7 +123,27 @@ assert_eq 0 "$code" "resume_runs_in_worktree: exit 0"
 stub_pwd=$(grep -m1 '^PWD=' "$STUB_LOG" | sed 's/^PWD=//')
 assert_eq "$(toplevel "$repo-wt/T1")" "$(toplevel "$stub_pwd")" "resume_runs_in_worktree: in worktree"
 assert_eq "s-1" "$(arg_after --resume)" "resume_runs_in_worktree: --resume id"
-assert_eq "Answer: use 404" "$(arg_after -p)" "resume_runs_in_worktree: message is the prompt"
+assert_contains "$(cat "$STUB_LOG")" "STDIN=Answer: use 404" "resume_runs_in_worktree: message arrives on stdin"
+assert_contains "$(arg_after --add-dir)" "/.orchestration" "resume_runs_in_worktree: state dir added"
+
+# resume_message_starting_with_dash
+setup
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+: > "$STUB_LOG"
+printf -- '- fix the null check\n--dangerously-skip-permissions\n' > "$base/msg.txt"
+cw "$repo" resume T1 s-1 "$base/msg.txt"
+assert_eq 0 "$code" "resume_dash_message: exit 0"
+assert_contains "$(cat "$STUB_LOG")" "STDIN=- fix the null check" "resume_dash_message: message on stdin"
+assert_not_contains "$(cat "$STUB_LOG")" "ARG=- fix" "resume_dash_message: not parsed as an option"
+assert_not_contains "$(cat "$STUB_LOG")" "ARG=--dangerously-skip-permissions" "resume_dash_message: no flag injection"
+
+# start_after_worktree_dir_deleted
+setup
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+rm -rf "$repo-wt/T1"
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+assert_eq 0 "$code" "start_after_dir_deleted: exit 0"
+assert_eq "orch/T1" "$(git -C "$repo-wt/T1" rev-parse --abbrev-ref HEAD 2>/dev/null)" "start_after_dir_deleted: worktree recreated"
 assert_eq "acceptEdits" "$(arg_after --permission-mode)" "resume_runs_in_worktree: permission mode"
 
 # resume_without_worktree
@@ -148,7 +171,13 @@ assert_eq 2 "$code" "usage: unknown command exits 2"
 allow=$(cat settings/worker-allowlist.json 2>/dev/null)
 assert_contains "$allow" '"allow"' "allowlist: has allow rules"
 assert_contains "$allow" 'Bash(gh pr create *)' "allowlist: gh pr create"
-assert_contains "$allow" 'Bash(git push *)' "allowlist: git push"
+assert_not_contains "$allow" 'Bash(git push *)' "allowlist: no blanket git push"
+assert_contains "$allow" 'Bash(git push -u origin HEAD:orch/*)' "allowlist: push to orch/ branches"
+assert_contains "$allow" '"deny"' "allowlist: has deny rules"
+assert_contains "$allow" 'Bash(git push --force*)' "allowlist: denies force push"
+assert_contains "$allow" 'Bash(git push *:main*)' "allowlist: denies pushing to main"
+assert_contains "$allow" '"Skill"' "allowlist: workers may load skills"
+assert_contains "$allow" '"Agent"' "allowlist: workers may run subagents"
 if command -v node >/dev/null 2>&1; then
   node -e "JSON.parse(require('fs').readFileSync('settings/worker-allowlist.json','utf8'))" 2>/dev/null || fail "allowlist: valid JSON"
 fi

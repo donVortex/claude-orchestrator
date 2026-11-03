@@ -47,7 +47,7 @@ Run the full test, lint and build commands and read the output. You may only cla
 
 ## 6. Open the PR
 
-`git push -u origin orch/<task-id>`, then `gh pr create --base <base> --title "T<n>: <task>"` with a body of: Goal, Changes, Verification (commands → results), Risks.
+`git push -u origin HEAD:orch/<task-id>` (your local branch name may differ; the remote branch is always `orch/<task-id>`), then `gh pr create --base <base> --head orch/<task-id> --title "T<n>: <task>"` with a body of: Goal, Changes, Verification (commands → results), Risks. Never force-push, and never push to the base branch.
 
 ## 7. Report
 

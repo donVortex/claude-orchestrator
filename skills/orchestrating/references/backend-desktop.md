@@ -11,12 +11,15 @@ Use it when `mcp__ccd_session__start_session` can be loaded (ToolSearch `select:
 1. Write the brief to `.orchestration/briefs/T<n>.md` ([brief-template.md](brief-template.md)) with `Orchestrator: desktop`.
 2. `start_session` with:
    - `initiation: "user_asked"` — the user's approval of the breakdown is the instruction to start it
-   - `context: "fresh"`
-   - `use_worktree: true`
-   - title `T<n> · <short task>`
-   - the brief as the prompt
-3. With the returned session id: `set_session_model` and `set_session_effort` to the task tier's **worker session** values in [model-tiers.md](model-tiers.md).
-4. Ledger: session id, `running`, an event line.
+   - `context: "fresh"`, `use_worktree: true`
+   - `source_branch`: the ledger's base branch, so the worktree starts from the right commit
+   - `branch_name`: `orch-T<n>` (the app adds its own prefix and suffix)
+   - `model` and `effort`: the task tier's **worker session** values from [model-tiers.md](model-tiers.md), set here so they apply to the worker's first turn (setting them after the start only applies from the next turn). `model` takes a full model id, not an alias: use the current id of that family (e.g. `claude-sonnet-5-5` for `sonnet`).
+   - `title`: `T<n> · <short task>`
+   - `prompt`: the brief
+   - `background` (required, 80+ characters): the orchestration goal in one sentence, how this task fits (what it depends on, what depends on it), and "You are a session-orchestrator worker; the brief is your contract."
+3. The app only allows a model and effort **at or below this session's own**. If a tier asks for more (e.g. a `deep` task while you run on sonnet), tell the user before starting it: they can raise this session's model, or accept the lower tier.
+4. Ledger: session id, the worktree branch name the start result reports, `running`, and an event line.
 
 Start independent ready tasks in the same turn, up to `max_parallel_workers`.
 
@@ -27,6 +30,10 @@ Start independent ready tasks in the same turn, up to `max_parallel_workers`.
 - Review fixes go back with `SendMessage` to the same worker.
 - Liveness: `list_sessions {"linked": true}` or `get_session`. A worker that ended its turn without a report, or errored, counts as a failure round.
 - Never poll or sleep; wait for the app's wake-up.
+
+## Reports and permissions
+
+Workers write their report to the main checkout's `.orchestration/reports/`, which is outside their worktree. Depending on the worker's permission mode, the app may ask the user to approve that write the first time. Mention this to the user when the first workers start.
 
 ## When the app refuses a start
 

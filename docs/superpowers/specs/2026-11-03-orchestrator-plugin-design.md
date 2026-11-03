@@ -90,7 +90,7 @@ The `working` skill builds on `superpowers:subagent-driven-development`, `superp
 
 ## 4. State: the `.orchestration/` folder
 
-Lives in the **main checkout** of the target repo. On first use the orchestrator adds `.orchestration/` to `.git/info/exclude`, so it is never committed and needs no `.gitignore` change.
+Lives in the **main checkout** of the target repo, resolved as `dirname $(git rev-parse --path-format=absolute --git-common-dir)` so that sessions running in worktrees (orchestrator, hook, workers) all agree on it. On first use the orchestrator adds `.orchestration/` to `<git-common-dir>/info/exclude`, so it is never committed and needs no `.gitignore` change.
 
 ```
 .orchestration/
@@ -169,7 +169,7 @@ Every brief (`brief-template.md`) contains: task id and goal; acceptance criteri
    - After each batch, run the full test suite before the next batch.
 4. **Escalate** per §6.
 5. **Verify.** Full test, lint and build. The passing output must be shown before claiming done.
-6. **PR.** Push `orch/<task-id>` and open a PR against the base branch with `gh pr create`. The body lists: goal, what changed, how it was verified, risks.
+6. **PR.** Push with `git push -u origin HEAD:orch/<task-id>` (a desktop worktree's local branch has an app-chosen name) and open a PR with `gh pr create --base <base> --head orch/<task-id>`. Never force-push or push to the base branch. The body lists: goal, what changed, how it was verified, risks.
 7. **Report.** Write the full report to the brief's path. Then end the turn with one line: "T<n> done, PR <url>, report at <path>".
 
 ## 8. Report and retro format (`report-format.md`)
@@ -214,7 +214,7 @@ The orchestrator picks **desktop** if `mcp__ccd_session__start_session` can be l
 
 ### 10.1 Desktop
 
-- **Start:** `start_session` with `initiation: "user_asked"` (the breakdown approval is the user's instruction), `context: "fresh"`, `use_worktree: true`, title `T<n> · <short task>`, the brief as prompt. Then `set_session_model` and `set_session_effort` per tier.
+- **Start:** `start_session` with `initiation: "user_asked"` (the breakdown approval is the user's instruction), `context: "fresh"`, `use_worktree: true`, `source_branch` = the ledger's base branch, `branch_name: orch-T<n>`, `model` (full model id) and `effort` per tier, title `T<n> · <short task>`, the brief as `prompt`, and a `background` of 80+ characters. Model and effort are set at start because changing them later only applies from the worker's next turn; the app caps both at the orchestrator's own, so a tier above that is raised with the user first.
 - **Results:** the app wakes the orchestrator when a worker ends a turn; the orchestrator reads `reports/<task-id>.md` for the full report (the wake-up note itself is truncated).
 - **Follow-ups:** `SendMessage` to the worker's `local_…` id.
 - **Liveness:** `list_sessions {"linked": true}` / `get_session`.
@@ -224,7 +224,7 @@ The orchestrator picks **desktop** if `mcp__ccd_session__start_session` can be l
 
 - **Start** (`cli-worker.sh start <task-id> <base> <model> <effort> <brief-file>`):
   - `git worktree add -b orch/<task-id> <repo>-wt/<task-id> <base>`
-  - inside it, `claude -p "<brief>" --model <model> --effort <effort> --output-format json --permission-mode acceptEdits --settings <allowlist>`, launched by the orchestrator with `run_in_background`.
+  - inside it, `claude -p --model <model> --effort <effort> --output-format json --permission-mode acceptEdits --settings <allowlist> --add-dir <root>/.orchestration < <brief-file>` (prompt on stdin, so text starting with `-` is never parsed as an option), launched by the orchestrator with `run_in_background`. A stale registered worktree is pruned first.
 - **Results:** the background run's exit wakes the orchestrator. The JSON output gives `session_id` (stored in the ledger, used for `--resume`). The full report is read from the report file.
 - **Follow-ups:** `cli-worker.sh resume <task-id> <session-id> <message-file>` → `claude -p --resume <session-id> ...` in the task's worktree, again in the background.
 - **Permissions:** `-p` runs start in Manual mode, so every worker gets `--permission-mode acceptEdits` plus `--settings settings/worker-allowlist.json` (git, gh, read/edit; the user adds their project's test and build commands). It never uses a bypass mode.

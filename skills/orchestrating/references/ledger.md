@@ -1,15 +1,17 @@
 # Ledger and state files
 
-All orchestration state lives in `.orchestration/` in the **main checkout** of the target repo. Nothing important lives only in your context: after compaction or resume, a SessionStart hook re-injects the ledger, and you continue from it.
+All orchestration state lives in `.orchestration/` in the **main checkout** of the target repo — even when your own session runs in a worktree, where `.git` is a file, not a folder. Nothing important lives only in your context: after compaction or resume, a SessionStart hook re-injects the ledger (it resolves the main checkout the same way), and you continue from it.
 
 ## Setup (once per repo)
 
 ```bash
-mkdir -p .orchestration/reports .orchestration/briefs
-grep -qxF '.orchestration/' .git/info/exclude || echo '.orchestration/' >> .git/info/exclude
+common=$(git rev-parse --path-format=absolute --git-common-dir)   # the main checkout's .git folder
+root=$(dirname "$common")                                         # the main checkout
+mkdir -p "$root/.orchestration/reports" "$root/.orchestration/briefs"
+grep -qxF '.orchestration/' "$common/info/exclude" 2>/dev/null || echo '.orchestration/' >> "$common/info/exclude"
 ```
 
-`.git/info/exclude` keeps it out of commits without touching `.gitignore`.
+`info/exclude` keeps it out of commits without touching `.gitignore`. Use `$root/.orchestration/…` (an absolute path) everywhere: in the ledger, in briefs' report paths, and when reading reports.
 
 ## Layout
 
@@ -39,6 +41,7 @@ Started: <date> · Backend: desktop|cli · Base branch: <branch> · Status: plan
 
 - The header's `Status:` must stay on line 2 — the hook reads the first lines, and stays silent once it says `done`.
 - `session/run`: the desktop session id (`local_…`) or the CLI `session_id`.
+- `branch`: the PR's branch on GitHub, always `orch/T<n>`. A desktop worker's local branch has an app-chosen name; note it in the Events line when the session starts.
 - Add a `failures` note in the Events list each time a task fails a round (see the two-failure limit).
 
 ## Task statuses

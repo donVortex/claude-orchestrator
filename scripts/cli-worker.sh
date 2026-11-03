@@ -37,18 +37,31 @@ is_task_worktree() {
   [ -d "$dir" ] && [ "$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null)" = "$branch" ]
 }
 
+# Echoes the absolute path of a readable file, or exits 2.
+abs_file() {
+  [ -r "$1" ] || die 2 "file not readable: $1"
+  echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+}
+
+# run_claude <prompt-file> <args...>: the prompt goes in on stdin, so text starting with "-"
+# is never parsed as an option and long briefs avoid command-line length limits.
+# --add-dir lets the worker write its report to the main checkout's .orchestration/.
 run_claude() {
+  prompt_file=$1; shift
+  state="$root/.orchestration"
+  mkdir -p "$state/reports" || die 1 "cannot create $state/reports"
   cd "$dir" || die 1 "cannot enter $dir"
-  exec "$CLAUDE_BIN" "$@" --output-format json --permission-mode acceptEdits --settings "$ORCH_ALLOWLIST"
+  exec "$CLAUDE_BIN" -p "$@" --output-format json --permission-mode acceptEdits \
+    --settings "$ORCH_ALLOWLIST" --add-dir "$state" < "$prompt_file"
 }
 
 cmd_start() {
   [ $# -eq 5 ] || usage
   locate "$1"
   base=$2 model=$3 effort=$4
-  [ -r "$5" ] || die 2 "brief file not readable: $5"
-  prompt=$(cat "$5")
+  brief=$(abs_file "$5") || exit 2
 
+  git -C "$root" worktree prune
   if [ -e "$dir" ]; then
     is_task_worktree || die 4 "$dir exists but is not the worktree for $branch"
     echo "cli-worker: reusing $dir" >&2
@@ -59,16 +72,15 @@ cmd_start() {
     git -C "$root" worktree add -b "$branch" "$dir" "$base" >&2 || die 1 "git worktree add failed"
   fi
 
-  run_claude -p "$prompt" --model "$model" --effort "$effort"
+  run_claude "$brief" --model "$model" --effort "$effort"
 }
 
 cmd_resume() {
   [ $# -eq 3 ] || usage
   locate "$1"
-  [ -r "$3" ] || die 2 "message file not readable: $3"
-  message=$(cat "$3")
+  message=$(abs_file "$3") || exit 2
   is_task_worktree || die 5 "no worktree for $1 at $dir"
-  run_claude -p "$message" --resume "$2"
+  run_claude "$message" --resume "$2"
 }
 
 cmd_remove() {

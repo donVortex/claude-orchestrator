@@ -6,6 +6,10 @@
 MAX_LINES=150
 
 dir="${1:-${CLAUDE_PROJECT_DIR:-$PWD}}"
+# State lives in the main checkout, even when this session runs in a worktree.
+if common=$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir 2>/dev/null); then
+  dir=$(dirname "$common")
+fi
 ledger="$dir/.orchestration/ledger.md"
 
 [ -r "$ledger" ] || exit 0

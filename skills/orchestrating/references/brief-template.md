@@ -15,7 +15,7 @@ Load the session-orchestrator:working skill and follow it.
 - Base branch: `<branch>` (already contains: <merged dependency PRs, or "nothing extra">)
 - Tier: <fast|standard|deep> — session <model> / <effort>
 - Orchestrator: desktop | CLI mode
-- Report path: `<absolute path of main checkout>/.orchestration/reports/T<n>.md`
+- Report path: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md)
 - Subtasks (files, tier hint, dependencies):
   - A. <what> — <files> — <tier> — depends on: none
   - B. <what> — <files> — <tier> — depends on: A

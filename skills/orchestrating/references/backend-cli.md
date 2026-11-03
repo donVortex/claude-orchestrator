@@ -43,9 +43,9 @@ Review fixes go back the same way: write the requested changes to a file and `re
 
 ## Permissions
 
-`-p` runs start in Manual mode, so the launcher always passes `--permission-mode acceptEdits --settings <plugin>/settings/worker-allowlist.json`. It never uses a bypass mode.
+`-p` runs start in Manual mode, so the launcher always passes `--permission-mode acceptEdits --settings <plugin>/settings/worker-allowlist.json --add-dir <main checkout>/.orchestration` (the last so workers can write their report). It never uses a bypass mode.
 
-The allowlist covers reading and editing files, `git` and `gh pr`. Commands it does not cover (usually the project's test and build commands) are denied, and the worker will report that. When that happens, tell the user which commands to add to the allowlist (or to their own settings) and resume the worker. Do not edit permission settings yourself.
+The allowlist covers reading and editing files, skills and subagents, `git` commits, pushing to `orch/*` branches only, and `gh pr`. The project's own test, lint and build commands are not in it. At intake, tell the user to add them to the project's `.claude/settings.json` (e.g. `"Bash(npm test*)"`), which workers load from their worktree. If a worker still reports a denied command, tell the user which one and resume the worker after they add it. Do not edit permission settings yourself.
 
 ## Cleanup
 
