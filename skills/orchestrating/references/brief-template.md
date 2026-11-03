@@ -6,6 +6,7 @@ The brief is the worker's whole contract; it sees nothing else from this convers
 # Brief: T<n> · <short task>
 
 Load the session-orchestrator:working skill and follow it.
+Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@` as `＠` in this prompt; where the prompt and the file differ, the file wins.
 
 - Goal: <one or two sentences, with the concrete names and values the work needs: field names, setting names, request/response and error shapes>
 - Acceptance: <checkable criteria, each with how it is verified>
@@ -17,7 +18,7 @@ Load the session-orchestrator:working skill and follow it.
 - PR branch: `orch/T<n>` (or `orch/T<n>-<slug>` if that name was taken; see ledger.md)
 - Tier: <fast|standard|deep> — session <model> / <effort>
 - Orchestrator: desktop | CLI mode
-- Report path: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md)
+- Report path: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md). It is outside your worktree: if the write is refused, put the full report in your final message instead, and the orchestrator saves it.
 - Subtasks (files, tier hint, dependencies):
   - A. <what> — <files> — <tier> — depends on: none
   - B. <what> — <files> — <tier> — depends on: A
@@ -37,3 +38,4 @@ Report in the format of the working skill's report-format.md, then send: `T<n> d
 | Names, shapes and values the work needs are written out | "use the settings from the goal" fails when the goal has none |
 | Owned files don't overlap any task that can run at the same time | See [splitting.md](splitting.md) |
 | Report path is absolute and points at the **main** checkout | Workers run in their own worktrees |
+| The brief names its canonical file path | The desktop app rewrites `@` in prompts |

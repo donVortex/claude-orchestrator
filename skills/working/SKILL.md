@@ -9,6 +9,7 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 
 ## 1. Read the brief
 
+- If the brief names a canonical file, that file wins wherever the prompt differs from it (the app may turn `@` into `＠`).
 - **Owned files** are the only files you and your subagents may change. The off-limits list is binding.
 - Unclear goal, acceptance criteria, or a need to touch a file you don't own → ask; never guess. Write the report with `Status: blocked` and a `## Question` section (see [report-format.md](report-format.md)), then end your turn. Ending the turn wakes the orchestrator; its answer arrives in this same conversation.
 
@@ -38,7 +39,7 @@ Two or more subtasks always use the batch loop.
 
 1. **Implement** — send all of the batch's Agent calls **in one message**; that is what runs them in parallel. Every call passes `model` from the rubric:
    - `fast`, `standard` → `orch-implementer`; `deep` → `orch-specialist` (build mode).
-   - Its prompt: the subtask goal, its files (and that nothing else may change), the test command, "do not commit".
+   - Its prompt: the subtask goal, its files (and that nothing else may change), the test command scoped to its own test files (e.g. `node --test <file>`), "do not commit". Only the gate runs the full suite: parallel siblings' half-written tests would fail it.
 2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review. Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel.
 3. **Fix** — send findings back to an implementer; review again.
 4. **Gate** — commit the batch, run the full test suite. Not green → fix before the next batch.
@@ -60,6 +61,8 @@ Run the full test, lint and build commands and read the output. You may only cla
 ## 7. Report
 
 Write the report in [report-format.md](report-format.md) to the brief's report path. Then end your turn with one line: `T<n> done, PR <url>, report at <path>`.
+
+The report path is outside your worktree. If the write is refused, don't route around the refusal with another tool: end your turn with the full report in your final message, then the line `T<n> done, PR <url>, report in final message`. The orchestrator saves it.
 
 Review fixes from the orchestrator arrive in this same conversation: fix on the same branch, push, re-verify, and rewrite the report (add new retro points; keep the old ones).
 

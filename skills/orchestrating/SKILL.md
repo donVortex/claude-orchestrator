@@ -32,13 +32,18 @@ Ledger status → `running`. Then, for every task whose dependencies are merged:
 
 ## 5. Track
 
-On every event, update the ledger first ([ledger.md](references/ledger.md)). Read each report in full from `.orchestration/reports/`. Append its retro to `retros.md`. Answer worker questions you can answer; ask the user the rest. Use early retros to improve the briefs of tasks not yet started.
+On every event, update the ledger first ([ledger.md](references/ledger.md)). Read each report in full from `.orchestration/reports/`; a worker whose report write was refused ends with the report in its final message — save that to `reports/T<n>.md` yourself. Append its retro to `retros.md`. Answer worker questions you can answer; ask the user the rest. Use early retros to improve the briefs of tasks not yet started.
 
 ## 6. Review
 
 For each report with a PR:
 1. Read the diff against the brief. `gh pr diff <n> --name-only` lists only owned files.
-2. Check CI with `gh pr checks <n>`. `no checks reported` (exit 1) means the repo has no CI: run the test and lint commands yourself on the PR branch instead.
+2. Check CI with `gh pr checks <n>`. `no checks reported` (exit 1) means the repo has no CI: run the test and lint commands yourself on the PR head in a temporary detached worktree, then remove it:
+   ```bash
+   git fetch origin <branch> && git worktree add --detach "$root-wt/review-T<n>" FETCH_HEAD
+   # run test and lint there
+   git worktree remove "$root-wt/review-T<n>"
+   ```
 3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric).
 4. Problems → send them to the same worker and mark `changes-requested`; clean → `reviewed`.
 

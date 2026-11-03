@@ -53,3 +53,9 @@ Found and fixed during the run:
 ```bash
 bash tests/run.sh
 ```
+
+Skill behaviour evals (each case runs with and without the plugin; this costs roughly $3–4 per full run on your account). Use a Sonnet judge: the default Haiku judge splits its votes on correct answers. `--no-publish` keeps the report local.
+
+```bash
+claude plugin eval . --judge-model sonnet --no-publish
+```
