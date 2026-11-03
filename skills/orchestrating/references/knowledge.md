@@ -19,7 +19,7 @@ Each project keeps what the orchestrator has learned about it in `.claude/orches
 | `domain.md` | Business and regulatory rules; terms that mean something specific here | 150 |
 | `map.md` | Where things live; how a typical feature flows through the layers | 100 |
 | `review-checklist.md` | What every review must check; extra checks per area | 60 |
-| `calibration.md` | Which task types need which tier here; typical split sizes; brief details workers keep needing; proven recipes, learned defaults and pre-flight checks (workflow learning) | 120 |
+| `calibration.md` | Which task types need which tier here; typical split sizes; brief details workers keep needing; proven recipes, learned defaults and pre-flight checks ([workflow learning](workflow-learning.md)) | 120 |
 
 A new file's first line states its budget: `<!-- budget: N lines -->`. Starter files are in [knowledge-templates/](knowledge-templates/README.md): [domain.md](knowledge-templates/domain.md), [map.md](knowledge-templates/map.md), [review-checklist.md](knowledge-templates/review-checklist.md), [calibration.md](knowledge-templates/calibration.md).
 

@@ -52,9 +52,12 @@ Started: <date> · Backend: desktop|cli · Base branch: <branch> · Status: plan
 | T2 | ... | src/api/users/** | T1 | standard | worker | local_ab12 | orch/T2 | #13 | in-review |
 
 ## Events
-- <time> T2 started (local_ab12, sonnet/medium)
-- <time> T2 report received → reports/T2.md
+- <time> [event] T2 started (local_ab12, sonnet/medium)
+- <time> [ask-user] T2 Should PUT return 422 or 400 on validation errors? → 422
+- <time> [event] T2 report received → reports/T2.md
 ```
+
+Every Events line starts with a kind tag after the time; the tags and what each counts toward are in [workflow-learning.md](workflow-learning.md#event-kinds).
 
 - The header's `Status:` must stay on line 2 — the hook reads the first lines, and stays silent once it says `done`.
 - `session/run`: the desktop session id (`local_…`) or the CLI `session_id`.
