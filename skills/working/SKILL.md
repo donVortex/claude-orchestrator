@@ -55,7 +55,7 @@ Run the full test, lint and build commands and read the output. You may only cla
 
 ## 6. Open the PR
 
-`git push -u origin HEAD:orch/<task-id>` (your local branch name may differ; the remote branch is always `orch/<task-id>`), then write the PR body — Goal, Changes, Verification (commands → results), Risks — to `<report dir>/T<n>-pr.md` and run `gh pr create --base <base> --head orch/<task-id> --title "T<n>: <task>" --body-file <that file>`. Never pass the body inline: a line starting with `#` gets the command rejected. Never force-push, and never push to the base branch.
+`git push -u origin HEAD:<branch>`, where `<branch>` is the one the brief names (default `orch/<task-id>`; your local branch name may differ). Then write the PR body — Goal, Changes, Verification (commands → results), Risks — to `<report dir>/T<n>-pr.md` and run `gh pr create --base <base> --head <branch> --title "T<n>: <task>" --body-file <that file>`. Never pass the body inline: a line starting with `#` gets the command rejected. Never force-push, and never push to the base branch.
 
 ## 7. Report
 

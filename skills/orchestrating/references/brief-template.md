@@ -9,10 +9,12 @@ Load the session-orchestrator:working skill and follow it.
 
 - Goal: <one or two sentences, with the concrete names and values the work needs: field names, setting names, request/response and error shapes>
 - Acceptance: <checkable criteria, each with how it is verified>
+- Style reference: <an existing file whose patterns to follow, or "none">
 - Owned files: <files/globs, including their test files>
 - Off-limits: every other file (name tempting neighbours explicitly, e.g. `src/db/schema.ts`)
 - Commands: test `<cmd>`, lint `<cmd>`, build `<cmd>`
 - Base branch: `<branch>` (already contains: <merged dependency PRs, or "nothing extra">)
+- PR branch: `orch/T<n>` (or `orch/T<n>-<slug>` if that name was taken; see ledger.md)
 - Tier: <fast|standard|deep> — session <model> / <effort>
 - Orchestrator: desktop | CLI mode
 - Report path: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md)

@@ -16,7 +16,7 @@ The script lives at `<plugin root>/scripts/cli-worker.sh` — two levels up from
 
 | Command | Does |
 |---|---|
-| `bash <plugin>/scripts/cli-worker.sh start <task-id> <base-branch> <model> <effort> <brief-file>` | Creates (or reuses) worktree `<repo>-wt/<task-id>` on branch `orch/<task-id>`, then runs the brief as a headless worker. |
+| `bash <plugin>/scripts/cli-worker.sh start <task-id> <base-branch> <model> <effort> <brief-file>` | Creates (or reuses) worktree `<repo>-wt/<task-id>` on branch `orch/<task-id>`, then runs the brief as a headless worker. It reuses an existing `orch/<task-id>` on purpose (re-spawning within one run), so a name left over from an earlier run must not be passed: use `T<n>-<slug>` instead (see [ledger.md](ledger.md)). |
 | `bash <plugin>/scripts/cli-worker.sh resume <task-id> <session-id> <message-file>` | Sends a follow-up (an answer, review fixes) to the same worker conversation. |
 | `bash <plugin>/scripts/cli-worker.sh remove <task-id>` | Removes the worktree after the PR is merged. The branch is kept. |
 

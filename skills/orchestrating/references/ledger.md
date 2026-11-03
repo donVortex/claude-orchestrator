@@ -34,6 +34,12 @@ mkdir -p "$dest"
 for f in "$root/.orchestration"/*; do [ "$(basename "$f")" = archive ] || mv "$f" "$dest/"; done
 ```
 
+Branches are not archived and would collide with the new run's `orch/T<n>`. After the move, list the finished run's branches — `git branch --list 'orch/T*'` and `git branch -r --merged origin/<base> | grep 'origin/orch/T'` — and ask the user whether to delete them locally and on the remote. Never delete without a yes.
+
+## Branch names
+
+A task's branch is `orch/T<n>`. If that name is already taken (locally or on `origin`) when the task starts, use `orch/T<n>-<short slug>` instead, write it in the ledger and the brief, and log it in Events. On the CLI backend, pass `T<n>-<short slug>` as the task id, so the launcher's worktree and branch get the same name.
+
 ## `ledger.md`
 
 ```markdown
@@ -52,7 +58,7 @@ Started: <date> · Backend: desktop|cli · Base branch: <branch> · Status: plan
 
 - The header's `Status:` must stay on line 2 — the hook reads the first lines, and stays silent once it says `done`.
 - `session/run`: the desktop session id (`local_…`) or the CLI `session_id`.
-- `branch`: the PR's branch on GitHub, always `orch/T<n>`. A desktop worker's local branch has an app-chosen name; note it in the Events line when the session starts.
+- `branch`: the PR's branch on GitHub: `orch/T<n>`, or `orch/T<n>-<slug>` when that name was taken (see Branch names). A desktop worker's local branch has an app-chosen name; note it in the Events line when the session starts.
 - Add a `failures` note in the Events list each time a task fails a round (see the two-failure limit).
 
 ## Task statuses

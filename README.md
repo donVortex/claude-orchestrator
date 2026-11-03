@@ -44,7 +44,7 @@ Found and fixed during the run:
 - A review nit counted as a failed round. Now only broken code, red tests/CI, worker errors or missing reports count.
 - From the run's own retros: workers may run `gh pr diff`, open PRs with `--body-file`, must see a failing test before any implementation, and check exact source text with grep.
 
-**Not yet verified:** the desktop backend (worker sessions started by the orchestrator in the app).
+**Desktop backend, end to end** (2026-11-03, sandbox PRs #4–#6): worker sessions start on their tier's model and load the plugin; the previous run is archived first. Found and fixed: folder trust is now handled as a blocked start, tiny tasks get a small-task path that still has one review, and branch names from an earlier run no longer collide.
 
 ## Tests
 
