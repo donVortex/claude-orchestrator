@@ -4,15 +4,19 @@ A dry run of the whole system on a throwaway repo, once per backend. Tick each b
 
 ## Setup
 
-- [ ] `claude plugin marketplace add D:\dev\claude-orchestrator`
-- [ ] `claude plugin install session-orchestrator@session-orchestrator`
-- [ ] `claude plugin list` shows `session-orchestrator` enabled
-- [ ] A throwaway GitHub repo (e.g. `donVortex/orch-sandbox`) with a tiny project, a working `npm test` (or equivalent), cloned locally
-- [ ] The sandbox's test command is added to `settings/worker-allowlist.json` (CLI run only)
+- [x] `claude plugin marketplace add D:/dev/claude-orchestrator`
+- [x] `claude plugin install session-orchestrator@session-orchestrator`
+- [x] `claude plugin list` shows `session-orchestrator` (user scope, read from `D:\dev\claude-orchestrator`)
+- [x] Sandbox project at `D:\dev\orch-sandbox`: Node, `npm test` (`node --test`) and `npm run lint`, no build step, initial commit on `main`
+- [x] The sandbox's commands are allowed for workers in its tracked `.claude/settings.json`
+- [ ] Private GitHub repo `donVortex/orch-sandbox` created, set as `origin`, `main` pushed
+- [ ] Desktop app restarted (so it loads the plugin and finds `claude` on PATH)
 
 Goal to use (three tasks: one `self`, two workers):
 
-> Add a `slugify(text)` utility with tests, a `truncate(text, n)` utility with tests, and a shared `src/strings/index.ts` that exports both.
+> Add a `slugify(text)` utility in `src/strings/slugify.js` and a `truncate(text, n)` utility in `src/strings/truncate.js`, each with tests, plus `src/strings/index.js` that re-exports both. Commands: test `npm test`, lint `npm run lint`, no build.
+
+Also try one deliberately thin brief: when a worker's brief leaves something out, it should block and ask, not guess.
 
 ## Desktop run
 
