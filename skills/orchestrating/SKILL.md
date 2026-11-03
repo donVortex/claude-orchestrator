@@ -24,7 +24,7 @@ Every message you end a turn with has this shape, in this order:
 - **Status first**, one sentence. No preamble.
 - **Short bullets**, no paragraphs. Full reports, diffs, reviews and briefs are linked, not pasted; the user asks if they want more.
 - **"Your next step" is always the last thing**, always present, under a `---` rule:
-  - one action: name it, with its link ("merge [PR #10](…), then tell me 'merged'");
+  - one action: name it, with its link ("merge PR #10 — <its URL> — then tell me 'merged'");
   - several actions: number them in the order to do them;
   - a question or approval (breakdown, interview question, knowledge diff, merges): the question goes here;
   - nothing needed: say so plainly and say when they'll hear from you ("Nothing to do — I'll message you when T2's PR is up").
@@ -56,7 +56,7 @@ Show the breakdown as a table — `id | task | owns | depends | tier | placement
 
 Ledger status → `running`. Then, for every task whose dependencies are merged:
 - `worker`: write the brief from [brief-template.md](references/brief-template.md) — with **Project rules** quoting the `domain.md` entries for this task and **Review checklist** naming the checklist sections it touches — and start it on the chosen backend, up to `max_parallel_workers` at once.
-- `self`: do it here, in its own worktree so the user's checkout never switches: `git worktree add -b orch/T<n> "$root-wt/T<n>" <base>` (`$root` from [ledger.md](references/ledger.md)). That folder is outside your working directories, so every read and edit there would prompt the user: before your first `self` task, ask them to run `/add-dir <$root>-wt` (you cannot run it, and you never change permission settings yourself). Work like a worker — the session-orchestrator:working skill's loop, including its small-task path when the plan has one subtask — then a PR and a report with a retro.
+- `self`: do it here, in its own worktree so the user's checkout never switches: `git fetch origin <base> && git worktree add -b orch/T<n> "$root-wt/T<n>" origin/<base>` — always from the freshly fetched `origin/<base>`, never the user's possibly stale local branch (`$root` from [ledger.md](references/ledger.md)). That folder is outside your working directories, so every read and edit there would prompt the user: before your first `self` task, ask them to run `/add-dir <$root>-wt` (you cannot run it, and you never change permission settings yourself). Work like a worker — the session-orchestrator:working skill's loop, including its small-task path when the plan has one subtask — then a PR and a report with a retro.
 
 ## 5. Track
 

@@ -158,6 +158,20 @@ printf 'x\n' > "$base/msg.txt"
 cw "$repo" resume T1 s-1 "$base/msg.txt"
 assert_eq 5 "$code" "resume_without_worktree: exit 5"
 
+# start_uses_fresh_origin_base: local main is behind origin; the task starts from origin's newest commit
+setup
+git clone -q --bare "$repo" "$base/remote.git"
+git -C "$repo" remote add origin "$base/remote.git"
+git -C "$repo" fetch -q origin
+git clone -q "$base/remote.git" "$base/other"
+git -C "$base/other" -c user.name=t -c user.email=t@t commit -q --allow-empty -m "newer on origin"
+git -C "$base/other" push -q origin HEAD:main
+newest=$(git -C "$base/remote.git" rev-parse main)
+[ "$(git -C "$repo" rev-parse main)" != "$newest" ] || fail "start_uses_fresh_origin_base: fixture has a stale local main"
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+assert_eq 0 "$code" "start_uses_fresh_origin_base: exit 0"
+assert_eq "$newest" "$(git -C "$repo-wt/T1" rev-parse HEAD 2>/dev/null)" "start_uses_fresh_origin_base: worktree starts at origin/main"
+
 # remove_deletes_worktree
 setup
 cw "$repo" start T1 main sonnet medium "$base/brief.md"

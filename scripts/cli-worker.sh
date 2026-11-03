@@ -73,6 +73,20 @@ use_git_bash() {
   done
 }
 
+# Echoes where a new task branch starts: the freshly fetched origin/<base> when the repo has an
+# origin and the fetch works, so a stale local base never leaks in; otherwise the local <base>.
+start_point() {
+  if git -C "$root" remote get-url origin >/dev/null 2>&1 &&
+    git -C "$root" fetch --quiet origin "$1" >/dev/null 2>&1 &&
+    git -C "$root" rev-parse --verify --quiet "refs/remotes/origin/$1^{commit}" >/dev/null; then
+    echo "origin/$1"
+  else
+    git -C "$root" remote get-url origin >/dev/null 2>&1 &&
+      echo "cli-worker: could not fetch origin/$1; starting from local $1" >&2
+    echo "$1"
+  fi
+}
+
 cmd_start() {
   [ $# -eq 5 ] || usage
   locate "$1"
@@ -86,8 +100,9 @@ cmd_start() {
   elif git -C "$root" show-ref --verify --quiet "refs/heads/$branch"; then
     git -C "$root" worktree add "$dir" "$branch" >&2 || die 1 "git worktree add failed"
   else
-    git -C "$root" rev-parse --verify --quiet "$base^{commit}" >/dev/null || die 3 "base branch not found: $base"
-    git -C "$root" worktree add -b "$branch" "$dir" "$base" >&2 || die 1 "git worktree add failed"
+    start=$(start_point "$base")
+    git -C "$root" rev-parse --verify --quiet "$start^{commit}" >/dev/null || die 3 "base branch not found: $base"
+    git -C "$root" worktree add -b "$branch" "$dir" "$start" >&2 || die 1 "git worktree add failed"
   fi
 
   run_claude "$brief" --model "$model" --effort "$effort"

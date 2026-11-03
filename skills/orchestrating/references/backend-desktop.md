@@ -12,7 +12,7 @@ Use it when `mcp__ccd_session__start_session` can be loaded (ToolSearch `select:
 2. `start_session` with:
    - `initiation: "user_asked"` — the user's approval of the breakdown is the instruction to start it
    - `context: "fresh"`, `use_worktree: true`
-   - `source_branch`: the ledger's base branch, so the worktree starts from the right commit
+   - `source_branch`: `orch/base-<base>`, a local helper branch you point at GitHub's latest base right before each start: `git fetch origin <base> && git branch -f orch/base-<base> origin/<base>`. The app can only cut worktrees from a local branch, and the user's own `<base>` may be behind; the helper branch never touches their checkout.
    - `branch_name`: `orch-T<n>` (the app adds its own prefix and suffix)
    - `model` and `effort`: the task tier's **worker session** values from [model-tiers.md](model-tiers.md), set here so they apply to the worker's first turn (setting them after the start only applies from the next turn). `model` takes a full model id, not an alias: use the current id of that family (e.g. `claude-sonnet-5-5` for `sonnet`).
    - `title`: `T<n> · <short task>`
@@ -21,7 +21,7 @@ Use it when `mcp__ccd_session__start_session` can be loaded (ToolSearch `select:
 3. The app only allows a model and effort **at or below this session's own**. If a tier asks for more (e.g. a `deep` task while you run on sonnet), tell the user before starting it: they can raise this session's model, or accept the lower tier.
 4. Ledger: session id, the worktree branch name the start result reports, `running`, and an event line.
 
-Before cutting worktrees, the app may fast-forward `source_branch` in the user's main checkout to its upstream — it doesn't always. Don't promise either: when you show the breakdown, say the app may move their local base branch forward. Check what a worker actually started from (`git -C <worktree> log -1`) rather than assuming, and briefs need no reset-to-origin step.
+Because `source_branch` is the helper branch, workers always start from GitHub's latest base, whatever state the user's own checkout is in; briefs need no reset-to-origin step. Check what a worker started from (`git -C <worktree> log -1`) if in doubt.
 
 Start independent ready tasks in the same turn, up to `max_parallel_workers`.
 
