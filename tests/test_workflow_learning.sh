@@ -17,6 +17,14 @@ for h in "## Event kinds" "## Counts table" "## Findings to proposals" "## Using
   assert_contains "$ref" "$h" "heading [$h]"
 done
 
+assert_contains "$ref" '[env]' "event kind [env] for environment-lost rounds"
+for prefix in '[event] pre-flight:' 'following recipe:' '[event] assumed default:' '[event] user overrode default:'; do
+  assert_contains "$ref" "$prefix" "fixed-prefix event line [$prefix]"
+done
+assert_contains "$ref" ".orchestration/counts.md" "full counts table goes to a file"
+assert_contains "$ref" "Don't propose what's already there" "dedupe rule"
+assert_contains "$(cat skills/orchestrating/references/knowledge.md)" 'except calibration'"'"'s `## Recipes`' "bootstrap keeps the workflow sections"
+
 ledger=$(cat skills/orchestrating/references/ledger.md 2>/dev/null)
 assert_contains "$ledger" "[ask-user]" "ledger.md shows a tagged event"
 assert_contains "$ledger" "starts with a kind tag" "ledger.md requires kind tags"

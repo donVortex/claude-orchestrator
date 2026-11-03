@@ -6,7 +6,7 @@ tags: [orchestrator, workflow]
 
 First load the session-orchestrator:orchestrating skill with the Skill tool, as an orchestrator session does at its start. Then orchestrate this goal:
 
-**Add `averagePrice(cents)` in `src/money/` with tests, and add a CSV export of all prices in `src/export/pricesCsv.js` with tests.**
+**Add `averagePrice(cents)` in `src/money/` with tests, and add a CSV export of all prices as `pricesCsv(prices)` in `src/money/pricesCsv.js` with tests.**
 
 This is a planning check. The repository is not checked out here, so use these intake facts instead of running commands:
 

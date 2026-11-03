@@ -28,7 +28,7 @@ Every message you end a turn with has this shape, in this order:
   - several actions: number them in the order to do them;
   - a question or approval (breakdown, interview question, knowledge diff, merges): the question goes here;
   - nothing needed: say so plainly and say when they'll hear from you ("Nothing to do — I'll message you when T2's PR is up").
-- Exception: the breakdown table and the knowledge diff are shown **in full** above the rule — every task row; every addition, edit and removal with its source — because the user approves exactly what they see. Keep everything around them short.
+- Exception: the breakdown table and the knowledge diff are shown **in full** above the rule — every task row; every addition, edit and removal with its source — because the user approves exactly what they see. Keep everything around them short. The wrap-up's counts table is not an exception: show the `run` row and non-zero tasks, and link `.orchestration/counts.md`.
 
 ## 1. Intake
 
@@ -43,29 +43,31 @@ Every message you end a turn with has this shape, in this order:
   - **Missing, no PR open, fresh orchestration** (never on resume) → run the [bootstrap](references/knowledge.md#bootstrap) **before any feature breakdown**: scan the repo with parallel scouts, then interview the user, then show the drafts for approval. In the message that starts the interview, tell the user that **nothing is written to the repo until they approve the drafts**, and ask **only the first question**: one thing to answer, not a list of sub-questions. Each further question (5 at most in total) waits for the previous answer.
   - Drafts never restate a `CLAUDE.md` rule, in any file: they refer to it ([content rules](references/knowledge.md#content-rules)). Before writing the bootstrap PR's worktree, ask the user to `/add-dir <$root>-wt` if they haven't.
   - **Present** → use it exactly as it is, whatever its layout; the project owns it and plugin updates never migrate or reformat it ([the project owns it](references/knowledge.md#the-project-owns-it)). Tell the user which entries bear on the goal. If an entry contradicts `CLAUDE.md` or the code, say so, record it in the ledger's Events, follow `CLAUDE.md` or the code (precedence: brief > `CLAUDE.md` > knowledge), and never quote the contradicted entry into a brief.
-- **Workflow learning** ([workflow-learning.md](references/workflow-learning.md#using-what-was-learned)): run every **Pre-flight** check in the project's calibration before planning, and tell the user up front what they'll need to do.
+- **Workflow learning** ([workflow-learning.md](references/workflow-learning.md#using-what-was-learned)): run every **Pre-flight** check in the project's calibration (by section or `Pre-flight:` prefix) before planning, tell the user up front what they'll need to do, and log it as `[event] pre-flight: …` — a planned ask, not an interruption.
 
 ## 2. Break down
 
-Split per [splitting.md](references/splitting.md), following the project's `map.md` feature flows and `calibration.md` tiers and split sizes when they exist ([using it](references/knowledge.md#using-it)). Every task gets an id, what it does, owned files, dependencies, tier and placement (`self`, `subagent`, `worker`). Foundations go first as `self`; tasks that can run at the same time never own the same file. Match each task to at most one of the project's **Recipes** (same area and same kind of change) and follow its split, tier, placement and brief must-haves unless the goal needs otherwise.
+Split per [splitting.md](references/splitting.md), following the project's `map.md` feature flows and `calibration.md` tiers and split sizes when they exist ([using it](references/knowledge.md#using-it)). Every task gets an id, what it does, owned files, dependencies, tier and placement (`self`, `subagent`, `worker`). Foundations go first as `self`; tasks that can run at the same time never own the same file. Match each task to at most one of the project's **Recipes** (same area **and** same kind of change; a different kind of change in the same area matches nothing) and follow its split, tier, placement and brief must-haves unless the goal needs otherwise.
 
 ## 3. Approval gate
 
 Show the breakdown as a table — `id | task | owns | depends | tier | placement` — then, under it:
 - `Following recipe: <name>` for each task that matches a recipe;
-- `Assumed from project knowledge: <default>` for each **Learned default** you rely on (never one that contradicts `CLAUDE.md`, a project rule or the goal — flag that instead).
+- `Assumed from project knowledge: <default>` for each **Learned default** you rely on. Never assume one that touches safety, data handling, money or a destructive action, or contradicts `CLAUDE.md`, a project rule or the goal — ask or flag it instead.
+
+Log each of these lines as `[event] T<n> following recipe: <name>` and `[event] assumed default: <default>`; if the user overrides a default, log `[event] user overrode default: <default> → <choice>` ([why](references/workflow-learning.md#event-kinds)).
 
 Ask the user to approve or change it, overrides included. Say that nothing has started. Write the ledger with status `planning`. **Start nothing until the user approves.** This is the only routine stop.
 
 ## 4. Dispatch
 
 Ledger status → `running`. Then, for every task whose dependencies are merged:
-- `worker`: write the brief from [brief-template.md](references/brief-template.md) — with **Project rules** quoting the `domain.md` entries for this task and **Review checklist** naming the checklist sections it touches; a task that follows a recipe gets every one of the recipe's must-haves (rules to quote, style reference, what to fold into the subtask) written into its brief — and start it on the chosen backend, up to `max_parallel_workers` at once.
+- `worker`: write the brief from [brief-template.md](references/brief-template.md) — with **Project rules** quoting the `domain.md` entries for this task and **Review checklist** naming the checklist sections it touches; a task that follows a recipe gets every one of the recipe's must-haves (rules to quote, style reference, what to fold into the subtask) written into its brief, and every task gets the learned defaults it relies on — and start it on the chosen backend, up to `max_parallel_workers` at once.
 - `self`: do it here, in its own worktree so the user's checkout never switches: `git fetch origin <base> && git worktree add -b orch/T<n> "$root-wt/T<n>" origin/<base>` — always from the freshly fetched `origin/<base>`, never the user's possibly stale local branch (`$root` from [ledger.md](references/ledger.md)). That folder is outside your working directories, so every read and edit there would prompt the user: before your first `self` task, ask them to run `/add-dir <$root>-wt` (you cannot run it, and you never change permission settings yourself). Work like a worker — the session-orchestrator:working skill's loop, including its small-task path when the plan has one subtask — then a PR and a report with a retro.
 
 ## 5. Track
 
-On every event, update the ledger first ([ledger.md](references/ledger.md)), starting the line with its [kind tag](references/workflow-learning.md#event-kinds) (`[ask-user] <question> → <answer>`, `[prompt]`, `[failed]`, `[event]`, …). Read each report in full from `.orchestration/reports/`; a worker whose report write was refused ends with the report in its final message — save that to `reports/T<n>.md` yourself. Append its retro to `retros.md`. Answer worker questions you can answer; ask the user the rest. Use early retros to improve the briefs of tasks not yet started.
+On every event, update the ledger first ([ledger.md](references/ledger.md)), starting the line with its [kind tag](references/workflow-learning.md#event-kinds) (`[ask-user] <question> → <answer>` — one line per question, the answer added to it — `[prompt]`, `[failed]`, `[env]`, `[event]`, …). Read each report in full from `.orchestration/reports/`; a worker whose report write was refused ends with the report in its final message — save that to `reports/T<n>.md` yourself. Append its retro to `retros.md`. Answer worker questions you can answer; ask the user the rest. Use early retros to improve the briefs of tasks not yet started.
 
 ## 6. Review
 
@@ -107,9 +109,10 @@ Only for:
 5. Merge approval for reviewed PRs.
 6. Retro-driven edits at wrap-up.
 7. A worker start the app refused (desktop).
-8. Before the first `self` task: running `/add-dir` for the worktrees folder (step 4).
-9. Knowledge bootstrap: each interview question, and approval of the drafts.
-10. Approval of the knowledge diff at wrap-up.
+8. Before the first `self` task: running `/add-dir` for the worktrees folder (step 4) — at intake already, if the project's Pre-flight lists it.
+9. Pre-flight asks at intake (logged as `[event] pre-flight: …`).
+10. Knowledge bootstrap: each interview question, and approval of the drafts.
+11. Approval of the knowledge diff at wrap-up.
 
 ## Failures
 

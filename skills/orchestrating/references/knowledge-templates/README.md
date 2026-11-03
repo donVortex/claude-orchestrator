@@ -7,7 +7,7 @@ What the session-orchestrator plugin has learned about this project. It reads th
 | `domain.md` | Business and regulatory rules; terms that mean something specific here |
 | `map.md` | Where things live; how a typical feature flows through the code |
 | `review-checklist.md` | What every review must check; extra checks per area |
-| `calibration.md` | Which work needs which model tier; typical task sizes; what briefs must spell out |
+| `calibration.md` | Which work needs which model tier; typical task sizes; what briefs must spell out; proven recipes, learned defaults (applied automatically and listed in every plan as "Assumed from project knowledge") and pre-flight checks |
 
 ## How it grows
 
