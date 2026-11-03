@@ -80,6 +80,8 @@ Found and fixed during the run:
 
 **Worker behaviour** (third run, sandbox PRs #7–#8): a worker with three independent subtasks sent three implementer subagents in a single response, each on its tier's model, followed by a review. A one-subtask worker took the small-task path and still ran one review.
 
+**Project knowledge, end to end** (sandbox PRs #9–#13): the first orchestration bootstrapped the knowledge (repo scan, an interview one question at a time, your approval, knowledge PR #9); feature 1 (`formatMoney`, #10) briefed its worker with those rules and its wrap-up added what it learned (knowledge PR #11); feature 2 (`sumPrices`, #12) quoted a rule feature 1 had taught, and its wrap-up added more (#13). Found and fixed along the way: structured messages ending in "Your next step", reading the base branch with `MSYS_NO_PATHCONV=1` on Windows, never `cd`-ing into a worktree, starting every task from GitHub's latest base, and the orchestrator as the default workflow in projects with knowledge.
+
 ## Tests
 
 ```bash

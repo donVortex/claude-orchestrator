@@ -42,3 +42,4 @@ Report in the format of the working skill's report-format.md, then send: `T<n> d
 | Report path is absolute and points at the **main** checkout | Workers run in their own worktrees |
 | The brief names its canonical file path | The desktop app rewrites `@` in prompts |
 | Project rules quote the `domain.md` entries for this task's area | Workers can't follow rules they weren't given |
+| A dependent change of a few lines (a re-export, a barrel line) is folded into the subtask it depends on | A one-subtask plan takes the working skill's small-task path (one implementer, one review) instead of the full batch loop |
