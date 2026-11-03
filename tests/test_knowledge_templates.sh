@@ -29,4 +29,11 @@ for f in domain.md map.md review-checklist.md calibration.md; do
   assert_contains "$readme" "$f" "README mentions $f"
 done
 
+# wiring into briefs, reports and the worker skill
+brief=$(cat skills/orchestrating/references/brief-template.md 2>/dev/null)
+assert_contains "$brief" "- Project rules:" "brief has a Project rules field"
+assert_contains "$brief" "- Review checklist:" "brief has a Review checklist field"
+assert_contains "$(cat skills/working/report-format.md 2>/dev/null)" '| `domain` |' "report format has the domain tag"
+assert_contains "$(cat skills/working/SKILL.md 2>/dev/null)" "Review checklist" "worker skill passes the review checklist to reviews"
+
 finish

@@ -10,6 +10,7 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 ## 1. Read the brief
 
 - If the brief names a canonical file, that file wins wherever the prompt differs from it (the app may turn `@` into `＠`).
+- **Project rules** in the brief are binding, like the off-limits list. The full knowledge is in `.claude/orchestrator/` in your worktree; read it when the brief points there.
 - **Owned files** are the only files you and your subagents may change. The off-limits list is binding.
 - Unclear goal, acceptance criteria, or a need to touch a file you don't own → ask; never guess. Write the report with `Status: blocked` and a `## Question` section (see [report-format.md](report-format.md)), then end your turn. Ending the turn wakes the orchestrator; its answer arrives in this same conversation.
 
@@ -30,7 +31,7 @@ followed by the line: `The full test suite runs after each batch, before the nex
 **Small task** — the plan has exactly **one** subtask: skip the batch loop below.
 1. Post a one-line plan: the subtask, its files, and `small task: I write it; one review`.
 2. Write it yourself, test-first (red run before any implementation, then green).
-3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance and code quality in a single pass. Fix its findings.
+3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance, code quality and the brief's **Review checklist** sections in a single pass. Fix its findings.
 4. Continue at step 5. Review is never skipped, however small the change.
 
 Two or more subtasks always use the batch loop.
@@ -40,7 +41,7 @@ Two or more subtasks always use the batch loop.
 1. **Implement** — send all of the batch's Agent calls **in one message**; that is what runs them in parallel. Every call passes `model` from the rubric:
    - `fast`, `standard` → `orch-implementer`; `deep` → `orch-specialist` (build mode).
    - Its prompt: the subtask goal, its files (and that nothing else may change), the test command scoped to its own test files (e.g. `node --test <file>`), "do not commit". Only the gate runs the full suite: parallel siblings' half-written tests would fail it.
-2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review. Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel.
+2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review that also checks the brief's **Review checklist** sections. Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel.
 3. **Fix** — send findings back to an implementer; review again.
 4. **Gate** — commit the batch, run the full test suite. Not green → fix before the next batch.
 
@@ -80,3 +81,4 @@ Review fixes from the orchestrator arrive in this same conversation: fix on the 
 | Changed a test, lint or build script and only saw it pass | Show it failing on a deliberately bad input too |
 | Guessing on an unclear brief | Ask (step 1) |
 | Retro like "brief could be clearer" | Say exactly what was missing, tagged |
+| Learned a project rule or fact and kept it to yourself | Add it as a `[domain]` retro point, so it reaches the project's knowledge |

@@ -11,6 +11,8 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - Goal: <one or two sentences, with the concrete names and values the work needs: field names, setting names, request/response and error shapes>
 - Acceptance: <checkable criteria, each with how it is verified>
 - Style reference: <an existing file whose patterns to follow, or "none">
+- Project rules: <the `.claude/orchestrator/domain.md` entries relevant to this task, quoted, or "none"> (binding, like the off-limits list)
+- Review checklist: `.claude/orchestrator/review-checklist.md` — sections: Always check, <the areas this task touches> (or "none" if the project has no knowledge folder)
 - Owned files: <files/globs, including their test files>
 - Off-limits: every other file (name tempting neighbours explicitly, e.g. `src/db/schema.ts`)
 - Commands: test `<cmd>`, lint `<cmd>`, build `<cmd>`
@@ -39,3 +41,4 @@ Report in the format of the working skill's report-format.md, then send: `T<n> d
 | Owned files don't overlap any task that can run at the same time | See [splitting.md](splitting.md) |
 | Report path is absolute and points at the **main** checkout | Workers run in their own worktrees |
 | The brief names its canonical file path | The desktop app rewrites `@` in prompts |
+| Project rules quote the `domain.md` entries for this task's area | Workers can't follow rules they weren't given |
