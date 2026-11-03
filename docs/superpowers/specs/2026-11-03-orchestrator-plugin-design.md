@@ -157,11 +157,9 @@ Rules:
 
 ## 7. Worker flow (`working` skill)
 
-Every brief (`brief-template.md`) contains: task id and goal; acceptance criteria; owned files and explicitly off-limits files; base branch; tier and subtask tier hints; the orchestrator's session id (desktop) or "CLI mode"; the absolute path for the report; "load the `working` skill"; and the report format.
+Every brief (`brief-template.md`) contains: task id and goal; acceptance criteria; owned files and explicitly off-limits files; base branch; test/lint/build commands; tier; subtasks with their files, tier hints and dependencies; context from merged dependencies; "desktop" or "CLI mode"; the absolute path for the report; "load the `working` skill"; and the report format.
 
-1. **Read the brief.** If anything is ambiguous, ask instead of guessing:
-   - Desktop: `SendMessage` to the orchestrator, then wait.
-   - CLI: write the question to the report file with status `blocked` and end. The orchestrator answers with `claude -p --resume <session-id> "<answer>"`.
+1. **Read the brief.** If anything is ambiguous, ask instead of guessing: write the report with status `blocked` and a question, and end the turn. Ending the turn wakes the orchestrator on both backends; it answers in the same conversation (desktop: `SendMessage`; CLI: `cli-worker.sh resume`).
 2. **Plan.** Make a short inline list of subtasks, each with owned files and a tier. Write a full plan document only if the task is large.
 3. **Execute in batches.** Group subtasks into batches:
    - Subtasks with disjoint files and no dependency between them run **in parallel** (several Agent calls in one message, up to the cap).
@@ -172,7 +170,7 @@ Every brief (`brief-template.md`) contains: task id and goal; acceptance criteri
 4. **Escalate** per §6.
 5. **Verify.** Full test, lint and build. The passing output must be shown before claiming done.
 6. **PR.** Push `orch/<task-id>` and open a PR against the base branch with `gh pr create`. The body lists: goal, what changed, how it was verified, risks.
-7. **Report.** Write the full report to the brief's path. Then send a one-line "T<n> done, PR <url>, report at <path>" (desktop: `SendMessage`/final message; CLI: last line of output).
+7. **Report.** Write the full report to the brief's path. Then end the turn with one line: "T<n> done, PR <url>, report at <path>".
 
 ## 8. Report and retro format (`report-format.md`)
 

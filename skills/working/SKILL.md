@@ -10,9 +10,7 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 ## 1. Read the brief
 
 - **Owned files** are the only files you and your subagents may change. The off-limits list is binding.
-- Unclear goal, acceptance criteria, or a need to touch a file you don't own → ask; never guess:
-  - **Desktop** (brief gives an orchestrator session id): `SendMessage` to it, then wait for the answer.
-  - **CLI mode**: write the report with `Status: blocked` and a `## Question` section (see [report-format.md](report-format.md)), then end.
+- Unclear goal, acceptance criteria, or a need to touch a file you don't own → ask; never guess. Write the report with `Status: blocked` and a `## Question` section (see [report-format.md](report-format.md)), then end your turn. Ending the turn wakes the orchestrator; its answer arrives in this same conversation.
 
 ## 2. Plan in batches
 
@@ -53,7 +51,7 @@ Run the full test, lint and build commands and read the output. You may only cla
 
 ## 7. Report
 
-Write the report in [report-format.md](report-format.md) to the brief's report path. Then send one line — `T<n> done, PR <url>, report at <path>` — via `SendMessage` (desktop) or as your final output line (CLI).
+Write the report in [report-format.md](report-format.md) to the brief's report path. Then end your turn with one line: `T<n> done, PR <url>, report at <path>`.
 
 Review fixes from the orchestrator arrive in this same conversation: fix on the same branch, push, re-verify, and rewrite the report (add new retro points; keep the old ones).
 
