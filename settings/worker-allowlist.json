@@ -15,6 +15,7 @@
       "Bash(git push origin HEAD:orch/*)",
       "Bash(gh pr create *)",
       "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
       "Bash(gh pr checks *)"
     ],
     "deny": [

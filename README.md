@@ -33,6 +33,19 @@ To replace the whole allowlist, point `ORCH_ALLOWLIST` at your own file.
 
 On Windows, workers use Git Bash for shell commands (the PowerShell tool is turned off for them). The launcher finds Git Bash itself; if your Git install is unusual, set `CLAUDE_CODE_GIT_BASH_PATH` to its `bash.exe`.
 
+## Verified
+
+**CLI backend, end to end** (2026-11-03, sandbox repo, 2 workers + 1 `self` task, all merged). Checklist: [docs/e2e-checklist.md](docs/e2e-checklist.md).
+
+Found and fixed during the run:
+- Workers started from Git Bash couldn't find Git Bash and got only PowerShell, which no `Bash(...)` allow rule matches. The launcher now sets `CLAUDE_CODE_GIT_BASH_PATH` and turns PowerShell off.
+- Blanket `Edit`/`Write` allow rules let a worker write outside its worktree. Removed; edits are scoped to the worktree and `.orchestration/`.
+- `self` worktrees sit outside the orchestrator's working directories, so it now asks you to `/add-dir` them first.
+- A review nit counted as a failed round. Now only broken code, red tests/CI, worker errors or missing reports count.
+- From the run's own retros: workers may run `gh pr diff`, open PRs with `--body-file`, must see a failing test before any implementation, and check exact source text with grep.
+
+**Not yet verified:** the desktop backend (worker sessions started by the orchestrator in the app).
+
 ## Tests
 
 ```bash

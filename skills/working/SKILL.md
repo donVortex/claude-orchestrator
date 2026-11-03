@@ -35,7 +35,7 @@ followed by the line: `The full test suite runs after each batch, before the nex
 3. **Fix** — send findings back to an implementer; review again.
 4. **Gate** — commit the batch, run the full test suite. Not green → fix before the next batch.
 
-If superpowers is installed, its subagent-driven-development and test-driven-development skills apply inside each subtask; the batching and model rules here win. Without it: test first, watch it fail, minimal code, watch it pass.
+If superpowers is installed, its subagent-driven-development and test-driven-development skills apply inside each subtask; the batching and model rules here win. With or without it, every subtask — including code you write yourself — runs the new test and sees it fail for the right reason **before** any implementation exists; then minimal code, then the test passes.
 
 ## 4. Escalate
 
@@ -47,7 +47,7 @@ Run the full test, lint and build commands and read the output. You may only cla
 
 ## 6. Open the PR
 
-`git push -u origin HEAD:orch/<task-id>` (your local branch name may differ; the remote branch is always `orch/<task-id>`), then `gh pr create --base <base> --head orch/<task-id> --title "T<n>: <task>"` with a body of: Goal, Changes, Verification (commands → results), Risks. Never force-push, and never push to the base branch.
+`git push -u origin HEAD:orch/<task-id>` (your local branch name may differ; the remote branch is always `orch/<task-id>`), then write the PR body — Goal, Changes, Verification (commands → results), Risks — to `<report dir>/T<n>-pr.md` and run `gh pr create --base <base> --head orch/<task-id> --title "T<n>: <task>" --body-file <that file>`. Never pass the body inline: a line starting with `#` gets the command rejected. Never force-push, and never push to the base branch.
 
 ## 7. Report
 
@@ -63,5 +63,8 @@ Review fixes from the orchestrator arrive in this same conversation: fix on the 
 | Leaving out `model` | Every Agent call passes the rubric's model |
 | A subagent changed a file it doesn't own | Revert that change; redo the subtask inside its files |
 | "Tests should pass" | Run them; quote the real result |
+| Implementation written before a red test run | Delete it, run the test, see it fail, then implement |
+| The brief requires exact source text (escapes like `̀`, exact strings) | Grep the file for that text before committing; file-writing tools can turn escapes into the literal characters |
+| Changed a test, lint or build script and only saw it pass | Show it failing on a deliberately bad input too |
 | Guessing on an unclear brief | Ask (step 1) |
 | Retro like "brief could be clearer" | Say exactly what was missing, tagged |

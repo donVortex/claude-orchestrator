@@ -27,7 +27,7 @@ Show the breakdown as a table — `id | task | owns | depends | tier | placement
 
 Ledger status → `running`. Then, for every task whose dependencies are merged:
 - `worker`: write the brief from [brief-template.md](references/brief-template.md) and start it on the chosen backend, up to `max_parallel_workers` at once.
-- `self`: do it here, in its own worktree so the user's checkout never switches: `git worktree add -b orch/T<n> "$root-wt/T<n>" <base>` (`$root` from [ledger.md](references/ledger.md)). Work like a worker — tiered subagents in parallel batches (the session-orchestrator:working skill describes the loop), then a PR and a report with a retro.
+- `self`: do it here, in its own worktree so the user's checkout never switches: `git worktree add -b orch/T<n> "$root-wt/T<n>" <base>` (`$root` from [ledger.md](references/ledger.md)). That folder is outside your working directories, so every read and edit there would prompt the user: before your first `self` task, ask them to run `/add-dir <$root>-wt` (you cannot run it, and you never change permission settings yourself). Work like a worker — tiered subagents in parallel batches (the session-orchestrator:working skill describes the loop), then a PR and a report with a retro.
 
 ## 5. Track
 
@@ -37,7 +37,7 @@ On every event, update the ledger first ([ledger.md](references/ledger.md)). Rea
 
 For each report with a PR:
 1. Read the diff against the brief. `gh pr diff <n> --name-only` lists only owned files.
-2. Check CI with `gh pr checks <n>`.
+2. Check CI with `gh pr checks <n>`. `no checks reported` (exit 1) means the repo has no CI: run the test and lint commands yourself on the PR branch instead.
 3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric).
 4. Problems → send them to the same worker and mark `changes-requested`; clean → `reviewed`.
 
@@ -61,12 +61,15 @@ Only for:
 5. Merge approval for reviewed PRs.
 6. Retro-driven edits at wrap-up.
 7. A worker start the app refused (desktop).
+8. Before the first `self` task: running `/add-dir` for the worktrees folder (step 4).
 
 ## Failures
 
 | Situation | Do |
 |---|---|
-| A round fails (bad review, red CI, worker error, no report) | Send it back once with what went wrong; a second failure → `failed`, and the user chooses: re-tier to `deep`, you take it as `self`, or drop it |
+| Review asks for changes (style, naming, readability, small gaps) | `changes-requested`, send to the same worker. **Not** a failure |
+| A round fails: the code is broken, tests or CI are red, the worker errors or ends without a report | Send it back once with what went wrong; a second failure → `failed`, and the user chooses: re-tier to `deep`, you take it as `self`, or drop it |
+| A round is lost to the environment (missing tool, permissions), not the work | Not a failure: fix or escalate the cause, then resume |
 | Worker changed files it doesn't own | Send the PR back; if the task truly needs them, re-split with the user |
 | Two PRs conflict | The later PR's worker rebases on the base branch |
 | Worker silent | Check its state (backend guide); resume once, then count a failure |

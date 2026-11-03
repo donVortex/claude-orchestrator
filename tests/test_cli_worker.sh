@@ -177,6 +177,7 @@ assert_eq 2 "$code" "usage: unknown command exits 2"
 allow=$(cat settings/worker-allowlist.json 2>/dev/null)
 assert_contains "$allow" '"allow"' "allowlist: has allow rules"
 assert_contains "$allow" 'Bash(gh pr create *)' "allowlist: gh pr create"
+assert_contains "$allow" 'Bash(gh pr diff *)' "allowlist: gh pr diff"
 assert_not_contains "$allow" 'Bash(git push *)' "allowlist: no blanket git push"
 assert_not_contains "$allow" '"Write"' "allowlist: no blanket Write (acceptEdits scopes edits to the worktree)"
 assert_not_contains "$allow" '"Edit"' "allowlist: no blanket Edit"

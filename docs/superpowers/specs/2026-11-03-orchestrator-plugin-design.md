@@ -207,6 +207,7 @@ The orchestrator stops for the user only for:
 5. Merge approval for a batch of reviewed PRs.
 6. Retro-driven edits at wrap-up.
 7. Desktop only: a session start the app refused (see §10.1).
+8. Before the first `self` task: asking the user to `/add-dir <repo>-wt`, since `self` worktrees sit outside the orchestrator's working directories.
 
 ## 10. Backends
 
@@ -235,9 +236,11 @@ The orchestrator picks **desktop** if `mcp__ccd_session__start_session` can be l
 
 | Situation | Response |
 |---|---|
-| Worker fails twice (including review/CI rounds) | Mark `failed`; user chooses: re-tier to `deep`, orchestrator takes it as `self`, or drop. |
+| Worker fails twice (a failure = broken code, red tests/CI, worker error, or no report) | Mark `failed`; user chooses: re-tier to `deep`, orchestrator takes it as `self`, or drop. |
 | Worker edits files it doesn't own | Caught in review; PR sent back, or task re-split with user OK (§9.3). |
-| CI fails / review finds problems | Back to the same worker; counts toward the two-failure limit. |
+| CI fails / tests red | Back to the same worker; counts toward the two-failure limit. |
+| Review requests changes (style, readability, small gaps) | Back to the same worker as `changes-requested`; not a failure. |
+| Round lost to the environment (missing tool, permissions) | Not a failure; fix or escalate the cause, then resume. |
 | Two PRs conflict | Shouldn't happen with disjoint ownership; if it does, the later PR's worker rebases. |
 | Orchestrator context compacted or session resumed | SessionStart hook injects the ledger; orchestrator continues from it. |
 | Worker silent | Check session state (desktop) or process exit (CLI); resume once, then escalate as a failure. |

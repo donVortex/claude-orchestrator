@@ -38,12 +38,19 @@ In a new desktop session opened on the sandbox folder: `/session-orchestrator:or
 
 In a terminal (Git Bash) in the sandbox: `claude`, then `/session-orchestrator:orchestrate <goal>`
 
-- [ ] Intake picks the CLI backend
-- [ ] Workers start via `cli-worker.sh start`, in `<repo>-wt/T<n>` on `orch/T<n>`, in the background
-- [ ] `session_id` lands in the ledger
-- [ ] A blocked worker is answered via `cli-worker.sh resume`
-- [ ] PRs, reports and retros as in the desktop run
-- [ ] After merge, `cli-worker.sh remove` cleans up the worktree
+Run on 2026-11-03 in `donVortex/orch-sandbox` (PRs #1–#3).
+
+- [x] Intake picks the CLI backend
+- [x] Workers start via `cli-worker.sh start`, in `<repo>-wt/T<n>` on `orch/T<n>`, in the background
+- [x] `session_id` lands in the ledger
+- [x] A blocked worker is answered via `cli-worker.sh resume`
+- [x] PRs, reports and retros as in the desktop run
+- [x] The orchestrator re-runs tests itself, checks owned files, sends a PR back, and asks you to merge; it never merges
+- [x] `/compact` re-injects the ledger (SessionStart hook) and skills are restored
+- [x] `self` task (T3) done in its own worktree with a PR
+- [x] Wrap-up: results, retros grouped by tag, concrete edits to named plugin files, nothing changed before approval
+- [ ] After merge, `cli-worker.sh remove` cleans up the worktree (not observed for T1/T2; T3's worktree was removed)
+- [ ] Parallel subagents inside a worker observed (not checked in this run)
 
 ## Results
 
