@@ -42,6 +42,13 @@ The app may refuse `start_session` on a turn it triggered itself (not one starte
 2. Tell the user in one line that T<n> is waiting for them to click Start.
 3. Ledger: `blocked` with the event `needs start click`.
 
+The app also refuses starts in a folder the user hasn't trusted yet. Trusting a folder is the user's decision; you cannot do it. Then:
+1. Tell the user, once for all refused tasks, that the app needs them to trust `<repo folder>` before workers can start, and that the briefs are ready.
+2. Ledger: `blocked` with the event `needs folder trust`. This is not a failure.
+3. When they confirm, retry the same starts.
+
+Workers' first report writes, outside their worktree, may also ask the user to approve them. Mention both when you show the breakdown for approval, so neither comes as a surprise.
+
 ## Cleanup
 
 Workers' worktrees belong to their sessions. After the user merges a task's PR, you may offer to archive that session; do it only on the user's yes.
