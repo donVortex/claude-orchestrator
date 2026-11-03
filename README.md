@@ -2,7 +2,7 @@
 
 A Claude Code plugin that turns the session you talk to into an **orchestrator**. It plans the work with you, splits it into PR-sized tasks, and runs them in **worker sessions** (desktop app sessions, or headless `claude -p` runs). Workers build with subagents whose model is picked by effort, run independent subagents in parallel, open one PR per task, and report back with a short retro. The orchestrator does critical tasks itself, reviews every PR, and leaves merging to you. Each project it works on builds up its own knowledge, so it gets better at that project with every feature.
 
-Design: [plugin](docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md) · [project knowledge](docs/superpowers/specs/2026-11-03-project-knowledge-design.md)
+Design: [plugin](docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md) · [project knowledge](docs/superpowers/specs/2026-11-03-project-knowledge-design.md) · [workflow learning](docs/superpowers/specs/2026-11-03-workflow-learning-design.md)
 
 ## Install
 
@@ -50,6 +50,19 @@ Each project keeps what the orchestrator has learned about it in `.claude/orches
 - **Hand edits are welcome** and always win. Never put secrets, identifiers or personal data in it.
 
 **The project owns its knowledge.** Plugin updates never rewrite, reformat or migrate it, whatever its layout. The plugin's templates only shape a brand-new bootstrap; after that, the knowledge changes only through PRs you approve.
+
+## Workflow learning
+
+Besides the domain, each project's orchestrator learns **how work goes best there**, aiming at fewer interruptions for you and less rework, with the same output.
+
+- **Measured, not guessed:** every ledger event carries a kind tag (`[ask-user]`, `[prompt]`, `[failed]`, `[changes]`, …). Each wrap-up shows a table of your attention and the rework per task. Expected stops (approving the plan, merges, the knowledge diff) don't count against it.
+- **What it learns,** all in the project's `calibration.md`:
+  - **Recipes:** how a kind of task goes through cleanly.
+  - **Learned defaults:** answers you gave twice, so it stops asking.
+  - **Pre-flight checks:** environment problems to catch at intake.
+  - **Brief rules:** to prevent rework.
+- **What you see:** the plan says `Following recipe: …` and `Assumed from project knowledge: …`, so you can override either in the same reply.
+- **Guardrails:** everything still goes through the approved knowledge PR. Learned defaults never override `CLAUDE.md` or project rules, and never cover safety, data handling or money.
 
 ## CLI workers and permissions
 

@@ -1,7 +1,7 @@
 # Workflow learning — Design
 
 Date: 2026-11-03
-Status: approved in conversation, awaiting written-spec review
+Status: implemented (v0.3.0)
 Builds on: [2026-11-03-project-knowledge-design.md](2026-11-03-project-knowledge-design.md)
 
 ## 1. Intent
