@@ -9,7 +9,7 @@ A dry run of the whole system on a throwaway repo, once per backend. Tick each b
 - [x] `claude plugin list` shows `session-orchestrator` (user scope, read from `D:\dev\claude-orchestrator`)
 - [x] Sandbox project at `D:\dev\orch-sandbox`: Node, `npm test` (`node --test`) and `npm run lint`, no build step, initial commit on `main`
 - [x] The sandbox's commands are allowed for workers in its tracked `.claude/settings.json`
-- [ ] Private GitHub repo `donVortex/orch-sandbox` created, set as `origin`, `main` pushed
+- [x] Private GitHub repo `donVortex/orch-sandbox` created, set as `origin`, `main` pushed
 - [ ] Desktop app restarted (so it loads the plugin and finds `claude` on PATH)
 
 Goal to use (three tasks: one `self`, two workers):
