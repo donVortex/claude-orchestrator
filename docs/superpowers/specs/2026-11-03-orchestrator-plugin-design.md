@@ -46,12 +46,12 @@ claude-orchestrator/
 │  │     ├─ model-tiers.md        # the editable rubric (§6)
 │  │     ├─ splitting.md          # how to cut work into tasks (§5)
 │  │     ├─ brief-template.md     # what every worker brief contains (§7)
-│  │     ├─ report-format.md      # worker result + retro template (§8)
 │  │     ├─ ledger.md             # ledger format and update rules (§4)
 │  │     ├─ backend-desktop.md    # §10.1
 │  │     └─ backend-cli.md        # §10.2
 │  └─ working/
-│     └─ SKILL.md                 # the worker loop (§7)
+│     ├─ SKILL.md                 # the worker loop (§7)
+│     └─ report-format.md         # worker result + retro template (§8)
 ├─ agents/
 │  ├─ orch-scout.md               # role: read-only search/summaries   (default model: haiku)
 │  ├─ orch-implementer.md         # role: implement + test             (default model: sonnet)
@@ -60,13 +60,17 @@ claude-orchestrator/
 │  ├─ hooks.json
 │  └─ ledger-context.sh           # SessionStart: re-inject the ledger
 ├─ scripts/
-│  └─ spawn-cli-worker.sh         # CLI backend: worktree + background `claude -p`
+│  └─ cli-worker.sh               # CLI backend: start | resume | remove a headless worker
 ├─ settings/
 │  └─ worker-allowlist.json       # suggested permissions for headless workers
 └─ tests/                         # §12
 ```
 
 Scripts are bash only. Claude Code on Windows already requires Git Bash, so one set covers both platforms.
+
+Shared references live in `skills/orchestrating/references/`; the `working` skill reads `model-tiers.md` from there by a path relative to its own folder (`../orchestrating/references/model-tiers.md`). The report format lives with the worker (`skills/working/report-format.md`) and the orchestrator reads it from there.
+
+Plugin commands are namespaced: the entry point is `/claude-orchestrator:orchestrate`.
 
 Agents describe **roles**. Their frontmatter `model` is only a default: callers always pass the rubric's model explicitly, which takes precedence. Retuning tiers means editing `model-tiers.md` only.
 
@@ -80,7 +84,7 @@ Agents describe **roles**. Their frontmatter `model` is only a default: callers 
 | `model-tiers.md` | The single source of model/effort choices and parallelism caps. | Both skills | — |
 | Tier agents | Reusable subagent roles. | Both skills | — |
 | SessionStart hook | After compaction or resume, injects the ledger summary so the orchestrator keeps its state. | Harness | ledger file |
-| `spawn-cli-worker.sh` | Creates a worktree and starts a headless worker in the background. | CLI backend | `git`, `claude` |
+| `cli-worker.sh` | Creates a worktree and starts, resumes or removes a headless worker. | CLI backend | `git`, `claude` |
 
 The `working` skill builds on `superpowers:subagent-driven-development`, `superpowers:dispatching-parallel-agents`, `superpowers:test-driven-development` and `superpowers:verification-before-completion` when they are installed. If they are not, it carries its own short version of each rule, so the plugin works without superpowers.
 
@@ -220,13 +224,14 @@ The orchestrator picks **desktop** if `mcp__ccd_session__start_session` can be l
 
 ### 10.2 CLI
 
-- **Start** (`spawn-cli-worker.sh <task-id> <base> <model> <brief-file>`):
-  - `git worktree add <repo>-wt/<task-id> -b orch/<task-id> <base>`
-  - inside it, `claude -p "$(cat <brief-file>)" --model <model> --output-format json`, launched by the orchestrator with `run_in_background`.
-- **Results:** the background run's exit wakes the orchestrator. The JSON output gives the session id (stored in the ledger, used for `--resume`). The full report is read from the report file.
-- **Follow-ups:** `claude -p --resume <session-id> "<message>"`, again in the background.
-- **Permissions:** headless workers need test/build commands, `git` and `gh`. The plugin ships `settings/worker-allowlist.json` for the user to adopt. It never defaults to bypass mode.
-- **Cleanup:** after merge, `git worktree remove` for that task.
+- **Start** (`cli-worker.sh start <task-id> <base> <model> <effort> <brief-file>`):
+  - `git worktree add -b orch/<task-id> <repo>-wt/<task-id> <base>`
+  - inside it, `claude -p "<brief>" --model <model> --effort <effort> --output-format json --permission-mode acceptEdits --settings <allowlist>`, launched by the orchestrator with `run_in_background`.
+- **Results:** the background run's exit wakes the orchestrator. The JSON output gives `session_id` (stored in the ledger, used for `--resume`). The full report is read from the report file.
+- **Follow-ups:** `cli-worker.sh resume <task-id> <session-id> <message-file>` → `claude -p --resume <session-id> ...` in the task's worktree, again in the background.
+- **Permissions:** `-p` runs start in Manual mode, so every worker gets `--permission-mode acceptEdits` plus `--settings settings/worker-allowlist.json` (git, gh, read/edit; the user adds their project's test and build commands). It never uses a bypass mode.
+- **Cleanup:** after merge, `cli-worker.sh remove <task-id>` (`git worktree remove`, branch kept).
+- **Requires** the `claude` CLI on PATH; intake checks this before choosing the CLI backend.
 
 ## 11. Failure handling
 
@@ -242,18 +247,18 @@ The orchestrator picks **desktop** if `mcp__ccd_session__start_session` can be l
 
 ## 12. Testing
 
-1. **Script tests** (`tests/`, bash): `ledger-context.sh` prints the ledger summary when a ledger exists and nothing otherwise; `spawn-cli-worker.sh` creates the worktree/branch and builds the right `claude` command (with `claude` stubbed).
+1. **Script tests** (`tests/`, bash): `ledger-context.sh` prints the ledger summary when an active ledger exists and nothing otherwise; `cli-worker.sh` creates the worktree/branch and builds the right `claude` command (with `claude` stubbed).
 2. **Behaviour evals** with `claude plugin eval`, against small fixture repos:
    - Breakdown: concurrent tasks own disjoint files; foundations are `self` and first; placements and tiers follow the rubric.
    - Worker: parallel batches only for disjoint subtasks; rubric models passed on every Agent call; report matches `report-format.md`.
    - Wrap-up: retros with a repeated pattern produce a matching proposed edit.
 3. **End-to-end dry run**: a throwaway repo with a GitHub remote and 3 tasks (one `self`, two workers), once per backend. Passes when the PRs open, reports and retros arrive, the ledger ends `done` after the user merges, and the wrap-up digest is produced.
 
-## 13. To verify during implementation
+## 13. Platform facts (checked against the Claude Code docs, 2026-11-03)
 
-These are assumptions about the platform that the plan must check before relying on them:
-- Plugin agents' frontmatter `model` is overridden by the Agent tool's `model` parameter.
-- SessionStart hooks fire with a `compact` and `resume` source, and their output is added to context.
-- Whether the CLI supports setting effort per run; if not, CLI workers use the model only.
-- `claude -p --output-format json` returns a session id usable with `--resume`.
-- Whether plugin skills are available to worker sessions automatically (plugin enabled at user scope) or need explicit enabling.
+- The Agent tool's `model` parameter overrides an agent's frontmatter `model` (family aliases only).
+- SessionStart hooks have `compact` and `resume` matchers; plain stdout is added to context.
+- `--effort <low|medium|high|xhigh|max>` sets effort per CLI run.
+- `claude -p --output-format json` returns `session_id`; `-p --resume <id>` works.
+- A plugin installed at user scope loads in local desktop sessions and in `claude -p` runs (not in cloud sessions, not with `--bare`).
+- Still to confirm in the end-to-end run: that sessions started by another desktop session load the plugin.
