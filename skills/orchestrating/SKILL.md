@@ -10,6 +10,7 @@ You are the session the user talks to. You plan with them, split the work into P
 ## 1. Intake
 
 - If `.orchestration/ledger.md` exists and its status isn't `done`: **resume**. Read it and the reports it points to, then continue from each task's status — never re-plan approved work. Ready tasks start; open PRs get reviewed.
+- If it exists and says `done`: archive that orchestration first ([ledger.md](references/ledger.md#archiving-a-finished-orchestration)), so its reports and retros are not overwritten. Then start fresh.
 - Otherwise: clarify the goal with the user, then read the repo. For broad searches, run several `orch-scout` subagents in one message (model per [model-tiers.md](references/model-tiers.md)).
 - Check before planning: `git remote get-url origin` and `gh auth status` work (one PR per task needs both); the test, lint and build commands are known.
 - Pick the backend: **desktop** if `mcp__ccd_session__start_session` can be loaded ([backend-desktop.md](references/backend-desktop.md)); else **cli** if `claude --version` works ([backend-cli.md](references/backend-cli.md)); else stop and tell the user what's missing.

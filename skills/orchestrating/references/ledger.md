@@ -20,7 +20,18 @@ grep -qxF '.orchestration/' "$common/info/exclude" 2>/dev/null || echo '.orchest
 ├─ ledger.md            # this orchestration's live state
 ├─ retros.md            # every retro, appended in arrival order
 ├─ briefs/T<n>.md       # the brief sent to each worker (and follow-up messages)
-└─ reports/T<n>.md      # each worker's full report
+├─ reports/T<n>.md      # each worker's full report
+└─ archive/<date>-<slug>/   # earlier, finished orchestrations
+```
+
+## Archiving a finished orchestration
+
+Task ids restart at `T1` for every orchestration, so a new one must not reuse a finished one's files. When `ledger.md` says `Status: done`, move everything in `.orchestration/` except `archive/` into `.orchestration/archive/<YYYY-MM-DD>-<short goal slug>/` (add `-2`, `-3` if that name exists), then start the new ledger. Never delete an earlier orchestration's files.
+
+```bash
+dest="$root/.orchestration/archive/<YYYY-MM-DD>-<slug>"
+mkdir -p "$dest"
+for f in "$root/.orchestration"/*; do [ "$(basename "$f")" = archive ] || mv "$f" "$dest/"; done
 ```
 
 ## `ledger.md`
