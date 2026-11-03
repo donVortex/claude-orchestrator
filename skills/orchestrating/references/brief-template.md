@@ -17,7 +17,7 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - Off-limits: every other file (name tempting neighbours explicitly, e.g. `src/db/schema.ts`)
 - Commands: test `<cmd>`, lint `<cmd>`, build `<cmd>`
 - Base branch: `<branch>` (already contains: <merged dependency PRs, or "nothing extra">)
-- PR branch: `orch/T<n>` (or `orch/T<n>-<slug>` if that name was taken; see ledger.md)
+- PR branch: `orch/T<n>` (or `orch/T<n>-<slug>` if that name was taken; see ledger.md). Your worktree folder and local branch may have other names (the app picks them, and may reuse an old folder); this PR branch is the one that counts.
 - Tier: <fast|standard|deep> — session <model> / <effort>
 - Orchestrator: desktop | CLI mode
 - Report path: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md). It is outside your worktree: if the write is refused, put the full report in your final message instead, and the orchestrator saves it.

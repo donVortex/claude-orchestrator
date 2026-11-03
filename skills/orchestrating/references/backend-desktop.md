@@ -21,7 +21,7 @@ Use it when `mcp__ccd_session__start_session` can be loaded (ToolSearch `select:
 3. The app only allows a model and effort **at or below this session's own**. If a tier asks for more (e.g. a `deep` task while you run on sonnet), tell the user before starting it: they can raise this session's model, or accept the lower tier.
 4. Ledger: session id, the worktree branch name the start result reports, `running`, and an event line.
 
-Before cutting worktrees, the app fast-forwards `source_branch` in the user's main checkout to its upstream, so workers start from the latest base and briefs need no reset-to-origin step. It moves the user's checkout, so say so when you show the breakdown for approval.
+Before cutting worktrees, the app may fast-forward `source_branch` in the user's main checkout to its upstream — it doesn't always. Don't promise either: when you show the breakdown, say the app may move their local base branch forward. Check what a worker actually started from (`git -C <worktree> log -1`) rather than assuming, and briefs need no reset-to-origin step.
 
 Start independent ready tasks in the same turn, up to `max_parallel_workers`.
 

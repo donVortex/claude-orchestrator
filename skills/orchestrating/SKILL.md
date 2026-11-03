@@ -69,9 +69,10 @@ For each report with a PR:
 2. Check CI with `gh pr checks <n>`. `no checks reported` (exit 1) means the repo has no CI: run the test and lint commands yourself on the PR head in a temporary detached worktree, then remove it:
    ```bash
    git fetch origin <branch> && git worktree add --detach "$root-wt/review-T<n>" FETCH_HEAD
-   # run test and lint there
+   (cd "$root-wt/review-T<n>" && npm test && npm run lint)   # the project's own commands; never a bare cd
    git worktree remove "$root-wt/review-T<n>"
    ```
+   The same holds for every worktree you work in (`self` tasks, knowledge PRs): run commands with `git -C`, `--prefix` or a `( cd … )` subshell, never a bare `cd` ([why](references/knowledge.md#working-in-a-worktree)).
 3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric), giving it the brief's Review checklist items.
 4. Problems → send them to the same worker and mark `changes-requested`; clean → `reviewed`.
 

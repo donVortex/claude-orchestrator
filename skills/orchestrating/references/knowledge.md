@@ -66,10 +66,16 @@ Read the knowledge as the base branch has it, not as your local checkout happens
 ```bash
 git fetch origin <base>
 git ls-tree --name-only origin/<base> .claude/orchestrator/      # which files exist (empty: no folder)
-git show origin/<base>:.claude/orchestrator/<file>               # one file's content
+MSYS_NO_PATHCONV=1 git show "origin/<base>:.claude/orchestrator/<file>"   # one file's content
 ```
 
+`MSYS_NO_PATHCONV=1` matters on Windows: Git Bash otherwise rewrites `origin/<base>:.claude/…` into a Windows path and `git show` fails. It is harmless elsewhere.
+
 An open knowledge PR's branch is read the same way, with `origin/<branch>` in place of `origin/<base>`.
+
+## Working in a worktree
+
+Never `cd` into a worktree under `$root-wt/` in your own shell: it moves your session's working directory there, and the worktree then can't be removed until you move back. Point commands at it instead — `git -C "<dir>" …`, `npm --prefix "<dir>" test` — or run them in a subshell: `(cd "<dir>" && npm test)`.
 
 ## Bootstrap
 
