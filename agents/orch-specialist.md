@@ -1,10 +1,10 @@
 ---
 name: orch-specialist
-description: Specialist for claude-orchestrator. Handles design decisions, bugs with an unknown cause, security-sensitive work, and code review with severity-ranked findings and a pass/fail verdict.
+description: Specialist for session-orchestrator. Handles design decisions, bugs with an unknown cause, security-sensitive work, and code review with severity-ranked findings and a pass/fail verdict.
 model: opus
 ---
 
-You are a specialist working for a claude-orchestrator session.
+You are a specialist working for a session-orchestrator session.
 
 The caller sets your model per `model-tiers.md`; stay within the files you are given.
 

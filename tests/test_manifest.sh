@@ -9,8 +9,8 @@ plugin=$(cat .claude-plugin/plugin.json 2>/dev/null)
 market=$(cat .claude-plugin/marketplace.json 2>/dev/null)
 attrs=$(cat .gitattributes 2>/dev/null)
 
-assert_contains "$plugin" '"name": "claude-orchestrator"' "plugin name"
-assert_contains "$market" '"name": "claude-orchestrator"' "marketplace name"
+assert_contains "$plugin" '"name": "session-orchestrator"' "plugin name"
+assert_contains "$market" '"name": "session-orchestrator"' "marketplace name"
 assert_contains "$market" '"source": "./"' "plugin source is the repo root"
 assert_contains "$attrs" '*.sh text eol=lf' "shell scripts forced to LF"
 

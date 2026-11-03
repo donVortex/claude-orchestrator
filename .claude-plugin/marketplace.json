@@ -1,11 +1,12 @@
 {
-  "name": "claude-orchestrator",
+  "name": "session-orchestrator",
+  "description": "Marketplace for session-orchestrator: one orchestrator session delegating PR-sized tasks to worker sessions.",
   "owner": {
     "name": "donVortex"
   },
   "plugins": [
     {
-      "name": "claude-orchestrator",
+      "name": "session-orchestrator",
       "source": "./",
       "description": "Orchestrator session that delegates PR-sized tasks to worker sessions using tiered, parallel subagents."
     }

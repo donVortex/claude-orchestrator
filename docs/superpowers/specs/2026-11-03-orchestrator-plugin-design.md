@@ -1,4 +1,4 @@
-# claude-orchestrator — Design
+# session-orchestrator — Design
 
 Date: 2026-11-03
 Status: approved in conversation, awaiting written-spec review
@@ -33,7 +33,7 @@ One Claude Code session becomes the **orchestrator**: the session the user talks
 ## 2. Plugin layout
 
 ```
-claude-orchestrator/
+session-orchestrator/
 ├─ .claude-plugin/
 │  ├─ plugin.json
 │  └─ marketplace.json            # this folder doubles as a local marketplace
@@ -70,7 +70,7 @@ Scripts are bash only. Claude Code on Windows already requires Git Bash, so one 
 
 Shared references live in `skills/orchestrating/references/`; the `working` skill reads `model-tiers.md` from there by a path relative to its own folder (`../orchestrating/references/model-tiers.md`). The report format lives with the worker (`skills/working/report-format.md`) and the orchestrator reads it from there.
 
-Plugin commands are namespaced: the entry point is `/claude-orchestrator:orchestrate`.
+Plugin commands are namespaced: the entry point is `/session-orchestrator:orchestrate`.
 
 Agents describe **roles**. Their frontmatter `model` is only a default: callers always pass the rubric's model explicitly, which takes precedence. Retuning tiers means editing `model-tiers.md` only.
 
@@ -256,6 +256,7 @@ The orchestrator picks **desktop** if `mcp__ccd_session__start_session` can be l
 
 ## 13. Platform facts (checked against the Claude Code docs, 2026-11-03)
 
+- Plugin names starting with `claude-` are reserved for Anthropic (`claude plugin validate` rejects them), so the plugin and marketplace are named `session-orchestrator`. The GitHub repo and local folder keep the name `claude-orchestrator`.
 - The Agent tool's `model` parameter overrides an agent's frontmatter `model` (family aliases only).
 - SessionStart hooks have `compact` and `resume` matchers; plain stdout is added to context.
 - `--effort <low|medium|high|xhigh|max>` sets effort per CLI run.

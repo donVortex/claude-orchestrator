@@ -1,4 +1,4 @@
-# claude-orchestrator Implementation Plan
+# session-orchestrator Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Skill-writing tasks (5, 6) also use superpowers:writing-skills.
 
@@ -17,8 +17,8 @@
 
 ## Global Constraints
 
-- Plugin `name`: `claude-orchestrator`; marketplace `name`: `claude-orchestrator`; install id `claude-orchestrator@claude-orchestrator`.
-- Entry point: `/claude-orchestrator:orchestrate`; skills: `claude-orchestrator:orchestrating`, `claude-orchestrator:working`.
+- Plugin `name`: `session-orchestrator`; marketplace `name`: `session-orchestrator`; install id `session-orchestrator@session-orchestrator`.
+- Entry point: `/session-orchestrator:orchestrate`; skills: `session-orchestrator:orchestrating`, `session-orchestrator:working`.
 - Scripts: bash only, bash 3.2 compatible (no associative arrays, no `${var,,}`), no `jq`. LF line endings enforced by `.gitattributes`.
 - Hooks reference scripts as `bash "${CLAUDE_PLUGIN_ROOT}/..."` (quoted). No state is ever written under `${CLAUDE_PLUGIN_ROOT}`.
 - Tiers: `fast` → subagent `haiku`, session `sonnet`/`low`; `standard` → `sonnet`, `sonnet`/`medium`; `deep` → `opus`, `opus`/`high`.
@@ -52,13 +52,13 @@
 - Produces: `tests/run.sh` runs every `tests/test_*.sh`, prints `PASS <file>`/`FAIL <file>`, exits non-zero if any file fails.
 
 - [ ] **Step 1: Write `tests/lib.sh`, `tests/run.sh`, and the failing `tests/test_manifest.sh`**
-  - `test_manifest.sh` asserts: `claude plugin validate .` exits 0; `plugin.json` contains `"name": "claude-orchestrator"`; `marketplace.json` contains `"name": "claude-orchestrator"` and `"source": "./"`; `.gitattributes` contains `*.sh text eol=lf`.
+  - `test_manifest.sh` asserts: `claude plugin validate .` exits 0; `plugin.json` contains `"name": "session-orchestrator"`; `marketplace.json` contains `"name": "session-orchestrator"` and `"source": "./"`; `.gitattributes` contains `*.sh text eol=lf`.
 - [ ] **Step 2: Run `bash tests/run.sh`** — Expected: `FAIL tests/test_manifest.sh` (files missing).
 - [ ] **Step 3: Create the files**
   - `plugin.json`: `name`, `version: "0.1.0"`, `description` (one sentence from the spec intent), `author: {"name": "donVortex"}`, `repository: "https://github.com/donVortex/claude-orchestrator"`, `license: "MIT"`. No component paths (default discovery).
-  - `marketplace.json`: `name`, `owner: {"name": "donVortex"}`, `plugins: [{"name": "claude-orchestrator", "source": "./", "description": ...}]`.
+  - `marketplace.json`: `name`, `owner: {"name": "donVortex"}`, `plugins: [{"name": "session-orchestrator", "source": "./", "description": ...}]`.
   - `.gitattributes`: `* text=auto eol=lf` and `*.sh text eol=lf`.
-  - `README.md`: what it is (3 lines), install (`claude plugin marketplace add D:\dev\claude-orchestrator` then `claude plugin install claude-orchestrator@claude-orchestrator`), usage (`/claude-orchestrator:orchestrate <goal>`), and "run tests: `bash tests/run.sh`". Later tasks append their sections.
+  - `README.md`: what it is (3 lines), install (`claude plugin marketplace add D:\dev\claude-orchestrator` then `claude plugin install session-orchestrator@session-orchestrator`), usage (`/session-orchestrator:orchestrate <goal>`), and "run tests: `bash tests/run.sh`". Later tasks append their sections.
 - [ ] **Step 4: Run `bash tests/run.sh`** — Expected: `PASS tests/test_manifest.sh`.
 - [ ] **Step 5: Commit** — `git add -A && git commit -m "feat: plugin scaffold, marketplace and test harness"`
 
@@ -99,9 +99,9 @@
 - Produces: `ledger-context.sh [project-dir]` — project dir defaults to `${CLAUDE_PROJECT_DIR:-$PWD}`. Always exits 0.
   - Ledger missing, unreadable, or its first 5 lines contain `Status: done` → prints nothing.
   - Otherwise prints, with every `\r` stripped:
-    1. `[claude-orchestrator] An orchestration is in progress. Ledger (.orchestration/ledger.md):`
+    1. `[session-orchestrator] An orchestration is in progress. Ledger (.orchestration/ledger.md):`
     2. the first 150 lines of the ledger, then `... (truncated — read .orchestration/ledger.md for the rest)` if longer
-    3. `Continue with the claude-orchestrator:orchestrating skill. The ledger is the source of truth.`
+    3. `Continue with the session-orchestrator:orchestrating skill. The ledger is the source of truth.`
 - Produces: `hooks.json` with top-level `"hooks"` → `SessionStart` → two matcher groups (`"compact"` and `"resume"`), each with handler `{"type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/ledger-context.sh\""}`.
 
 - [ ] **Step 1: Write failing tests** in `tests/test_ledger_context.sh`, each in its own `make_tmp` dir:
@@ -166,7 +166,7 @@
   - `worker-batches`: `allowed_tools: [Skill, Read, Glob, Grep]`, `max_turns: 8`. Prompt = a brief for task T7 with 4 subtasks: A edits `src/a.ts` (fast), B edits `src/b.ts` (standard), C edits `src/a.ts` (standard), D is "write README section" (fast). It asks the worker to start. Graders: `tool_used` Skill matching `working`; `llm`: PASS if the posted batch plan puts A, B, D together and C after A, assigns models haiku/sonnet/sonnet/haiku, and includes a full test run between batches.
   - `worker-report`: `allowed_tools: [Skill, Read]`. Prompt = finished-task facts (PR url, changes, test output, two problems: brief unclear about API errors; Haiku failed once on tests). Graders: `regex` for each of `## Result`, `## Retro`, `### Went well`, `### Went badly`, `### Improve`; `llm`: PASS if the problems are tagged `[brief]` and `[tier]` and "Improve" has a concrete suggestion for each.
 - [ ] **Step 2: Run `claude plugin eval . --case worker-batches --case worker-report`** — Expected: low score (skill missing / baseline).
-- [ ] **Step 3: Write `skills/working/SKILL.md`** (frontmatter `name: working`, a description that triggers on "you are a worker" / a brief from claude-orchestrator) covering spec §7 in order:
+- [ ] **Step 3: Write `skills/working/SKILL.md`** (frontmatter `name: working`, a description that triggers on "you are a worker" / a brief from session-orchestrator) covering spec §7 in order:
   1. Read the brief; the off-limits list is binding. On ambiguity, ask: desktop → `SendMessage` to the orchestrator id in the brief and wait; CLI → write the question to the report path with `Status: blocked`, then end.
   2. Read `../orchestrating/references/model-tiers.md`. Post the batch plan: subtasks, owned files, tier/model, batches.
   3. Batches: disjoint + independent → one message with several Agent calls (≤ `max_parallel_implementers_per_session`); shared files or dependencies → sequential; scouts and reviews always parallel. Every Agent call passes `model`. Each subtask: `orch-implementer` (TDD) → spec-compliance review → code-quality review (`orch-specialist` for deep work). Full test suite after each batch.
@@ -189,20 +189,20 @@
 
 **Interfaces:**
 - Consumes: `model-tiers.md` (Task 2), `backend-cli.md` + `scripts/cli-worker.sh` (Task 4), `../working/report-format.md` (Task 5), hook output format (Task 3).
-- Produces: `/claude-orchestrator:orchestrate <goal>`; the ledger format that `ledger-context.sh` reads (header line containing `Status:` within the first 5 lines).
+- Produces: `/session-orchestrator:orchestrate <goal>`; the ledger format that `ledger-context.sh` reads (header line containing `Status:` within the first 5 lines).
 
 - [ ] **Step 1: Write the evals (RED)**, all with `allowed_tools: [Skill, Read, Glob, Grep]`:
-  - `orch-breakdown`: prompt invokes `/claude-orchestrator:orchestrate add user profiles` with an inline repo tree (`src/db/schema.ts`, `src/api/users/*`, `src/ui/profile/*`, `docs/`) and "stop at the approval gate". Graders: `tool_used` Skill matching `orchestrat`; `llm`: PASS if it shows a table with id / task / owns / depends / tier / placement; the schema change is `self` and has no dependencies; tasks that can run at once own disjoint files; each tier fits the rubric; it asks for approval and starts nothing.
+  - `orch-breakdown`: prompt invokes `/session-orchestrator:orchestrate add user profiles` with an inline repo tree (`src/db/schema.ts`, `src/api/users/*`, `src/ui/profile/*`, `docs/`) and "stop at the approval gate". Graders: `tool_used` Skill matching `orchestrat`; `llm`: PASS if it shows a table with id / task / owns / depends / tier / placement; the schema change is `self` and has no dependencies; tasks that can run at once own disjoint files; each tier fits the rubric; it asks for approval and starts nothing.
   - `orch-resume`: prompt pastes a ledger where T1 is `merged`, T2 `in-review`, T3 `planned` depending on T1. `llm`: PASS if it names T3 as ready to start, T2 as awaiting review, and does not re-plan.
   - `orch-wrapup`: prompt pastes `retros.md` with three `[tier]` notes "haiku too weak for test writing" and one `[brief]` note. `llm`: PASS if it groups by tag, proposes editing `model-tiers.md` to move test writing to `standard`, proposes a brief-template fix, asks for approval, and edits no files.
 - [ ] **Step 2: Run `claude plugin eval . --case orch-breakdown --case orch-resume --case orch-wrapup`** — Expected: low score.
 - [ ] **Step 3: Write the references**
   - `splitting.md`: spec §5 step 2 rules and the placement table, plus 2 short worked examples (one good split, one with overlapping files and its fix).
   - `ledger.md`: spec §4 format verbatim, status list, "update on every event", `.git/info/exclude` setup, `retros.md` and `reports/` layout.
-  - `brief-template.md`: spec §7 brief contents as a fill-in template, including "Load the claude-orchestrator:working skill" and the absolute report path `<main checkout>/.orchestration/reports/<task-id>.md`.
+  - `brief-template.md`: spec §7 brief contents as a fill-in template, including "Load the session-orchestrator:working skill" and the absolute report path `<main checkout>/.orchestration/reports/<task-id>.md`.
   - `backend-desktop.md`: spec §10.1 — load `mcp__ccd_session__start_session` via ToolSearch; `start_session` (`initiation: "user_asked"`, `context: "fresh"`, `use_worktree: true`, title `T<n> · <short task>`); `set_session_model` / `set_session_effort` per tier; on worker turn end read the report file; follow-ups via `SendMessage` to `local_…`; liveness via `list_sessions {"linked": true}`; refused start → `own_initiative` card + one-line notice + ledger `blocked: needs start click`.
 - [ ] **Step 4: Write `skills/orchestrating/SKILL.md`** (frontmatter `name: orchestrating`) — spec §5 steps 1–7 as the procedure, each step linking its reference; the §9 escalation list as the only reasons to stop; intake checks (`git remote get-url origin`, `gh auth status`, backend detection: desktop if `start_session` loads, else CLI if `claude --version` works, else stop and tell the user); `self` tasks in their own worktree via `git worktree add`; parallel `orch-scout` at intake and parallel reviews; the spec §11 failure table (two-failure limit counting review/CI rounds, off-limits edits, conflicts, silent workers); retro handling (append to `retros.md`, write a retro for each `self` task too, use early retros to improve later briefs, wrap-up digest + proposed edits to the plugin source repo, approval required).
-- [ ] **Step 5: Write `commands/orchestrate.md`** — frontmatter `description`, `argument-hint: <goal>`; body: "Use the claude-orchestrator:orchestrating skill to orchestrate: $ARGUMENTS".
+- [ ] **Step 5: Write `commands/orchestrate.md`** — frontmatter `description`, `argument-hint: <goal>`; body: "Use the session-orchestrator:orchestrating skill to orchestrate: $ARGUMENTS".
 - [ ] **Step 6: Run evals and tests** — `claude plugin eval . --case orch-breakdown --case orch-resume --case orch-wrapup` all pass (iterate on skill text); `bash tests/run.sh` all PASS; `claude plugin validate .` exits 0.
 - [ ] **Step 7: Commit** — `git commit -m "feat: orchestrating skill, references and /orchestrate command"`
 
@@ -213,9 +213,9 @@
 - Create: `docs/e2e-checklist.md`
 
 - [ ] **Step 1: Write `docs/e2e-checklist.md`** — the checks below as checkboxes.
-- [ ] **Step 2: Install** — `claude plugin marketplace add D:\dev\claude-orchestrator` and `claude plugin install claude-orchestrator@claude-orchestrator`; `claude plugin list` shows it enabled.
+- [ ] **Step 2: Install** — `claude plugin marketplace add D:\dev\claude-orchestrator` and `claude plugin install session-orchestrator@session-orchestrator`; `claude plugin list` shows it enabled.
 - [ ] **Step 3: User creates a throwaway GitHub repo** (e.g. `donVortex/orch-sandbox`) with a tiny project that has a test command; clone it locally.
-- [ ] **Step 4: Desktop run** — in a new desktop session in the sandbox: `/claude-orchestrator:orchestrate <3-task goal>` (one `self`, two workers). Check:
+- [ ] **Step 4: Desktop run** — in a new desktop session in the sandbox: `/session-orchestrator:orchestrate <3-task goal>` (one `self`, two workers). Check:
   - the breakdown waits for approval
   - workers appear as sessions with the right model/effort
   - workers load `working` (confirms the open point in spec §13)

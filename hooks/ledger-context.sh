@@ -14,10 +14,10 @@ printf '%s\n' "$content" | head -n 5 | grep -q 'Status: done' && exit 0
 
 total=$(printf '%s\n' "$content" | wc -l)
 
-echo "[claude-orchestrator] An orchestration is in progress. Ledger (.orchestration/ledger.md):"
+echo "[session-orchestrator] An orchestration is in progress. Ledger (.orchestration/ledger.md):"
 printf '%s\n' "$content" | head -n "$MAX_LINES"
 if [ "$total" -gt "$MAX_LINES" ]; then
   echo "... (truncated — read .orchestration/ledger.md for the rest)"
 fi
-echo "Continue with the claude-orchestrator:orchestrating skill. The ledger is the source of truth."
+echo "Continue with the session-orchestrator:orchestrating skill. The ledger is the source of truth."
 exit 0

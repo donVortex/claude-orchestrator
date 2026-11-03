@@ -3,8 +3,8 @@
 . "$(dirname "$0")/lib.sh"
 
 HOOK="$PWD/hooks/ledger-context.sh"
-INTRO='[claude-orchestrator] An orchestration is in progress. Ledger (.orchestration/ledger.md):'
-OUTRO='Continue with the claude-orchestrator:orchestrating skill. The ledger is the source of truth.'
+INTRO='[session-orchestrator] An orchestration is in progress. Ledger (.orchestration/ledger.md):'
+OUTRO='Continue with the session-orchestrator:orchestrating skill. The ledger is the source of truth.'
 
 # write_ledger <project-dir> <status>
 write_ledger() {
