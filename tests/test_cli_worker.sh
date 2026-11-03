@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+# CLI worker launcher: worktree handling and the claude command it builds.
+. "$(dirname "$0")/lib.sh"
+
+CW="$PWD/scripts/cli-worker.sh"
+export CLAUDE_BIN="$PWD/tests/stub-claude.sh"
+chmod +x "$CLAUDE_BIN"
+
+new_repo() {
+  mkdir -p "$1"
+  git -C "$1" init -q -b main
+  git -C "$1" config core.autocrlf false
+  echo hi > "$1/f"
+  git -C "$1" add f
+  git -C "$1" -c user.name=t -c user.email=t@t commit -qm init
+}
+
+# Resolves a directory to its git top level, so bash-style and Windows-style paths compare equal.
+toplevel() {
+  git -C "$1" rev-parse --show-toplevel 2>/dev/null
+}
+
+# Value of the argument that follows <flag> in the stub log.
+arg_after() {
+  grep -A1 "^ARG=$1\$" "$STUB_LOG" | sed -n '2p' | sed 's/^ARG=//'
+}
+
+# cw <repo> <args...>: runs the launcher from inside <repo>; sets out, code.
+cw() {
+  r=$1; shift
+  out=$(cd "$r" && bash "$CW" "$@" 2>/dev/null)
+  code=$?
+}
+
+setup() {
+  base=$(make_tmp)
+  repo="$base/${1:-repo}"
+  new_repo "$repo"
+  export STUB_LOG="$base/stub.log"
+  : > "$STUB_LOG"
+  printf 'Implement T1: the brief text\n' > "$base/brief.md"
+}
+
+check_started() {
+  label=$1
+  wt="$repo-wt/T1"
+  assert_eq 0 "$code" "$label: exit 0"
+  [ -d "$wt" ] || fail "$label: worktree dir created"
+  assert_eq "orch/T1" "$(git -C "$wt" rev-parse --abbrev-ref HEAD 2>/dev/null)" "$label: on branch orch/T1"
+  assert_contains "$out" '"session_id":"s-1"' "$label: stdout is claude's JSON"
+  log=$(cat "$STUB_LOG")
+  stub_pwd=$(grep -m1 '^PWD=' "$STUB_LOG" | sed 's/^PWD=//')
+  assert_eq "$(toplevel "$wt")" "$(toplevel "$stub_pwd")" "$label: claude runs in the worktree"
+  assert_contains "$log" "ARG=-p" "$label: -p"
+  assert_eq "Implement T1: the brief text" "$(arg_after -p)" "$label: brief is the prompt"
+  assert_eq "sonnet" "$(arg_after --model)" "$label: model"
+  assert_eq "medium" "$(arg_after --effort)" "$label: effort"
+  assert_eq "json" "$(arg_after --output-format)" "$label: output format"
+  assert_eq "acceptEdits" "$(arg_after --permission-mode)" "$label: permission mode"
+  assert_contains "$(arg_after --settings)" "worker-allowlist.json" "$label: allowlist settings"
+  assert_not_contains "$log" "bypassPermissions" "$label: never bypass"
+}
+
+# start_creates_worktree
+setup
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+check_started start_creates_worktree
+
+# start_rejects_bad_id
+setup
+cw "$repo" start ../x main sonnet medium "$base/brief.md"
+assert_eq 2 "$code" "start_rejects_bad_id: exit 2"
+[ -e "$repo-wt" ] && fail "start_rejects_bad_id: nothing created"
+
+# start_missing_base
+setup
+cw "$repo" start T1 nope sonnet medium "$base/brief.md"
+assert_eq 3 "$code" "start_missing_base: exit 3"
+[ -e "$repo-wt/T1" ] && fail "start_missing_base: no worktree"
+
+# start_reuses_existing_worktree
+setup
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+assert_eq 0 "$code" "start_reuses_existing_worktree: second start exit 0"
+assert_eq 2 "$(git -C "$repo" worktree list | wc -l | tr -d ' ')" "start_reuses_existing_worktree: one task worktree"
+
+# start_reuses_branch_without_worktree
+setup
+git -C "$repo" branch orch/T1
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+assert_eq 0 "$code" "start_reuses_branch: exit 0"
+assert_eq "orch/T1" "$(git -C "$repo-wt/T1" rev-parse --abbrev-ref HEAD 2>/dev/null)" "start_reuses_branch: on orch/T1"
+
+# start_rejects_foreign_dir
+setup
+mkdir -p "$repo-wt/T1"
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+assert_eq 4 "$code" "start_rejects_foreign_dir: exit 4"
+
+# start_in_path_with_space
+setup "my repo"
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+check_started start_in_path_with_space
+
+# start_from_subdirectory
+setup
+mkdir -p "$repo/sub"
+cw "$repo/sub" start T1 main sonnet medium "$base/brief.md"
+assert_eq 0 "$code" "start_from_subdirectory: exit 0"
+[ -d "$repo-wt/T1" ] || fail "start_from_subdirectory: worktree next to the repo root"
+
+# resume_runs_in_worktree
+setup
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+: > "$STUB_LOG"
+printf 'Answer: use 404\n' > "$base/msg.txt"
+cw "$repo" resume T1 s-1 "$base/msg.txt"
+assert_eq 0 "$code" "resume_runs_in_worktree: exit 0"
+stub_pwd=$(grep -m1 '^PWD=' "$STUB_LOG" | sed 's/^PWD=//')
+assert_eq "$(toplevel "$repo-wt/T1")" "$(toplevel "$stub_pwd")" "resume_runs_in_worktree: in worktree"
+assert_eq "s-1" "$(arg_after --resume)" "resume_runs_in_worktree: --resume id"
+assert_eq "Answer: use 404" "$(arg_after -p)" "resume_runs_in_worktree: message is the prompt"
+assert_eq "acceptEdits" "$(arg_after --permission-mode)" "resume_runs_in_worktree: permission mode"
+
+# resume_without_worktree
+setup
+printf 'x\n' > "$base/msg.txt"
+cw "$repo" resume T1 s-1 "$base/msg.txt"
+assert_eq 5 "$code" "resume_without_worktree: exit 5"
+
+# remove_deletes_worktree
+setup
+cw "$repo" start T1 main sonnet medium "$base/brief.md"
+cw "$repo" remove T1
+assert_eq 0 "$code" "remove_deletes_worktree: exit 0"
+[ -e "$repo-wt/T1" ] && fail "remove_deletes_worktree: dir gone"
+git -C "$repo" show-ref --verify --quiet refs/heads/orch/T1 || fail "remove_deletes_worktree: branch kept"
+
+# usage
+setup
+cw "$repo" start T1
+assert_eq 2 "$code" "usage: wrong arg count exits 2"
+cw "$repo" frobnicate
+assert_eq 2 "$code" "usage: unknown command exits 2"
+
+# allowlist
+allow=$(cat settings/worker-allowlist.json 2>/dev/null)
+assert_contains "$allow" '"allow"' "allowlist: has allow rules"
+assert_contains "$allow" 'Bash(gh pr create *)' "allowlist: gh pr create"
+assert_contains "$allow" 'Bash(git push *)' "allowlist: git push"
+if command -v node >/dev/null 2>&1; then
+  node -e "JSON.parse(require('fs').readFileSync('settings/worker-allowlist.json','utf8'))" 2>/dev/null || fail "allowlist: valid JSON"
+fi
+
+finish

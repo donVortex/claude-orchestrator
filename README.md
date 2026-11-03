@@ -19,6 +19,10 @@ Requirements: `git`, `gh` (logged in), and a GitHub remote on the project you or
 /session-orchestrator:orchestrate <goal>
 ```
 
+## CLI workers and permissions
+
+Outside the desktop app, workers run as headless `claude -p` processes in their own git worktrees (`scripts/cli-worker.sh`). Headless runs can't ask you for permission, so each worker gets `--permission-mode acceptEdits` plus [settings/worker-allowlist.json](settings/worker-allowlist.json), which allows reading and editing files, `git` and `gh pr`. Add your project's test and build commands to that file (e.g. `"Bash(npm test*)"`), or workers will be denied when they try to run them. The plugin never uses a bypass mode.
+
 ## Tests
 
 ```bash
