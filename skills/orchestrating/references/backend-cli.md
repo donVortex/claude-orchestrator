@@ -43,7 +43,9 @@ Review fixes go back the same way: write the requested changes to a file and `re
 
 ## Permissions
 
-`-p` runs start in Manual mode, so the launcher always passes `--permission-mode acceptEdits --settings <plugin>/settings/worker-allowlist.json --add-dir <main checkout>/.orchestration` (the last so workers can write their report). It never uses a bypass mode.
+`-p` runs start in Manual mode, so the launcher always passes `--permission-mode acceptEdits --settings <plugin>/settings/worker-allowlist.json --add-dir <main checkout>/.orchestration` (the last so workers can write their report). It never uses a bypass mode. Edits are allowed inside the worktree and `.orchestration/` only; writes anywhere else are denied.
+
+On Windows the launcher also points workers at Git Bash (`CLAUDE_CODE_GIT_BASH_PATH`, unless already set) and turns off the PowerShell tool, because every shell rule in the allowlist is a `Bash(...)` rule. A worker that reports "no Bash tool" means Git Bash wasn't found: tell the user to set `CLAUDE_CODE_GIT_BASH_PATH` to their `bash.exe`.
 
 The allowlist covers reading and editing files, skills and subagents, `git` commits, pushing to `orch/*` branches only, and `gh pr`. The project's own test, lint and build commands are not in it. At intake, tell the user to add them to the project's `.claude/settings.json` (e.g. `"Bash(npm test*)"`), which workers load from their worktree. If a worker still reports a denied command, tell the user which one and resume the worker after they add it. Do not edit permission settings yourself.
 

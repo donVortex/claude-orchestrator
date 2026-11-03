@@ -51,8 +51,26 @@ run_claude() {
   state="$root/.orchestration"
   mkdir -p "$state/reports" || die 1 "cannot create $state/reports"
   cd "$dir" || die 1 "cannot enter $dir"
+  use_git_bash
+  # The allowlist's shell rules are Bash(...) rules; PowerShell would match none of them.
   exec "$CLAUDE_BIN" -p "$@" --output-format json --permission-mode acceptEdits \
-    --settings "$ORCH_ALLOWLIST" --add-dir "$state" < "$prompt_file"
+    --settings "$ORCH_ALLOWLIST" --add-dir "$state" --disallowedTools PowerShell < "$prompt_file"
+}
+
+# On Windows, claude started from inside Git Bash can fail to find Git Bash (it picks up
+# Git's ucrt64\bin\git.exe first) and then offers only PowerShell. Point it at Git Bash,
+# unless the user already set CLAUDE_CODE_GIT_BASH_PATH.
+use_git_bash() {
+  [ -z "${CLAUDE_CODE_GIT_BASH_PATH:-}" ] || return 0
+  command -v cygpath >/dev/null 2>&1 || return 0
+  git_root=$(cygpath -w /)
+  git_root=${git_root%\\}
+  for candidate in "$git_root\\bin\\bash.exe" "$git_root\\usr\\bin\\bash.exe"; do
+    if [ -f "$(cygpath -u "$candidate")" ]; then
+      export CLAUDE_CODE_GIT_BASH_PATH="$candidate"
+      return 0
+    fi
+  done
 }
 
 cmd_start() {

@@ -62,6 +62,12 @@ check_started() {
   assert_eq "acceptEdits" "$(arg_after --permission-mode)" "$label: permission mode"
   assert_contains "$(arg_after --settings)" "worker-allowlist.json" "$label: allowlist settings"
   assert_not_contains "$log" "bypassPermissions" "$label: never bypass"
+  assert_eq "PowerShell" "$(arg_after --disallowedTools)" "$label: PowerShell tool off (allow rules are Bash rules)"
+  if command -v cygpath >/dev/null 2>&1; then
+    gb=$(grep -m1 '^GIT_BASH_PATH=' "$STUB_LOG" | sed 's/^GIT_BASH_PATH=//')
+    [ -n "$gb" ] || fail "$label: Git Bash path set for the worker on Windows"
+    [ -n "$gb" ] && { [ -f "$(cygpath -u "$gb")" ] || fail "$label: Git Bash path exists ($gb)"; }
+  fi
 }
 
 # start_creates_worktree
@@ -172,6 +178,13 @@ allow=$(cat settings/worker-allowlist.json 2>/dev/null)
 assert_contains "$allow" '"allow"' "allowlist: has allow rules"
 assert_contains "$allow" 'Bash(gh pr create *)' "allowlist: gh pr create"
 assert_not_contains "$allow" 'Bash(git push *)' "allowlist: no blanket git push"
+assert_not_contains "$allow" '"Write"' "allowlist: no blanket Write (acceptEdits scopes edits to the worktree)"
+assert_not_contains "$allow" '"Edit"' "allowlist: no blanket Edit"
+
+# keeps_existing_git_bash_path
+setup
+CLAUDE_CODE_GIT_BASH_PATH='X:\custom\bash.exe' cw "$repo" start T1 main sonnet medium "$base/brief.md"
+assert_eq 'X:\custom\bash.exe' "$(grep -m1 '^GIT_BASH_PATH=' "$STUB_LOG" | sed 's/^GIT_BASH_PATH=//')" "keeps_existing_git_bash_path: user's setting wins"
 assert_contains "$allow" 'Bash(git push -u origin HEAD:orch/*)' "allowlist: push to orch/ branches"
 assert_contains "$allow" '"deny"' "allowlist: has deny rules"
 assert_contains "$allow" 'Bash(git push --force*)' "allowlist: denies force push"
