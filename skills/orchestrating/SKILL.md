@@ -75,7 +75,7 @@ Ledger status → `running`. Then, for every task whose dependencies are merged:
 
 ## 5. Track
 
-On every event, update the ledger first ([ledger.md](references/ledger.md)), starting the line with its [kind tag](references/workflow-learning.md#event-kinds) (`[ask-user] <question> → <answer>` — one line per question, the answer added to it — `[prompt]`, `[failed]`, `[env]`, `[event]`, …). Read each report in full from `.orchestration/reports/`; a worker whose report write was refused ends with the report in its final message — save that to `reports/T<n>.md` yourself. Append its retro to `retros.md`. Answer worker questions you can answer; ask the user the rest. Use early retros to improve the briefs of tasks not yet started.
+On every event, update the ledger first ([ledger.md](references/ledger.md)), starting the line with its [kind tag](references/workflow-learning.md#event-kinds) (`[ask-user] <question> → <answer>` — one line per question, the answer added to it — `[prompt]`, `[failed]`, `[env]`, `[event]`, …). Read each report in full from `.orchestration/reports/` (desktop: copy it there from the shared notes folder first, [how](references/backend-desktop.md#reports-and-permissions)); a worker whose report write was refused ends with the report in its final message — save that to `reports/T<n>.md` yourself. Append its retro to `retros.md`. Answer worker questions you can answer; ask the user the rest. Use early retros to improve the briefs of tasks not yet started.
 
 ## 6. Review
 
@@ -87,6 +87,7 @@ For each report with a PR:
    (cd "$root-wt/review-T<n>" && npm test && npm run lint)   # the project's own commands; never a bare cd
    git worktree remove "$root-wt/review-T<n>"
    ```
+   A fresh worktree has no installed dependencies. If you link them from the main checkout (a `node_modules` junction or symlink), never install through the link, and remove the link first, before `git worktree remove` ([how](references/knowledge.md#linked-dependencies)).
    The same holds for every worktree you work in (`self` tasks, knowledge PRs): run commands with `git -C`, `--prefix` or a `( cd … )` subshell, never a bare `cd` ([why](references/knowledge.md#working-in-a-worktree)).
 3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric), giving it the brief's Review checklist items. When the brief names a review skill, this review and your own diff read apply its criteria too, without adding a review for it ([how](references/coexistence.md#reviews)).
 4. Problems → send them to the same worker and mark `changes-requested`; clean → `reviewed`.

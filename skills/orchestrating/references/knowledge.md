@@ -78,6 +78,12 @@ An open knowledge PR's branch is read the same way, with `origin/<branch>` in pl
 
 Never `cd` into a worktree under `$root-wt/` in your own shell: it moves your session's working directory there, and the worktree then can't be removed until you move back. Point commands at it instead — `git -C "<dir>" …`, `npm --prefix "<dir>" test` — or run them in a subshell: `(cd "<dir>" && npm test)`.
 
+## Linked dependencies
+
+A new worktree has no installed dependencies (`node_modules`, a virtualenv). Linking them from the main checkout (a junction or symlink) is fine for running tests, with two rules:
+- never run an install in that worktree (`npm install`, or a script that installs, such as a lint command that adds its own tool): it writes through the link into the main checkout's dependencies;
+- remove the link itself before removing the worktree: `cmd //c rmdir "<dir>\node_modules"` for a Windows junction, `rm "<dir>/node_modules"` for a symlink, then `git worktree remove "<dir>"`. Never use `git worktree remove --force` (it leaves the folder behind), and never `rm -r` the link or the worktree folder: a recursive delete can follow the link into the main checkout.
+
 ## Bootstrap
 
 Only at the intake of a **fresh** orchestration (never on resume), and only when the base branch has no `.claude/orchestrator/`. It needs no goal: when the user starts the orchestrator without one, bootstrap first and ask for the goal after the drafts are approved. First check for an open knowledge PR:

@@ -1,6 +1,6 @@
 # Worker report format
 
-Every worker ends with exactly one report, written to the path in its brief (`<main checkout>/.orchestration/reports/<task-id>.md`). The orchestrator reads these headings, so keep them exactly.
+Every worker ends with exactly one report, written to the path in its brief (`<main checkout>/.orchestration/reports/<task-id>.md` in CLI mode, the app's shared notes folder in desktop mode). The orchestrator reads these headings, so keep them exactly.
 
 ```markdown
 # T<n> report

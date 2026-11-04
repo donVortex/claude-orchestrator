@@ -27,7 +27,7 @@ Start independent ready tasks in the same turn, up to `max_parallel_workers`.
 
 ## While workers run
 
-- The app wakes you when a worker ends a turn. The wake-up note is truncated: read `.orchestration/reports/T<n>.md` for the full report.
+- The app wakes you when a worker ends a turn. The wake-up note is truncated: read the full report (copied to `.orchestration/reports/T<n>.md`, see below).
 - A worker with a question writes its report with `Status: blocked` and a `## Question`, then ends its turn, which wakes you. Answer with `SendMessage` to its `local_…` id if you can; if only the user can decide, ask the user, then forward their answer quoting their words.
 - Review fixes go back with `SendMessage` to the same worker.
 - Liveness: `list_sessions {"linked": true}` or `get_session`. A worker that ended its turn without a report, or errored, counts as a failure round.
@@ -35,7 +35,9 @@ Start independent ready tasks in the same turn, up to `max_parallel_workers`.
 
 ## Reports and permissions
 
-Workers write their report to the main checkout's `.orchestration/reports/`, which is outside their worktree. Depending on the worker's permission mode, the app may ask the user to approve that write the first time. Mention this to the user when the first workers start.
+The app blocks workers from writing outside their worktree, so the main checkout's `.orchestration/reports/` is closed to them. The app gives the sessions you start a **shared notes folder** that you and they can both read and write; each worker's session instructions name it. Point the brief's Report path there: `<notes>/T<n>-report.md` (the PR body goes beside it). Until you know the folder's absolute path, write the Report path as "the shared notes folder your session instructions name, file `T<n>-report.md`"; the worker's last line names the path it used, so use that absolute path from the next brief on.
+
+When a report arrives, copy it to `$root/.orchestration/reports/T<n>.md` and work from that copy (copy it again after each fix round). A worker that has no notes folder, or whose write is refused, ends with the full report in its final message: save that to `reports/T<n>.md` yourself.
 
 ## When the app refuses a start
 
@@ -49,7 +51,7 @@ The app also refuses starts in a folder the user hasn't trusted yet. Trusting a 
 2. Ledger: `blocked` with the event `needs folder trust`. This is not a failure.
 3. When they confirm, retry the same starts.
 
-Workers' first report writes, outside their worktree, may also ask the user to approve them. Mention both when you show the breakdown for approval, so neither comes as a surprise.
+Mention the folder trust when you show the breakdown for approval, so it doesn't come as a surprise.
 
 ## Cleanup
 

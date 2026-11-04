@@ -21,7 +21,7 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - PR branch: `orch/T<n>` (or `orch/T<n>-<slug>` if that name was taken; see ledger.md). Your worktree folder and local branch may have other names (the app picks them, and may reuse an old folder); this PR branch is the one that counts.
 - Tier: <fast|standard|deep> — session <model> / <effort>
 - Orchestrator: desktop | CLI mode
-- Report path: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md). It is outside your worktree: if the write is refused, put the full report in your final message instead, and the orchestrator saves it.
+- Report path: CLI mode: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md). Desktop: `<notes>/T<n>-report.md` in the app's shared notes folder ([backend-desktop.md](backend-desktop.md#reports-and-permissions)). It is outside your worktree: if the write is refused, put the full report in your final message instead, and the orchestrator saves it.
 - Subtasks (files, tier hint, dependencies):
   - A. <what> — <files> — <tier> — depends on: none
   - B. <what> — <files> — <tier> — depends on: A
@@ -41,7 +41,7 @@ Report in the format of the working skill's report-format.md, then send: `T<n> d
 | Skills names only skills seen in the skills look or in `Skill:` entries | A made-up skill name makes the worker hunt for it |
 | Names, shapes and values the work needs are written out | "use the settings from the goal" fails when the goal has none |
 | Owned files don't overlap any task that can run at the same time | See [splitting.md](splitting.md) |
-| Report path is absolute and points at the **main** checkout | Workers run in their own worktrees |
+| Report path: CLI → absolute, in the main checkout's `.orchestration/reports/`; desktop → the app's shared notes folder | Workers run in their own worktrees, and the desktop app blocks their writes to the main checkout |
 | The brief names its canonical file path | The desktop app rewrites `@` in prompts |
 | Project rules quote the `domain.md` entries for this task's area | Workers can't follow rules they weren't given |
 | A dependent change of a few lines (a re-export, a barrel line) is folded into the subtask it depends on | A one-subtask plan takes the working skill's small-task path (one implementer, one review) instead of the full batch loop |

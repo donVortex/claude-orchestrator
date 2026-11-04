@@ -11,7 +11,7 @@ mkdir -p "$root/.orchestration/reports" "$root/.orchestration/briefs"
 grep -qxF '.orchestration/' "$common/info/exclude" 2>/dev/null || echo '.orchestration/' >> "$common/info/exclude"
 ```
 
-`info/exclude` keeps it out of commits without touching `.gitignore`. Use `$root/.orchestration/…` (an absolute path) everywhere: in the ledger, in briefs' report paths, and when reading reports.
+`info/exclude` keeps it out of commits without touching `.gitignore`. Use `$root/.orchestration/…` (an absolute path) everywhere: in the ledger, in CLI briefs' report paths, and when reading reports (desktop briefs point at the app's shared notes folder; [why](backend-desktop.md#reports-and-permissions)).
 
 ## Layout
 

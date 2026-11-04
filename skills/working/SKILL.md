@@ -54,7 +54,7 @@ A subagent that fails or returns weak work: retry once on the next tier up and n
 
 ## 5. Verify
 
-Run the full test, lint and build commands and read the output. You may only claim done with that output in hand (and a verification skill's checks, if one is installed). Check `git diff --name-only <base>...HEAD` lists only owned files.
+Run the full test, lint and build commands and read the output. If your worktree's dependencies are linked from the main checkout (a `node_modules` junction or symlink), never run an install there, including a command that would install a missing tool: it writes into the main checkout. Report it as a `[tooling]` point instead. You may only claim done with that output in hand (and a verification skill's checks, if one is installed). Check `git diff --name-only <base>...HEAD` lists only owned files.
 
 ## 6. Open the PR
 
@@ -62,7 +62,7 @@ Run the full test, lint and build commands and read the output. You may only cla
 
 ## 7. Report
 
-Write the report in [report-format.md](report-format.md) to the brief's report path. Then end your turn with one line: `T<n> done, PR <url>, report at <path>`.
+Write the report in [report-format.md](report-format.md) to the brief's report path. When the brief names "the shared notes folder your session instructions name" instead of a path, use that folder. Then end your turn with one line: `T<n> done, PR <url>, report at <path>`.
 
 The report path is outside your worktree. If the write is refused, don't route around the refusal with another tool: end your turn with the full report in your final message, then the line `T<n> done, PR <url>, report in final message`. The orchestrator saves it.
 
