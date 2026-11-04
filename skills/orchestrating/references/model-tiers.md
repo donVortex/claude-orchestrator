@@ -14,6 +14,7 @@ The single source for which model and effort each piece of work gets. Edit this 
 - **Worker session model / effort**: what the orchestrator sets on a worker session (desktop: `set_session_model` + `set_session_effort`; CLI: `--model` + `--effort`) for a task of this tier.
 - A task's tier sets its session. Each subtask inside it gets its own tier, so one worker can mix models.
 - The orchestrator session keeps whatever model the user started it with.
+- A project's `calibration.md` → **Tiers by task type** (`Tier:` entries) refines these per kind of work; it is learned at each wrap-up from the workers' Subtasks tables ([how](workflow-learning.md#findings-to-proposals)).
 
 ## Session floor
 

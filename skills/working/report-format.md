@@ -12,6 +12,11 @@ PR: <url, or "none">
 - Verified by: <command> → <real outcome>   (one line per command: tests, lint, build)
 - Risks / follow-ups: <anything the reviewer should look at; "none" if none>
 
+## Subtasks
+| Subtask | Kind | Tier | Outcome | Review found |
+|---|---|---|---|---|
+| A | <kind of work, in a few words: "pure data mapping", "state machine change", "UI wiring"> | fast / standard / deep | first try / escalated to <tier> / failed | nothing / minor / important |
+
 ## Retro
 ### Went well
 - [tag] <what helped, concretely>
@@ -20,6 +25,8 @@ PR: <url, or "none">
 ### Improve
 - [tag] <a concrete change to a brief, the split, the rubric, tooling or the codebase>
 ```
+
+One row per subtask you dispatched (a small task has one row; work you did yourself is not a row). **Tier** is the tier it started on; **Outcome** says whether that tier passed its review on the first try; **Review found** is the most serious finding of its review. The orchestrator learns subtask tiers from this table, so keep the kind of work comparable across tasks.
 
 For `Status: blocked`, add a `## Question` section after `## Result` with the one question you need answered and the options you see.
 

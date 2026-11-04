@@ -17,7 +17,7 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 
 ## 2. Plan in batches
 
-Read [model-tiers.md](../orchestrating/references/model-tiers.md). Split the task into subtasks; give each its files, a tier and what it depends on.
+Read [model-tiers.md](../orchestrating/references/model-tiers.md). Split the task into subtasks; give each its files, a tier and what it depends on, and follow the brief's tier hints (they carry the project's learned `Tier:` entries): go higher only for a reason you note in the retro, never lower.
 
 - **Same batch**: subtasks whose files don't overlap and that don't depend on each other — up to `max_parallel_implementers_per_session`.
 - **Later batch**: a subtask that shares a file with, or depends on, an earlier one.

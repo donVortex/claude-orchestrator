@@ -7,6 +7,7 @@ How work in this project should be done: tiers, task sizes, what briefs must spe
 
 <!-- Example:
 - **Anything in `src/billing/` is `deep`**: rounding and currency rules failed twice on `standard`. _(T4 / PR #51, 2026-11-12)_
+- **Tier: exercise-data mapping in `scripts/` is `standard`**: passed on the first try with only minor findings on `deep` in two runs. _(T3 / PR #15; T5 / PR #18)_
 -->
 
 ## Split patterns
