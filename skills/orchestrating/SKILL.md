@@ -91,7 +91,7 @@ When every task is `merged`, `failed` or `dropped`:
 1. Results: each task, its PR, its outcome.
 2. Retro digest: group all points in `retros.md` by tag; call out patterns that repeat across tasks.
    **Counts:** the [counts table](references/workflow-learning.md#counts-table) of attention and rework per task and for the run; turn what it shows into proposals per [findings to proposals](references/workflow-learning.md#findings-to-proposals) — learned defaults, pre-flight checks, brief rules or checklist items, recipes — and include them in the knowledge diff below.
-3. **Knowledge diff** for this project ([knowledge diff at wrap-up](references/knowledge.md#knowledge-diff-at-wrap-up)): additions, edits and removals, each with its source (`T<n> / PR #<n>`).
+3. **Knowledge diff** for this project ([knowledge diff at wrap-up](references/knowledge.md#knowledge-diff-at-wrap-up)): additions, edits and removals, each with its source (`T<n> / PR #<n>`). If the project has no `.claude/skills/project-rules/` and never declined it, offer it as an optional extra file ([project-rules skill](references/knowledge.md#the-project-rules-skill)).
    - **In the project's own files and headings.** Entries go into the existing file whose purpose fits; never create a template file or rename, reformat or add budgets on your own. If nothing fits, ask.
    - **Budgets only where a file has its own budget header**; a file without one is never trimmed for length.
    - **No secrets, record identifiers or personal data** in entries, reasons, PR text or commit messages: state the rule, never the value, and tell the user what kind of value you left out.

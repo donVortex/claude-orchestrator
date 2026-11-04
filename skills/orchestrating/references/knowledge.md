@@ -95,7 +95,7 @@ GitHub's `head:` search can match more loosely than the prefix; the `--jq` filte
 
 1. **Scan.** In one message, start parallel `orch-scout` subagents to read the README, `docs/`, `CLAUDE.md`, the folder structure, the test layout and the last 50 commits. Ask each for draft entries with `path:line` sources.
 2. **Interview.** Ask the user at most **5** questions, **one at a time** — each one thing to answer, never a bundle of sub-questions — picking from: rules that aren't written down; risky or regulated areas; terms with a specific meaning here; what reviewers must always check; work that has gone wrong before.
-3. **Draft.** Fill `README.md` and the four files from the templates, applying the content rules. Remove a template heading that ends up with no entries (e.g. an unused `## When touching <area>`), except calibration's `## Recipes`, `## Learned defaults` and `## Pre-flight`, which stay for workflow learning to fill.
+3. **Draft.** Fill `README.md` and the four files from the templates, applying the content rules. Remove a template heading that ends up with no entries (e.g. an unused `## When touching <area>`), except calibration's `## Recipes`, `## Learned defaults` and `## Pre-flight`, which stay for workflow learning to fill. Also offer the [project-rules skill](#the-project-rules-skill) as part of the same PR; the user may decline it.
 4. **Approve.** Show the drafts and ask the user to approve or edit them. Write nothing to the repo before they do.
 5. **PR.** The worktree sits outside your working directories: if the user hasn't run `/add-dir <$root>-wt` yet, ask them to now. Then:
    ```bash
@@ -117,9 +117,17 @@ If the user declines the bootstrap, run without knowledge for this orchestration
 | Briefs | **Project rules:** quote the rule entries relevant to the task (never a contradicted one). **Review checklist:** name the project's checklist file and the sections that apply; when the knowledge isn't on the base branch yet (open bootstrap PR, approved draft), quote the checklist items themselves. Write the calibration's "briefs need" items into the brief's fields, plus a matched recipe's must-haves and the learned defaults the task relies on ([workflow learning](workflow-learning.md#using-what-was-learned)). |
 | Reviews | Your own review and every `orch-specialist` pass, `deep` tasks included, check the same checklist items. |
 
+## The project-rules skill
+
+Only the orchestrator reads `.claude/orchestrator/`. Sessions that don't orchestrate — quick fixes, questions, a teammate without the plugin — would not know the project's rules. A small project skill fixes that: `.claude/skills/project-rules/SKILL.md`, from [this template](knowledge-templates/project-rules-skill.md). Claude Code loads it whenever code in the repo is changed, with or without the plugin. It only **points** to `domain.md` and the review checklist; it never copies rules, so it can't drift.
+
+- **When to offer it:** in the bootstrap PR, and at a wrap-up when the project has knowledge but no `.claude/skills/project-rules/` — unless this or an archived ledger records `[event] project skill: declined`.
+- **How:** as one more file in the knowledge diff, clearly optional. If the user declines, log `[event] project skill: declined` and never offer it again.
+- **Ownership:** once added, it belongs to the project like the knowledge: never rewritten or reformatted by plugin updates; the team may edit or delete it.
+
 ## Knowledge diff at wrap-up
 
-1. Group the retros by tag; `[domain]` points are knowledge candidates, and so are repeated `[brief]`, `[split]` and `[tier]` patterns, plus contradictions recorded at intake, plus the workflow findings from the [counts](workflow-learning.md#findings-to-proposals) (recipes, learned defaults, pre-flight checks).
+1. Group the retros by tag; `[domain]` points are knowledge candidates, and so are repeated `[brief]`, `[split]` and `[tier]` patterns, plus contradictions recorded at intake, plus the workflow findings from the [counts](workflow-learning.md#findings-to-proposals) (recipes, learned defaults, pre-flight checks), plus the [project-rules skill](#the-project-rules-skill) if it's missing and was never declined.
 2. Find an open knowledge PR (same `gh pr list` as in Bootstrap). If one is open, read its branch's files: you will draft against them, not against the base branch. If more than one is open, use the newest and list the others to the user, suggesting they merge or close them.
 3. Draft the **knowledge diff**: additions, edits and removals, each in the existing file whose purpose fits (see The project owns it), with its source and a one-line reason. Apply the content rules. For files with a budget header, show the line count against it.
 4. Ask the user to approve or edit the diff. Change nothing before they do.

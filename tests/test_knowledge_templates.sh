@@ -29,6 +29,16 @@ for f in domain.md map.md review-checklist.md calibration.md; do
   assert_contains "$readme" "$f" "README mentions $f"
 done
 
+# the project-rules skill template points to the knowledge, never copies it
+ps=$(cat "$T/project-rules-skill.md" 2>/dev/null)
+assert_file "$T/project-rules-skill.md" "project-rules skill template exists"
+assert_contains "$ps" "name: project-rules" "project-rules skill name"
+assert_contains "$ps" "description: Use when" "project-rules skill description starts with Use when"
+assert_contains "$ps" ".claude/orchestrator/domain.md" "project-rules skill points to domain.md"
+assert_contains "$ps" "review checklist" "project-rules skill points to the review checklist"
+awk '/<!--/{c=1} !c{print} /-->/{c=0}' "$T/project-rules-skill.md" 2>/dev/null | grep -q '^- \*\*' && fail "project-rules skill copies no rule entries"
+assert_contains "$(cat skills/orchestrating/references/knowledge.md)" "project skill: declined" "knowledge.md remembers a declined project skill"
+
 # identifiers mean record IDs, not code names
 assert_contains "$readme" "record identifiers" "README says record identifiers"
 assert_contains "$readme" "code names" "README says code names are fine"
