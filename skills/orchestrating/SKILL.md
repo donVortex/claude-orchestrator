@@ -53,7 +53,7 @@ Split per [splitting.md](references/splitting.md), following the project's `map.
 
 Show the breakdown as a table — `id | task | owns | depends | tier | placement` — then, under it:
 - `Following recipe: <name>` for each task that matches a recipe;
-- `Assumed from project knowledge: <default>` for each **Learned default** you rely on. Never assume one that touches safety, data handling, money or a destructive action, or contradicts `CLAUDE.md`, a project rule or the goal — ask or flag it instead.
+- `Assumed from project knowledge: <default>` for each **Learned default** you rely on. Never assume one that decides safety, data handling, money or a destructive action ([what counts](references/workflow-learning.md#guardrails)), or contradicts `CLAUDE.md`, a project rule or the goal — ask or flag it instead.
 
 Log each of these lines as `[event] T<n> following recipe: <name>` and `[event] assumed default: <default>`; if the user overrides a default, log `[event] user overrode default: <default> → <choice>` ([why](references/workflow-learning.md#event-kinds)).
 

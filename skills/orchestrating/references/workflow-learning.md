@@ -62,7 +62,7 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 
 | Finding | Proposal | Lands in |
 |---|---|---|
-| The user was asked the same question and gave the same answer in two or more runs (this ledger's `[ask-user]` lines against the archived ledgers' `[ask-user]` lines) — except bootstrap interview questions (their answers belong in `domain.md`), the plugin's own confirmations (merges, branch deletion, the bootstrap offer, the knowledge diff), and anything touching safety, data handling, money or a destructive action | A **learned default**: "<answer> unless told otherwise" | `calibration.md` → Learned defaults |
+| The user was asked the same question and gave the same answer in two or more runs (this ledger's `[ask-user]` lines against the archived ledgers' `[ask-user]` lines) — except bootstrap interview questions (their answers belong in `domain.md`), the plugin's own confirmations (merges, branch deletion, the bootstrap offer, the knowledge diff), and any answer that decides safety, data handling, money or a destructive action ([what counts](#guardrails)) | A **learned default**: "<answer> unless told otherwise" | `calibration.md` → Learned defaults |
 | A stall from the environment: a `[prompt]`, a `[start-click]`, or an `[env]` round | A **pre-flight check** for intake, with what to tell the user up front | `calibration.md` → Pre-flight |
 | A `[failed]`, `[changes]` or `[worker-q]` caused by the work or the brief | A **brief rule** (what the worker needed to be told) or a **checklist item** (what review should catch earlier) | `calibration.md` → Briefs need, or `review-checklist.md` |
 | A task with zero rework and no attention except product decisions that this same diff records as `domain.md` rules, of a kind with no recipe | A **new recipe** | `calibration.md` → Recipes |
@@ -82,13 +82,13 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 | Reading | Read entries by section **or** by prefix: a `Pre-flight:`, `Recipe:` or `Learned default:` entry under another heading counts the same. |
 | Intake | Run every **Pre-flight** check before planning. Fix what you can; tell the user up front what they'll need to do (e.g. `/add-dir`, trusting the folder), and log it as `[event] pre-flight: …`. |
 | Breakdown | Match tasks to **Recipes** by area **and** kind of change; a different kind of change in the same area matches nothing. Follow a recipe's split, tier and placement unless the goal needs otherwise. |
-| The plan the user approves | One line per learned default you rely on — `Assumed from project knowledge: <default>` — and per matched task — `Following recipe: <name>`. Never assume a default that touches safety, data handling, money or a destructive action, or contradicts `CLAUDE.md`, a project rule or the goal: ask or flag it instead. Log each line as its `[event]` (see Event kinds); an override as `user overrode default:`. |
+| The plan the user approves | One line per learned default you rely on — `Assumed from project knowledge: <default>` — and per matched task — `Following recipe: <name>`. Never assume a default that decides safety, data handling, money or a destructive action ([what counts](#guardrails)), or contradicts `CLAUDE.md`, a project rule or the goal: ask or flag it instead. Log each line as its `[event]` (see Event kinds); an override as `user overrode default:`. |
 | Briefs | Carry the recipe's must-haves, the "Briefs need" items, and every learned default the task relies on. |
 
 ## Guardrails
 
 - Nothing is learned without the user's approval of the knowledge diff.
 - Never apply a learned default that contradicts `CLAUDE.md`, a project rule or the goal: flag the contradiction and follow `CLAUDE.md` (precedence: brief > `CLAUDE.md` > knowledge).
-- Learned defaults never cover safety, data handling, money or destructive actions — not when proposing them, and not when applying them, even if one was added by hand. Those are rules (`domain.md`) or the user's call.
+- Learned defaults never decide safety, data handling, money or destructive actions — not when proposing them, and not when applying them, even if one was added by hand. Those are rules (`domain.md`) or the user's call. What counts is what the default decides (an amount, rounding, a currency, who may see data, deleting something), not where the code lives: a file-placement, naming or export default still applies inside a payments or patient-data folder.
 - A default the user overrides twice is proposed for removal.
 - The content rules of project knowledge apply unchanged: no secrets, record identifiers or personal data; state the rule, never the value.
