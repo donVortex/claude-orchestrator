@@ -67,9 +67,18 @@ Besides the domain, each project's orchestrator learns **how work goes best ther
 - **What you see:** the plan says `Following recipe: …` and `Assumed from project knowledge: …`, so you can override either in the same reply.
 - **Guardrails:** everything still goes through the approved knowledge PR. Learned defaults never override `CLAUDE.md` or project rules, and never cover safety, data handling or money.
 
-## With superpowers
+## Alongside other skills and plugins
 
-The orchestrator works alongside [superpowers](https://github.com/obra/superpowers) and similar process-skill plugins. In the orchestrator session you may brainstorm an unclear goal first, but the breakdown, approval and dispatch replace superpowers' writing-plans and executing-plans. Workers treat the brief as the approved design and plan: they skip brainstorming, plan documents, their own worktree setup and the finishing step (they push and open a PR, never merge), and keep test-driven development, subagent-driven development, code review and verification.
+The orchestrator runs alongside whatever other skills and plugins you use, without either getting in the other's way or doing the same work twice. It judges every skill by **what it would do**, not by its name ([the contract](skills/orchestrating/references/coexistence.md)):
+
+- **The orchestrator owns how work is organised**: the plan and your approval, branches, worktrees, one PR per task, reviews, and project knowledge. You merge. Another planner's ideas feed the breakdown but never replace it, and no skill merges, creates its own worktree, or writes plan files into a PR.
+- **Everything inside a task is open to other skills**: test-driven development, framework and domain skills (Stripe, Cloudflare, design), debugging.
+- **When a workflow skill overlaps,** the plan says so in one line (`Other workflow skills: …`), and you can override it in the same reply.
+- **Briefs name the skills that fit each task,** so workers don't each go looking for them.
+- **Still one review per change:** if the project has a preferred review skill, the reviewer uses it **and** the project's checklist.
+- **Each project learns its own skill set:** wrap-ups propose `Skill:` entries ("use payments-kit for refunds", "skip that plugin's worktree step"), which you approve in the usual knowledge PR.
+
+[superpowers](https://github.com/obra/superpowers) is the worked example: brainstorming helps with an unclear goal; its planning, worktree and finishing steps are replaced by the orchestrator's; its TDD, review and verification skills are used inside tasks.
 
 ## CLI workers and permissions
 

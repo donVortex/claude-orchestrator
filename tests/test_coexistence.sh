@@ -54,4 +54,6 @@ assert_contains "$wl" "A named skill was missing in two runs" "workflow-learning
 assert_contains "$wl" "never removes the review" "workflow-learning: guardrail on reviews"
 assert_contains "$wl" "\`Skill:\`" "workflow-learning: Skill prefix in layout rule"
 
+assert_contains "$(cat README.md)" "## Alongside other skills and plugins" "README section"
+
 finish

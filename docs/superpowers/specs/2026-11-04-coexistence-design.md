@@ -1,7 +1,7 @@
 # Coexistence with other skills and plugins — Design
 
 Date: 2026-11-04
-Status: approved design, not yet implemented (target v0.5.0)
+Status: implemented (v0.5.0)
 Builds on: [plugin](2026-11-03-orchestrator-plugin-design.md) · [project knowledge](2026-11-03-project-knowledge-design.md) · [workflow learning](2026-11-03-workflow-learning-design.md)
 Replaces: the superpowers-only rules added in v0.4.1 (they become a worked example)
 
