@@ -27,8 +27,11 @@ assert_contains "$(cat skills/orchestrating/references/knowledge.md)" 'except ca
 
 assert_contains "$ref" "no attention except product decisions" "new-recipe rule allows product decisions recorded as domain rules"
 
+assert_contains "$(cat skills/working/SKILL.md)" "wait for it in the same turn" "worker waits for its review subagents before ending the turn"
+
 ledger=$(cat skills/orchestrating/references/ledger.md 2>/dev/null)
 assert_contains "$ledger" "[ask-user]" "ledger.md shows a tagged event"
 assert_contains "$ledger" "starts with a kind tag" "ledger.md requires kind tags"
+assert_contains "$ledger" "left unanswered in the previous run" "branch question is not repeated once left unanswered"
 
 finish

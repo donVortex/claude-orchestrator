@@ -34,7 +34,7 @@ mkdir -p "$dest"
 for f in "$root/.orchestration"/*; do [ "$(basename "$f")" = archive ] || mv "$f" "$dest/"; done
 ```
 
-Branches are not archived and would collide with the new run's `orch/T<n>`. After the move, list the finished run's branches — `git branch --list 'orch/T*'` and `git branch -r --merged origin/<base> | grep 'origin/orch/T'` — and ask the user whether to delete them locally and on the remote. Never delete without a yes.
+Branches are not archived and would collide with the new run's `orch/T<n>`. After the move, list the finished run's branches — `git branch --list 'orch/T*'` and `git branch -r --merged origin/<base> | grep 'origin/orch/T'` — and ask the user whether to delete them locally and on the remote. Never delete without a yes. If the archived ledger shows this question was left unanswered in the previous run (or answered no), don't ask again: mention the leftover branches in one line of your next message instead, and log it as `[event]`, not `[ask-user]`.
 
 ## Branch names
 

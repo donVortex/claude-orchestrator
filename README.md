@@ -95,6 +95,8 @@ Found and fixed during the run:
 
 **Project knowledge, end to end** (sandbox PRs #9–#13): the first orchestration bootstrapped the knowledge (repo scan, an interview one question at a time, your approval, knowledge PR #9); feature 1 (`formatMoney`, #10) briefed its worker with those rules and its wrap-up added what it learned (knowledge PR #11); feature 2 (`sumPrices`, #12) quoted a rule feature 1 had taught, and its wrap-up added more (#13). Found and fixed along the way: structured messages ending in "Your next step", reading the base branch with `MSYS_NO_PATHCONV=1` on Windows, never `cd`-ing into a worktree, starting every task from GitHub's latest base, and the orchestrator as the default workflow in projects with knowledge.
 
+**Workflow learning, end to end** (sandbox PRs #14–#17, on a project whose knowledge predates v0.3.0): run 1 (`maxPrice`, #14) tagged every ledger event, counted 1 question to you and 0 rework, turned that question into a domain rule, and learned a "Money helper" recipe, filed under the project's existing heading with a `Recipe:` prefix (#15). Run 2 (`minPrice`, #16) followed that recipe and finished with **0 questions and 0 rework**, and its wrap-up updated the recipe's track record (#17). Found and fixed along the way: a recipe may be learned when its only question became a domain rule; workers wait for their review subagents in the same turn; a branch-cleanup question you left unanswered isn't asked again.
+
 ## Tests
 
 ```bash
