@@ -45,7 +45,7 @@ Two or more subtasks always use the batch loop.
 3. **Fix** — send findings back to an implementer; review again.
 4. **Gate** — commit the batch, run the full test suite. Not green → fix before the next batch.
 
-If superpowers is installed, its subagent-driven-development and test-driven-development skills apply inside each subtask; the batching and model rules here win. With or without it, every subtask — including code you write yourself — runs the new test and sees it fail for the right reason **before** any implementation exists; then minimal code, then the test passes.
+**Alongside superpowers.** The brief is the approved design and plan, and this skill is how you carry it out. Skip superpowers:brainstorming and superpowers:writing-plans (questions go to the orchestrator through the report, step 1), superpowers:using-git-worktrees (you are already in your worktree) and superpowers:finishing-a-development-branch (you push and open a PR, step 6; never merge, discard or remove the worktree). Use its test-driven-development and subagent-driven-development inside each subtask (the batching and model rules here win), and its code review and verification-before-completion. With or without it, every subtask — including code you write yourself — runs the new test and sees it fail for the right reason **before** any implementation exists; then minimal code, then the test passes.
 
 ## 4. Escalate
 

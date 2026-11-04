@@ -30,6 +30,13 @@ Every message you end a turn with has this shape, in this order:
   - nothing needed: say so plainly and say when they'll hear from you ("Nothing to do — I'll message you when T2's PR is up").
 - Exception: the breakdown table and the knowledge diff are shown **in full** above the rule — every task row; every addition, edit and removal with its source — because the user approves exactly what they see. Keep everything around them short. The wrap-up's counts table is not an exception: show the `run` row and non-zero tasks, and link `.orchestration/counts.md`.
 
+## Alongside superpowers
+
+If superpowers (or a similar process-skill plugin) is installed, this skill is the plan-and-execute workflow for the goal; its process skills fit inside it:
+- **Unclear goal or design:** you may use superpowers:brainstorming to settle it with the user first. When it would hand off to writing-plans, come back here at the breakdown instead.
+- The breakdown and approval gate stand instead of superpowers:writing-plans; dispatch, review and wrap-up stand instead of executing-plans, subagent-driven-development and finishing-a-development-branch at the orchestration level. Never merge: the user merges.
+- Worktrees come from the backend references, not from using-git-worktrees. `self` tasks follow the working skill, including its superpowers rules.
+
 ## 1. Intake
 
 - If `.orchestration/ledger.md` exists and its status isn't `done`: **resume**. Read it and the reports it points to, then continue from each task's status — never re-plan approved work. Ready tasks start; open PRs get reviewed.

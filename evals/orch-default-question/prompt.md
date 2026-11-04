@@ -6,6 +6,7 @@ tags: [orchestrator, default]
 
 [session-orchestrator] This project uses session-orchestrator; its knowledge is in .claude/orchestrator/.
 - When the user asks for feature work (new or changed behaviour, more than a one-file fix), your first action is to invoke the Skill tool with session-orchestrator:orchestrating, before you plan or answer; then follow it (breakdown, approval, delegation).
+- Other process skills (e.g. superpowers) still apply inside it: you may brainstorm an unclear goal first, but the plan and its execution come from session-orchestrator:orchestrating, not writing-plans or executing-plans.
 - Questions, explanations, reviews and small one-file fixes are normal work; don't orchestrate them.
 - If .orchestration/ledger.md exists and isn't done, an orchestration is in progress: continue it with that skill.
 - If this session was started with a task brief that names session-orchestrator:working, you are a worker: ignore this note.

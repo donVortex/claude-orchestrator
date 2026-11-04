@@ -67,6 +67,10 @@ Besides the domain, each project's orchestrator learns **how work goes best ther
 - **What you see:** the plan says `Following recipe: …` and `Assumed from project knowledge: …`, so you can override either in the same reply.
 - **Guardrails:** everything still goes through the approved knowledge PR. Learned defaults never override `CLAUDE.md` or project rules, and never cover safety, data handling or money.
 
+## With superpowers
+
+The orchestrator works alongside [superpowers](https://github.com/obra/superpowers) and similar process-skill plugins. In the orchestrator session you may brainstorm an unclear goal first, but the breakdown, approval and dispatch replace superpowers' writing-plans and executing-plans. Workers treat the brief as the approved design and plan: they skip brainstorming, plan documents, their own worktree setup and the finishing step (they push and open a PR, never merge), and keep test-driven development, subagent-driven development, code review and verification.
+
 ## CLI workers and permissions
 
 Outside the desktop app, workers run as headless `claude -p` processes in their own git worktrees (`scripts/cli-worker.sh`). Headless runs can't ask you for permission, so each worker gets `--permission-mode acceptEdits` plus [settings/worker-allowlist.json](settings/worker-allowlist.json). Edits are limited to the worker's worktree and the `.orchestration/` folder. The allowlist adds skills and subagents, `git` commits, pushing to `orch/*` branches only (no force-push, nothing to `main`/`master`), and `gh pr`. The plugin never uses a bypass mode.
