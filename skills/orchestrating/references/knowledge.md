@@ -11,7 +11,7 @@ Each project keeps what the orchestrator has learned about it in `.claude/orches
 ├─ map.md               ## Areas  ## Feature flows
 ├─ review-checklist.md  ## Always check  ## When touching <area>
 └─ calibration.md       ## Tiers by task type  ## Split patterns  ## Briefs need
-                        ## Recipes  ## Learned defaults  ## Pre-flight
+                        ## Recipes  ## Learned defaults  ## Skills  ## Pre-flight
 ```
 
 | File | Holds | Budget written into a new file (lines) |

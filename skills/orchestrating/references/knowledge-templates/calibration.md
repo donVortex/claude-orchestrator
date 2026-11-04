@@ -33,6 +33,12 @@ How work in this project should be done: tiers, task sizes, what briefs must spe
 - **Export new helpers from the area's `index.js`** unless told otherwise. _(T1 / PR #20; T2 / PR #24)_
 -->
 
+## Skills
+
+<!-- Which skills help this project, which steps of other plugins to skip, and how overlapping workflow skills are handled. Example:
+- **Use stripe-best-practices for payment endpoints**; it caught a missing idempotency key. _(T2 / PR #31)_
+-->
+
 ## Pre-flight
 
 <!-- Checked at intake, before planning. Example:

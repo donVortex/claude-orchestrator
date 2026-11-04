@@ -25,7 +25,8 @@ Every line in the ledger's Events list starts with one of these tags:
 - `[event] pre-flight: <what you asked or checked up front>` — an up-front pre-flight ask is planned, not an interruption;
 - `[event] T<n> following recipe: <name>` — at the approval gate, per matched task;
 - `[event] assumed default: <default>` — at the approval gate, per default relied on;
-- `[event] user overrode default: <default> → <what they chose>`.
+- `[event] user overrode default: <default> → <what they chose>`;
+- `[event] skills: overlap <name> (<stage>); fit <names>` — at intake, from the skills look ([coexistence.md](coexistence.md#intake-plan-and-briefs)).
 
 Add the task id after the tag when an event belongs to one task: `[failed] T2 tests red on the PR head`.
 
@@ -68,22 +69,27 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 | A task with zero rework and no attention except product decisions that this same diff records as `domain.md` rules, of a kind with no recipe | A **new recipe** | `calibration.md` → Recipes |
 | A task that followed its recipe and did as well or better | Update the recipe's track record | `calibration.md` → Recipes |
 | A task that did clearly worse than its recipe | The cause, and a fix to the recipe or the brief | as above |
+| A skill helped on a task that passed with no rework (a `[tooling]` retro point) | `Skill: use <skill> for <area / kind of task>`; also add it to a matching recipe's must-haves | `calibration.md` → Skills |
+| A skill got in the way: it caused rework, a failure, or a step the worker skipped | `Skill: <skill> — skip its <step> here`, or `Skill: don't use <skill> for <kind of task>` | `calibration.md` → Skills |
+| An overlapping workflow skill was handled (the `Other workflow skills:` line) and the user didn't override it | `Skill: <skill> — <used for>; <replaced steps>`, shown as Assumed next run | `calibration.md` → Skills |
+| A hook or plugin blocked something (e.g. `git push`), logged as `[env]` | A **pre-flight check**, not a `Skill:` entry | `calibration.md` → Pre-flight |
+| A named skill was missing in two runs (`[tooling]` "not available" points in this and archived retros) | Remove its `Skill:` entry | `calibration.md` → Skills |
 | A learned default the user overrode in two runs (the `user overrode default:` lines in this and the archived ledgers) | Remove it | `calibration.md` → Learned defaults |
 
 - **Don't propose what's already there.** If an existing recipe, default, pre-flight check or brief rule already covers a finding, don't propose it again; if it's there and the problem still happened, propose a fix to that entry.
 - **Older ledgers without tags:** skip their untagged lines. Never guess a question or an answer from prose.
-- **The project's own layout wins:** if `calibration.md` lacks a section, put the entry under the closest existing heading with its kind as a prefix — `Recipe: …`, `Learned default: …`, `Pre-flight: …` — or ask the user once whether to add the section. If they say no, use prefixed entries from then on without asking again. Respect the file's own budget, or none if it has no header ([the project owns it](knowledge.md#the-project-owns-it)).
-- **Plugin lessons** (tooling, scripts, the skills): in development mode they become plugin edits; standalone, they become project entries (a pre-flight check, a "briefs need" item) only where they help this project, and are otherwise left out (see the orchestrating skill's wrap-up).
+- **The project's own layout wins:** if `calibration.md` lacks a section, put the entry under the closest existing heading with its kind as a prefix — `Recipe: …`, `Learned default: …`, `Pre-flight: …`, `Skill: …` — or ask the user once whether to add the section. If they say no, use prefixed entries from then on without asking again. Respect the file's own budget, or none if it has no header ([the project owns it](knowledge.md#the-project-owns-it)).
+- **Plugin lessons** (tooling, scripts, the skills, how other plugins coexist): in development mode they become plugin edits (including to [coexistence.md](coexistence.md)); standalone, they become project entries (a pre-flight check, a "briefs need" item) only where they help this project, and are otherwise left out (see the orchestrating skill's wrap-up).
 
 ## Using what was learned
 
 | Step | Use |
 |---|---|
-| Reading | Read entries by section **or** by prefix: a `Pre-flight:`, `Recipe:` or `Learned default:` entry under another heading counts the same. |
+| Reading | Read entries by section **or** by prefix: a `Pre-flight:`, `Recipe:`, `Learned default:` or `Skill:` entry under another heading counts the same. |
 | Intake | Run every **Pre-flight** check before planning. Fix what you can; tell the user up front what they'll need to do (e.g. `/add-dir`, trusting the folder), and log it as `[event] pre-flight: …`. |
 | Breakdown | Match tasks to **Recipes** by area **and** kind of change; a different kind of change in the same area matches nothing. Follow a recipe's split, tier and placement unless the goal needs otherwise. |
-| The plan the user approves | One line per learned default you rely on — `Assumed from project knowledge: <default>` — and per matched task — `Following recipe: <name>`. Never assume a default that decides safety, data handling, money or a destructive action ([what counts](#guardrails)), or contradicts `CLAUDE.md`, a project rule or the goal: ask or flag it instead. Log each line as its `[event]` (see Event kinds); an override as `user overrode default:`. |
-| Briefs | Carry the recipe's must-haves, the "Briefs need" items, and every learned default the task relies on. |
+| The plan the user approves | One line per learned default you rely on — `Assumed from project knowledge: <default>` — and per matched task — `Following recipe: <name>`; a `Skill:` entry that covers an overlapping workflow skill is shown the same way, as `Assumed from project knowledge: <entry>`. Never assume a default that decides safety, data handling, money or a destructive action ([what counts](#guardrails)), or contradicts `CLAUDE.md`, a project rule or the goal: ask or flag it instead. Log each line as its `[event]` (see Event kinds); an override as `user overrode default:`. |
+| Briefs | Carry the recipe's must-haves, the "Briefs need" items, every learned default the task relies on, and the `Skill:` entries that fit the task, in its **Skills** field. |
 
 ## Guardrails
 
@@ -92,3 +98,4 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 - Learned defaults never decide safety, data handling, money or destructive actions — not when proposing them, and not when applying them, even if one was added by hand. Those are rules (`domain.md`) or the user's call. What counts is what the default decides (an amount, rounding, a currency, who may see data, deleting something), not where the code lives: a file-placement, naming or export default still applies inside a payments or patient-data folder.
 - A default the user overrides twice is proposed for removal.
 - The content rules of project knowledge apply unchanged: no secrets, record identifiers or personal data; state the rule, never the value.
+- A `Skill:` entry never removes the review, the review checklist, tests or a project rule, and never overrides `CLAUDE.md` — not when proposing it, and not when applying one added by hand. One observation is enough to propose a `Skill:` entry; the user approves every entry.

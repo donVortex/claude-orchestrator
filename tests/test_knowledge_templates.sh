@@ -21,7 +21,7 @@ check_template() {
 check_template domain.md 150 "## Rules" "## Glossary"
 check_template map.md 100 "## Areas" "## Feature flows"
 check_template review-checklist.md 60 "## Always check" "## When touching <area>"
-check_template calibration.md 120 "## Tiers by task type" "## Split patterns" "## Briefs need" "## Recipes" "## Learned defaults" "## Pre-flight"
+check_template calibration.md 120 "## Tiers by task type" "## Split patterns" "## Briefs need" "## Recipes" "## Learned defaults" "## Skills" "## Pre-flight"
 
 readme=$(cat "$T/README.md" 2>/dev/null)
 assert_file "$T/README.md" "README.md exists"

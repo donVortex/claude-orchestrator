@@ -31,7 +31,7 @@ For `Status: blocked`, add a `## Question` section after `## Result` with the on
 | `split` | the task boundary or file ownership was wrong |
 | `tier` | a model was too weak or more than needed; escalations |
 | `parallelism` | parallel batches helped, or collided |
-| `tooling` | commands, permissions, scripts, CI |
+| `tooling` | commands, permissions, scripts, CI, and skills that helped, got in the way, or were missing — e.g. "stripe-best-practices caught a missing idempotency key", "X tried to write a plan file; skipped", "named skill X not available in this session" |
 | `codebase` | the code itself made the work harder or easier |
 | `process` | anything about the working loop itself |
 | `domain` | a rule, term or codebase fact the project's knowledge (`.claude/orchestrator/`) should record — state the rule, not the value: "MRNs may contain dashes", never a real record ID or personal data |

@@ -44,4 +44,14 @@ assert_contains "$work" "carry on without it" "working: missing skill doesn't bl
 assert_contains "$work" "review skill" "working: reviewer uses the named review skill"
 assert_contains "$work" "in the same pass" "working: one pass with the checklist"
 
+# learning which skills help, per project
+rf=$(cat skills/working/report-format.md); wl=$(cat skills/orchestrating/references/workflow-learning.md)
+assert_contains "$rf" "skills that helped, got in the way, or were missing" "report format: tooling covers skills"
+assert_contains "$wl" "[event] skills: overlap" "workflow-learning: skills event listed"
+assert_contains "$wl" "Skill: use <skill> for" "workflow-learning: helped → Skill entry"
+assert_contains "$wl" "skip its <step> here" "workflow-learning: got in the way → Skill entry"
+assert_contains "$wl" "A named skill was missing in two runs" "workflow-learning: missing twice → remove"
+assert_contains "$wl" "never removes the review" "workflow-learning: guardrail on reviews"
+assert_contains "$wl" "\`Skill:\`" "workflow-learning: Skill prefix in layout rule"
+
 finish
