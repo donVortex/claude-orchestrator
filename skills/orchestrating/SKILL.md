@@ -34,7 +34,7 @@ Every message you end a turn with has this shape, in this order:
 
 Other skills and plugins work inside this workflow, judged by what they would do ([coexistence.md](references/coexistence.md)):
 - Other planners and whole-feature workflows feed the breakdown, never replace it; when one would hand off to its own next step, come back to this skill's next stage. A brainstorming skill may settle an unclear goal with the user first.
-- Never merge (the user merges), and never create worktrees or branches outside the backend's setup.
+- Never merge (the user merges), and never let another skill create worktrees or branches: they come from the backend's setup or this skill's own steps.
 
 ## 1. Intake
 
@@ -61,16 +61,16 @@ Split per [splitting.md](references/splitting.md), following the project's `map.
 Show the breakdown as a table — `id | task | owns | depends | tier | placement` — then, under it:
 - `Following recipe: <name>` for each task that matches a recipe;
 - `Assumed from project knowledge: <default>` for each **Learned default** you rely on. Never assume one that decides safety, data handling, money or a destructive action ([what counts](references/workflow-learning.md#guardrails)), or contradicts `CLAUDE.md`, a project rule or the goal — ask or flag it instead.
-- `Other workflow skills: <name> (<used for>; <replaced steps>)` — only when something overlaps (from the skills look). When a `Skill:` entry in the project's knowledge covers it, show it as `Assumed from project knowledge: <entry>` instead.
+- `Other workflow skills: <name> (<used for>; <replaced steps>)` — only when something overlaps (from the skills look). When a `Skill:` entry in the project's knowledge covers it, show it as `Assumed from project knowledge: <entry>` instead — never one that drops the review, the checklist, tests or a project rule (flag it instead).
 
-Log each of these lines as `[event] T<n> following recipe: <name>` and `[event] assumed default: <default>`; if the user overrides a default, log `[event] user overrode default: <default> → <choice>` ([why](references/workflow-learning.md#event-kinds)).
+Log each of these lines as `[event] T<n> following recipe: <name>` and `[event] assumed default: <default>`; if the user overrides a default or the `Other workflow skills` line, log `[event] user overrode default: <default> → <choice>` ([why](references/workflow-learning.md#event-kinds)).
 
 Ask the user to approve or change it, overrides included. Say that nothing has started. Write the ledger with status `planning`. **Start nothing until the user approves.** This is the only routine stop.
 
 ## 4. Dispatch
 
 Ledger status → `running`. Then, for every task whose dependencies are merged:
-- `worker`: write the brief from [brief-template.md](references/brief-template.md) — with **Project rules** quoting the `domain.md` entries for this task and **Review checklist** naming the checklist sections it touches; a task that follows a recipe gets every one of the recipe's must-haves (rules to quote, style reference, what to fold into the subtask) written into its brief, and every task gets the learned defaults it relies on — and start it on the chosen backend, up to `max_parallel_workers` at once. Every brief gets **Skills**: the fitting skills per subtask and the project's review skill, if any, from `Skill:` entries or the skills look — never a name you haven't seen.
+- `worker`: write the brief from [brief-template.md](references/brief-template.md) — with **Project rules** quoting the `domain.md` entries for this task and **Review checklist** naming the checklist sections it touches; a task that follows a recipe gets every one of the recipe's must-haves (rules to quote, style reference, what to fold into the subtask) written into its brief, and every task gets the learned defaults it relies on — and start it on the chosen backend, up to `max_parallel_workers` at once. Every brief gets **Skills**: the fitting skills per subtask, from `Skill:` entries or the skills look (never a name you haven't seen), and `review: <skill>` only from a `Skill:` entry or the user — otherwise `review: none`. Never apply a `Skill:` entry that drops the review, the checklist, tests or a project rule.
 - `self`: do it here, in its own worktree so the user's checkout never switches: `git fetch origin <base> && git worktree add -b orch/T<n> "$root-wt/T<n>" origin/<base>` — always from the freshly fetched `origin/<base>`, never the user's possibly stale local branch (`$root` from [ledger.md](references/ledger.md)). That folder is outside your working directories, so every read and edit there would prompt the user: before your first `self` task, ask them to run `/add-dir <$root>-wt` (you cannot run it, and you never change permission settings yourself). Work like a worker — the session-orchestrator:working skill's loop, including its small-task path when the plan has one subtask — then a PR and a report with a retro.
 
 ## 5. Track
@@ -88,7 +88,7 @@ For each report with a PR:
    git worktree remove "$root-wt/review-T<n>"
    ```
    The same holds for every worktree you work in (`self` tasks, knowledge PRs): run commands with `git -C`, `--prefix` or a `( cd … )` subshell, never a bare `cd` ([why](references/knowledge.md#working-in-a-worktree)).
-3. `deep` tasks, and any task whose brief names a review skill: also run an `orch-specialist` review (review mode, model per rubric), giving it the brief's Review checklist items. With a review skill, it loads that skill and checks the checklist in the same pass — one review, not two ([why](references/coexistence.md#reviews)).
+3. `deep` tasks: also run an `orch-specialist` review (review mode, model per rubric), giving it the brief's Review checklist items. When the brief names a review skill, this review and your own diff read apply its criteria too, without adding a review for it ([how](references/coexistence.md#reviews)).
 4. Problems → send them to the same worker and mark `changes-requested`; clean → `reviewed`.
 
 Batch the `reviewed` PRs and ask the user to merge them. **Never merge yourself.** After merges, start the tasks they unblocked (step 4).

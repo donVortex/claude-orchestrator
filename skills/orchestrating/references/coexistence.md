@@ -22,7 +22,7 @@ The orchestrating and working skills own **how the work is organised**. Everythi
 
 | A skill wants to… | In the orchestrator | In a worker |
 |---|---|---|
-| ask the user questions | fine | the question goes into the report (`Status: blocked`), then end the turn |
+| ask the user questions | fine | a skill's own confirmation steps are skipped — the approved brief is the confirmation; a real question about the brief goes into the report (`Status: blocked`), then end the turn |
 | plan or run the whole goal | its thinking feeds the breakdown | the brief is the plan; skip it |
 | write plan or spec documents | only where the project already keeps them | never in the PR |
 | create a worktree or branch | no — the backend's setup does | no — you are already in one |
@@ -37,16 +37,16 @@ For anything not listed: if a skill would change **who decides**, **where code l
 ## Intake, plan and briefs
 
 - **Skills look (intake).** From the skill list this session already has (names and descriptions; never other plugins' files), note:
-  - **overlapping workflow skills** — they plan, run a whole feature, finish or merge branches, or review;
+  - **overlapping workflow skills** — they plan, run a whole feature, create worktrees, or finish or merge branches. Review skills are not overlaps (they run on demand); they never show up on the plan line;
   - **fitting skills** — framework, domain or tool skills that match the goal's tasks.
 
   Log one line: `[event] skills: overlap <name> (<stage>); fit <names>`.
 - **The plan.** Only when something overlaps, one line under the breakdown: `Other workflow skills: <name> (<what it is used for>; <which steps the orchestrator replaces>)`. When a `Skill:` entry in the project's knowledge already covers it, show it as `Assumed from project knowledge: <entry>` instead (logged `[event] assumed default: …`). The user can override either in the same reply (`[event] user overrode default: … → …`).
-- **Briefs.** Every brief has `- Skills: <skill> (<subtask / why>) · review: <review skill or none>` — the fitting skills per subtask (from `Skill:` entries or the skills look; never a name you haven't seen) and the project's review skill, if any. The worker loads the named skills; a named skill missing from its session doesn't block it — it carries on and notes a `[tooling]` retro point. It may use other skills it finds, within this contract, and mentions them in the retro.
+- **Briefs.** Every brief has `- Skills: <skill> (<subtask / why>) · review: <review skill or none>` — the fitting skills per subtask (from `Skill:` entries or the skills look; never a name you haven't seen) and the review skill, set only from a `Skill:` entry or the user's answer at the approval gate. Default `review: none`: an installed review skill is never picked on its own. The worker loads the named skills; a named skill missing from its session doesn't block it — it carries on and notes a `[tooling]` retro point. It may use other skills it finds, within this contract, and mentions them in the retro.
 
 ## Reviews
 
-One review per change, never two of the same scope. The worker's review is done by `orch-specialist` in review mode, on its usual model (sonnet or above). When the brief names a review skill, the reviewer loads that skill **and** checks the brief's Review checklist in the same pass, so the checklist is never dropped. The orchestrator's PR review follows the same rule with the project's review skill, if it has one.
+One review per change, never two of the same scope. The worker's review is done by `orch-specialist` in review mode, on its usual model (sonnet or above). When the brief names a review skill, the reviewer applies that skill's criteria **and** the brief's Review checklist in its own pass, so the checklist is never dropped. If the skill would dispatch its own reviewer or other agents, the reviewer does that review itself instead: no nested reviewers. If the skill can't be loaded, the reviewer still reviews with the checklist and the worker notes a `[tooling]` point. The orchestrator's own PR review (its diff read, and the specialist review of `deep` tasks) applies the same review skill's criteria the same way; it adds no review of its own for it.
 
 ## Example: superpowers
 

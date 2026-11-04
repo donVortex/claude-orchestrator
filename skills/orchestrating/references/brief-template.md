@@ -13,7 +13,7 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - Style reference: <an existing file whose patterns to follow, or "none">
 - Project rules: <the project's rule entries relevant to this task, quoted (never one that contradicts `CLAUDE.md`), or "none"> (binding, like the off-limits list)
 - Review checklist: <the project's checklist file — sections: its always-check section, the areas this task touches>; if the knowledge isn't on the base branch yet, quote the items themselves; "none" if the project has no knowledge
-- Skills: <skill> (<subtask / why>) · review: <review skill or none> — only skills from the skills look or the project's `Skill:` entries; "none" is a value
+- Skills: <skill> (<subtask / why>) · review: <review skill or none> — only skills from the skills look or the project's `Skill:` entries; the review skill only from a `Skill:` entry or the user (default `none`)
 - Owned files: <files/globs, including their test files>
 - Off-limits: every other file (name tempting neighbours explicitly, e.g. `src/db/schema.ts`)
 - Commands: test `<cmd>`, lint `<cmd>`, build `<cmd>`

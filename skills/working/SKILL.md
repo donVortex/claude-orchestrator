@@ -11,7 +11,7 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 
 - If the brief names a canonical file, that file wins wherever the prompt differs from it (the app may turn `@` into `＠`).
 - **Project rules** in the brief are binding, like the off-limits list. The full knowledge is in `.claude/orchestrator/` in your worktree; read it when the brief points there.
-- **Skills** in the brief: load each named skill for its subtasks. A named skill missing from your session → carry on without it and note a `[tooling]` retro point.
+- **Skills** in the brief: make sure each named skill is used for its subtasks — load it yourself for code you write, and name it in the prompt of each subagent that does that subtask. A named skill missing from your session → carry on without it and note a `[tooling]` retro point.
 - **Owned files** are the only files you and your subagents may change. The off-limits list is binding.
 - Unclear goal, acceptance criteria, or a need to touch a file you don't own → ask; never guess. Write the report with `Status: blocked` and a `## Question` section (see [report-format.md](report-format.md)), then end your turn. Ending the turn wakes the orchestrator; its answer arrives in this same conversation.
 
@@ -32,7 +32,7 @@ followed by the line: `The full test suite runs after each batch, before the nex
 **Small task** — the plan has exactly **one** subtask: skip the batch loop below.
 1. Post a one-line plan: the subtask, its files, and `small task: I write it; one review`.
 2. Write it yourself, test-first (red run before any implementation, then green).
-3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance, code quality and the brief's **Review checklist** (its named sections, or the items quoted in it) in a single pass. If the brief names a review skill, the reviewer loads it and checks the Review checklist in the same pass — still one review ([why](../orchestrating/references/coexistence.md#reviews)). Run it in the foreground and wait for it in the same turn: ending your turn while a subagent runs wakes the orchestrator with no report. Fix its findings.
+3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance, code quality and the brief's **Review checklist** (its named sections, or the items quoted in it) in a single pass. If the brief names a review skill, the reviewer applies its criteria and the Review checklist in the same pass — no nested reviewers: if the skill would dispatch its own reviewer, the reviewer does that review itself; if it can't be loaded, the reviewer still reviews with the checklist and you note a `[tooling]` point ([why](../orchestrating/references/coexistence.md#reviews)). Run it in the foreground and wait for it in the same turn: ending your turn while a subagent runs wakes the orchestrator with no report. Fix its findings.
 4. Continue at step 5. Review is never skipped, however small the change.
 
 Two or more subtasks always use the batch loop.
@@ -41,12 +41,12 @@ Two or more subtasks always use the batch loop.
 
 1. **Implement** — send all of the batch's Agent calls **in one message**; that is what runs them in parallel. Every call passes `model` from the rubric:
    - `fast`, `standard` → `orch-implementer`; `deep` → `orch-specialist` (build mode).
-   - Its prompt: the subtask goal, its files (and that nothing else may change), the test command scoped to its own test files (e.g. `node --test <file>`), "do not commit". Only the gate runs the full suite: parallel siblings' half-written tests would fail it.
-2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review that also checks the brief's **Review checklist** (its named sections, or the items quoted in it). Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel. Wait for every implementer and review subagent in the same turn; never end your turn while one is still running. If the brief names a review skill, the code-quality reviewer loads it and checks the Review checklist in the same pass — still one review per subtask.
+   - Its prompt: the subtask goal, its files (and that nothing else may change), the test command scoped to its own test files (e.g. `node --test <file>`), the skills the brief names for this subtask (to load with the Skill tool), "do not commit". Only the gate runs the full suite: parallel siblings' half-written tests would fail it.
+2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review that also checks the brief's **Review checklist** (its named sections, or the items quoted in it). Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel. Wait for every implementer and review subagent in the same turn; never end your turn while one is still running. If the brief names a review skill, the code-quality reviewer applies its criteria with the Review checklist in the same pass — the review skill doesn't add another review on top, and no nested reviewers; if it can't be loaded, the reviewer still reviews with the checklist.
 3. **Fix** — send findings back to an implementer; review again.
 4. **Gate** — commit the batch, run the full test suite. Not green → fix before the next batch.
 
-**Other skills and plugins.** The brief is your contract, and the brief is the approved plan: skip any skill's own brainstorming or planning, and plan documents never go into the PR. You are already in your worktree: never create a worktree, and never merge, discard or remove the worktree — you push and open a PR (step 6). Questions go into the report (step 1), never to the user. Skills that change how a step is done inside your owned files (test-driven development, framework and domain skills) are welcome; the batching and model rules here win ([coexistence.md](../orchestrating/references/coexistence.md)). With or without other skills, every subtask — including code you write yourself — runs the new test and sees it fail for the right reason **before** any implementation exists; then minimal code, then the test passes.
+**Other skills and plugins.** The brief is your contract, and the brief is the approved plan: skip other skills' own brainstorming, planning and confirmation steps (the approved brief is the confirmation; your batch plan in step 2 still applies), and plan documents never go into the PR. You are already in your worktree: never create a worktree, and never merge, discard or remove the worktree — you push and open a PR (step 6). Questions go into the report (step 1), never to the user. Skills that change how a step is done inside your owned files (test-driven development, framework and domain skills) are welcome; the batching and model rules here win ([coexistence.md](../orchestrating/references/coexistence.md)). With or without other skills, every subtask — including code you write yourself — runs the new test and sees it fail for the right reason **before** any implementation exists; then minimal code, then the test passes.
 
 ## 4. Escalate
 
@@ -54,7 +54,7 @@ A subagent that fails or returns weak work: retry once on the next tier up and n
 
 ## 5. Verify
 
-Run the full test, lint and build commands and read the output. You may only claim done with that output in hand (superpowers:verification-before-completion, if installed). Check `git diff --name-only <base>...HEAD` lists only owned files.
+Run the full test, lint and build commands and read the output. You may only claim done with that output in hand (and a verification skill's checks, if one is installed). Check `git diff --name-only <base>...HEAD` lists only owned files.
 
 ## 6. Open the PR
 
