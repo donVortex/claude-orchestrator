@@ -158,5 +158,12 @@ A project with `.claude/orchestrator/` has opted in. A SessionStart hook (`start
 
 ## 9. Later (not in this design)
 
-- Publishing a mature `domain.md` as a project skill under `.claude/skills/`, so sessions that don't use the orchestrator also benefit.
-- Sharing generic, non-project lessons back to the plugin author (e.g. via an issue on the plugin repo).
+- ~~Publishing `domain.md` as a project skill~~ — **done in v0.4.0** as a pointer skill (`.claude/skills/project-rules/SKILL.md`, offered in the bootstrap PR or once at a wrap-up; a decline is remembered). See §10.
+- ~~Sharing lessons back to the plugin author~~ — **rejected** (user decision, 2026-11-04): installs from GitHub must stay standalone and private. See §10.
+
+## 10. Standalone and development modes (v0.4.0, user decision)
+
+- **Standalone** (every install from GitHub): the plugin improves only within each project. Wrap-ups never propose plugin edits, never mention the plugin's source or author, and never send anything anywhere. A plugin-level lesson that helps the project becomes a project entry (e.g. a pre-flight check); otherwise it is dropped.
+- **Development** (the plugin's own checkout only): a git-ignored `.plugin-dev` marker makes a SessionStart hook print `[session-orchestrator] development mode`; only then do wrap-ups propose plugin edits. `ORCH_PLUGIN_MODE=standalone` (or `EVAL_ORCH_PLUGIN_MODE` in eval cases) forces standalone.
+- **No goal, no knowledge:** the orchestrator bootstraps first and asks for the goal after the drafts are approved.
+- Tests: `tests/test_plugin_mode.sh`; evals `orch-mode-standalone`, `orch-mode-dev`, `orch-bootstrap-no-goal`, `orch-project-skill-offer`, `orch-project-skill-declined`.
