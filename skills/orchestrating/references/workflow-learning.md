@@ -65,7 +65,7 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 | The user was asked the same question and gave the same answer in two or more runs (this ledger's `[ask-user]` lines against the archived ledgers' `[ask-user]` lines) — except bootstrap interview questions (their answers belong in `domain.md`), the plugin's own confirmations (merges, branch deletion, the bootstrap offer, the knowledge diff), and anything touching safety, data handling, money or a destructive action | A **learned default**: "<answer> unless told otherwise" | `calibration.md` → Learned defaults |
 | A stall from the environment: a `[prompt]`, a `[start-click]`, or an `[env]` round | A **pre-flight check** for intake, with what to tell the user up front | `calibration.md` → Pre-flight |
 | A `[failed]`, `[changes]` or `[worker-q]` caused by the work or the brief | A **brief rule** (what the worker needed to be told) or a **checklist item** (what review should catch earlier) | `calibration.md` → Briefs need, or `review-checklist.md` |
-| A task with zero attention and zero rework, of a kind with no recipe | A **new recipe** | `calibration.md` → Recipes |
+| A task with zero rework and no attention except product decisions that this same diff records as `domain.md` rules, of a kind with no recipe | A **new recipe** | `calibration.md` → Recipes |
 | A task that followed its recipe and did as well or better | Update the recipe's track record | `calibration.md` → Recipes |
 | A task that did clearly worse than its recipe | The cause, and a fix to the recipe or the brief | as above |
 | A learned default the user overrode in two runs (the `user overrode default:` lines in this and the archived ledgers) | Remove it | `calibration.md` → Learned defaults |

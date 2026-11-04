@@ -83,7 +83,7 @@ The wrap-up compares each task's counts with its recipe (or with zero if it had 
 | The user was asked the same question with the same answer in two or more runs (this run's `[ask-user]` events against the ledgers in `.orchestration/archive/`) | A **learned default**: "assume X unless told otherwise" | `calibration.md` → Learned defaults |
 | A stall caused by the environment (`[prompt]`, `[start-click]`, or an `[env]` round) | A **pre-flight check** for intake, with what to tell the user up front | `calibration.md` → Pre-flight |
 | A `[failed]`, `[changes]` or `[worker-q]` with an identifiable cause in the work | A **brief rule** (what the worker needed to be told) or a **checklist item** (what review should catch earlier) | `calibration.md` → Briefs need, or `review-checklist.md` |
-| A task with zero attention and zero rework, of a kind with no recipe | A **new recipe** | `calibration.md` → Recipes |
+| A task with zero rework and no attention except product decisions that this same diff records as `domain.md` rules, of a kind with no recipe | A **new recipe** | `calibration.md` → Recipes |
 | A task that matched a recipe and did as well or better | An update to the recipe's track record | `calibration.md` → Recipes |
 | A task that did clearly worse than its recipe | The cause, and a fix to the recipe or the brief | as above |
 | A learned default the user overrode in two runs | Its removal | `calibration.md` → Learned defaults |

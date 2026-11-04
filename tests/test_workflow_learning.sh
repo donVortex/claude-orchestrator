@@ -25,6 +25,8 @@ assert_contains "$ref" ".orchestration/counts.md" "full counts table goes to a f
 assert_contains "$ref" "Don't propose what's already there" "dedupe rule"
 assert_contains "$(cat skills/orchestrating/references/knowledge.md)" 'except calibration'"'"'s `## Recipes`' "bootstrap keeps the workflow sections"
 
+assert_contains "$ref" "no attention except product decisions" "new-recipe rule allows product decisions recorded as domain rules"
+
 ledger=$(cat skills/orchestrating/references/ledger.md 2>/dev/null)
 assert_contains "$ledger" "[ask-user]" "ledger.md shows a tagged event"
 assert_contains "$ledger" "starts with a kind tag" "ledger.md requires kind tags"
