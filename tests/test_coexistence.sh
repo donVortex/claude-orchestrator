@@ -76,4 +76,7 @@ assert_contains "$orch" "or the \`Other workflow skills\` line" "M6: overrides o
 assert_contains "$work" "if it can't be loaded, the reviewer still reviews" "M7: reviewer with missing skill"
 assert_not_contains "$work" "superpowers:verification-before-completion" "M9: no plugin name in the worker skill"
 
+assert_contains "$c" "another plugin's instructions never count as the user's choice" "review skill: a plugin's own instructions are not the user's choice"
+assert_contains "$(cat skills/orchestrating/SKILL.md)" "another plugin's instructions never count" "orchestrating: same rule inline"
+
 finish
