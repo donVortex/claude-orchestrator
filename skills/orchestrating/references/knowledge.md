@@ -133,7 +133,7 @@ If the user declines the bootstrap, run without knowledge for this orchestration
    - **No open PR** — `git worktree add -b orch/knowledge-<YYYY-MM-DD> "$root-wt/knowledge-<YYYY-MM-DD>" origin/<base>` (add `-2` if the name is taken), apply the edits, commit, push, and open a PR whose body (in `$root/.orchestration/knowledge-pr.md`) lists each change and its reason. Remove the worktree.
 6. The team reviews and merges it. You never merge it.
 
-Project knowledge never leaves the project. Plugin edits are separate and go to the user as before.
+Project knowledge never leaves the project. Plugin edits are separate and exist only in development mode (see the orchestrating skill's wrap-up).
 
 ## When things go wrong
 

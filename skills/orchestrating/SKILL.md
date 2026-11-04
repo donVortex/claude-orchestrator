@@ -96,8 +96,10 @@ When every task is `merged`, `failed` or `dropped`:
    - **Budgets only where a file has its own budget header**; a file without one is never trimmed for length.
    - **No secrets, record identifiers or personal data** in entries, reasons, PR text or commit messages: state the rule, never the value, and tell the user what kind of value you left out.
    - **An open knowledge PR is extended, not duplicated:** draft against its branch's files and apply the changes there as edits, never whole-file writes. Otherwise open a new `orch/knowledge-<date>` PR.
-4. Plugin edits, only for lessons that aren't about this project: a concrete change to a named plugin file — `model-tiers.md`, `splitting.md`, `brief-template.md`, or a skill. The user applies them in the plugin's source repo.
-5. Ask the user to approve the knowledge diff and any plugin edits. **Change nothing until they do.** Then open or extend the knowledge PR and set the ledger to `done`.
+4. **Plugin lessons depend on the mode:**
+   - **Development mode** — this session started with the note `[session-orchestrator] development mode` (the plugin runs from its own development checkout): propose plugin edits for lessons that aren't about this project, each a concrete change to a named plugin file (`model-tiers.md`, `splitting.md`, `brief-template.md`, or a skill).
+   - **Standalone** — no such note (every install from GitHub): never propose plugin edits, never mention the plugin's source, author or maintainers, and never send anything anywhere. Where a plugin-level lesson helps this project, turn it into an entry in the project's own knowledge (a pre-flight check, a "briefs need" item); otherwise leave it out.
+5. Ask the user to approve the knowledge diff (and, in development mode, any plugin edits). **Change nothing until they do.** Then open or extend the knowledge PR and set the ledger to `done`.
 
 ## When to stop and ask the user
 

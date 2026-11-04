@@ -73,7 +73,7 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 - **Don't propose what's already there.** If an existing recipe, default, pre-flight check or brief rule already covers a finding, don't propose it again; if it's there and the problem still happened, propose a fix to that entry.
 - **Older ledgers without tags:** skip their untagged lines. Never guess a question or an answer from prose.
 - **The project's own layout wins:** if `calibration.md` lacks a section, put the entry under the closest existing heading with its kind as a prefix — `Recipe: …`, `Learned default: …`, `Pre-flight: …` — or ask the user once whether to add the section. If they say no, use prefixed entries from then on without asking again. Respect the file's own budget, or none if it has no header ([the project owns it](knowledge.md#the-project-owns-it)).
-- **Plugin lessons stay plugin edits** (tooling, scripts, the skills), never project knowledge.
+- **Plugin lessons** (tooling, scripts, the skills): in development mode they become plugin edits; standalone, they become project entries (a pre-flight check, a "briefs need" item) only where they help this project, and are otherwise left out (see the orchestrating skill's wrap-up).
 
 ## Using what was learned
 
