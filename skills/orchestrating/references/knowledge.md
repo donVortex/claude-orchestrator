@@ -80,7 +80,7 @@ Never `cd` into a worktree under `$root-wt/` in your own shell: it moves your se
 
 ## Bootstrap
 
-Only at the intake of a **fresh** orchestration (never on resume), and only when the base branch has no `.claude/orchestrator/`. First check for an open knowledge PR:
+Only at the intake of a **fresh** orchestration (never on resume), and only when the base branch has no `.claude/orchestrator/`. It needs no goal: when the user starts the orchestrator without one, bootstrap first and ask for the goal after the drafts are approved. First check for an open knowledge PR:
 
 ```bash
 gh pr list --state open --search "head:orch/knowledge-" --json number,headRefName,createdAt \
