@@ -16,4 +16,20 @@ assert_contains "$c" "[event] skills: overlap" "coexistence: skills event prefix
 assert_contains "$c" "Other workflow skills:" "coexistence: plan line"
 assert_contains "$c" "- Skills:" "coexistence: brief field"
 
+# inline must-never-miss lines and the default note
+orch=$(cat skills/orchestrating/SKILL.md); work=$(cat skills/working/SKILL.md); hook=$(cat hooks/project-default.sh)
+assert_contains "$orch" "## Other skills and plugins" "orchestrating: section"
+assert_contains "$orch" "references/coexistence.md" "orchestrating: links the contract"
+assert_contains "$orch" "feed the breakdown, never replace it" "orchestrating: planners feed the breakdown"
+assert_not_contains "$orch" "## Alongside superpowers" "orchestrating: superpowers section replaced"
+assert_contains "$work" "**Other skills and plugins.**" "working: paragraph"
+assert_contains "$work" "../orchestrating/references/coexistence.md" "working: links the contract"
+for s in "never merge" "never create a worktree" "into the report" "never go into the PR" "the brief is the approved plan"; do
+  assert_contains "$work" "$s" "working: [$s]"
+done
+assert_contains "$hook" "- Other skills and plugins" "hook: generalised line"
+for e in orch-default-feature orch-default-question orch-superpowers-feature; do
+  assert_contains "$(cat evals/$e/prompt.md)" "- Other skills and plugins" "eval $e copies the current hook line"
+done
+
 finish
