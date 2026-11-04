@@ -6,14 +6,7 @@ Design: [plugin](docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md
 
 ## Install
 
-The repo is private, so first give git access to it on the machine (once):
-
-```bash
-gh auth login
-gh auth setup-git
-```
-
-Then install from GitHub:
+Install from GitHub:
 
 ```bash
 claude plugin marketplace add donVortex/claude-orchestrator
@@ -124,3 +117,7 @@ Skill behaviour evals (each case runs with and without the plugin; this costs ro
 ```bash
 claude plugin eval . --judge-model sonnet --no-publish
 ```
+
+## License
+
+[MIT](LICENSE)

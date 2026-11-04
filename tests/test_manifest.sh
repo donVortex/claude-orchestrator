@@ -17,6 +17,11 @@ readme=$(cat README.md 2>/dev/null)
 assert_contains "$readme" "claude plugin marketplace add donVortex/claude-orchestrator" "README installs from GitHub"
 assert_not_contains "$readme" 'marketplace add D:' "README has no local-path install"
 assert_contains "$attrs" '*.sh text eol=lf' "shell scripts forced to LF"
+assert_contains "$plugin" '"homepage": "https://github.com/donVortex/claude-orchestrator"' "plugin homepage"
+assert_file LICENSE "LICENSE file exists"
+assert_contains "$(cat LICENSE 2>/dev/null)" "MIT License" "LICENSE is MIT, matching plugin.json"
+assert_not_contains "$readme" "repo is private" "README has no private-repo install step"
+assert_not_contains "$readme" "gh auth setup-git" "README install needs no git credential setup"
 
 if command -v node >/dev/null 2>&1; then
   for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
