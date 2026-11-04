@@ -11,6 +11,7 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 
 - If the brief names a canonical file, that file wins wherever the prompt differs from it (the app may turn `@` into `＠`).
 - **Project rules** in the brief are binding, like the off-limits list. The full knowledge is in `.claude/orchestrator/` in your worktree; read it when the brief points there.
+- **Skills** in the brief: load each named skill for its subtasks. A named skill missing from your session → carry on without it and note a `[tooling]` retro point.
 - **Owned files** are the only files you and your subagents may change. The off-limits list is binding.
 - Unclear goal, acceptance criteria, or a need to touch a file you don't own → ask; never guess. Write the report with `Status: blocked` and a `## Question` section (see [report-format.md](report-format.md)), then end your turn. Ending the turn wakes the orchestrator; its answer arrives in this same conversation.
 
@@ -31,7 +32,7 @@ followed by the line: `The full test suite runs after each batch, before the nex
 **Small task** — the plan has exactly **one** subtask: skip the batch loop below.
 1. Post a one-line plan: the subtask, its files, and `small task: I write it; one review`.
 2. Write it yourself, test-first (red run before any implementation, then green).
-3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance, code quality and the brief's **Review checklist** (its named sections, or the items quoted in it) in a single pass. Run it in the foreground and wait for it in the same turn: ending your turn while a subagent runs wakes the orchestrator with no report. Fix its findings.
+3. Run **one** review subagent: `orch-specialist` in review mode, sonnet or above, covering spec compliance, code quality and the brief's **Review checklist** (its named sections, or the items quoted in it) in a single pass. If the brief names a review skill, the reviewer loads it and checks the Review checklist in the same pass — still one review ([why](../orchestrating/references/coexistence.md#reviews)). Run it in the foreground and wait for it in the same turn: ending your turn while a subagent runs wakes the orchestrator with no report. Fix its findings.
 4. Continue at step 5. Review is never skipped, however small the change.
 
 Two or more subtasks always use the batch loop.
@@ -41,7 +42,7 @@ Two or more subtasks always use the batch loop.
 1. **Implement** — send all of the batch's Agent calls **in one message**; that is what runs them in parallel. Every call passes `model` from the rubric:
    - `fast`, `standard` → `orch-implementer`; `deep` → `orch-specialist` (build mode).
    - Its prompt: the subtask goal, its files (and that nothing else may change), the test command scoped to its own test files (e.g. `node --test <file>`), "do not commit". Only the gate runs the full suite: parallel siblings' half-written tests would fail it.
-2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review that also checks the brief's **Review checklist** (its named sections, or the items quoted in it). Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel. Wait for every implementer and review subagent in the same turn; never end your turn while one is still running.
+2. **Review** — for each finished subtask, a spec-compliance review (does exactly what the subtask says, only in its files), then a code-quality review that also checks the brief's **Review checklist** (its named sections, or the items quoted in it). Use `orch-specialist` in review mode, model = the subtask's tier model but never below sonnet. Reviews of different subtasks run in parallel. Wait for every implementer and review subagent in the same turn; never end your turn while one is still running. If the brief names a review skill, the code-quality reviewer loads it and checks the Review checklist in the same pass — still one review per subtask.
 3. **Fix** — send findings back to an implementer; review again.
 4. **Gate** — commit the batch, run the full test suite. Not green → fix before the next batch.
 

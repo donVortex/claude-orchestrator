@@ -32,4 +32,16 @@ for e in orch-default-feature orch-default-question orch-superpowers-feature; do
   assert_contains "$(cat evals/$e/prompt.md)" "- Other skills and plugins" "eval $e copies the current hook line"
 done
 
+# skills look, plan line, Skills in briefs, one review with the named reviewer
+brief=$(cat skills/orchestrating/references/brief-template.md)
+assert_contains "$brief" "- Skills: <skill> (<subtask / why>) · review: <review skill or none>" "brief: Skills field"
+assert_contains "$orch" "- **Skills look**" "orchestrating: intake skills look"
+assert_contains "$orch" "[event] skills: overlap" "orchestrating: logs the skills event"
+assert_contains "$orch" "Other workflow skills:" "orchestrating: plan line"
+assert_contains "$orch" "only when something overlaps" "orchestrating: plan line only when something overlaps"
+assert_contains "$work" "named skill" "working: loads the brief's named skills"
+assert_contains "$work" "carry on without it" "working: missing skill doesn't block"
+assert_contains "$work" "review skill" "working: reviewer uses the named review skill"
+assert_contains "$work" "in the same pass" "working: one pass with the checklist"
+
 finish

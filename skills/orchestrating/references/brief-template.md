@@ -13,6 +13,7 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - Style reference: <an existing file whose patterns to follow, or "none">
 - Project rules: <the project's rule entries relevant to this task, quoted (never one that contradicts `CLAUDE.md`), or "none"> (binding, like the off-limits list)
 - Review checklist: <the project's checklist file — sections: its always-check section, the areas this task touches>; if the knowledge isn't on the base branch yet, quote the items themselves; "none" if the project has no knowledge
+- Skills: <skill> (<subtask / why>) · review: <review skill or none> — only skills from the skills look or the project's `Skill:` entries; "none" is a value
 - Owned files: <files/globs, including their test files>
 - Off-limits: every other file (name tempting neighbours explicitly, e.g. `src/db/schema.ts`)
 - Commands: test `<cmd>`, lint `<cmd>`, build `<cmd>`
@@ -37,6 +38,7 @@ Report in the format of the working skill's report-format.md, then send: `T<n> d
 | Every test the acceptance criteria require has its test file in **Owned files** | Otherwise the worker can't write the tests and blocks |
 | Test, lint and build commands are given | Otherwise the worker can't verify and blocks |
 | Every subtask lists its files and dependencies (`none` is a value) | Workers batch on these; a missing dependency gets guessed |
+| Skills names only skills seen in the skills look or in `Skill:` entries | A made-up skill name makes the worker hunt for it |
 | Names, shapes and values the work needs are written out | "use the settings from the goal" fails when the goal has none |
 | Owned files don't overlap any task that can run at the same time | See [splitting.md](splitting.md) |
 | Report path is absolute and points at the **main** checkout | Workers run in their own worktrees |
