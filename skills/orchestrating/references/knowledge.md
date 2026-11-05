@@ -60,6 +60,25 @@ A task's brief > `CLAUDE.md` > knowledge files. When knowledge contradicts `CLAU
 - follow `CLAUDE.md` or the code; **never quote the contradicted entry into a brief's Project rules** — quote `CLAUDE.md`'s version instead;
 - fix the entry in the next knowledge diff.
 
+A goal that changes a project rule is not a contradiction to flag but a change to confirm: see [Rule changes](#rule-changes).
+
+## Rule changes
+
+Rules change as the product does: feature X needed Y at first, now it needs Z. Handle it so the knowledge keeps saying one thing:
+
+- **At intake**, compare the goal with the rule entries. When the goal changes one, show it on the plan as `Changes rule: <old entry> → <new rule>`; the user's approval of the plan confirms it (or they correct it). Log `[event] rule change: <old> → <new>`. If it's unclear whether the goal means to change the rule, ask; don't guess.
+- **Briefs** quote only the new version, never the old one, not even as background.
+- **At wrap-up**, each `rule change` event, and each entry this run's merged work made untrue, becomes an **edit of the existing entry**, shown as old → new, with the new source and date. Never add a second entry beside the old one, and never keep both "for history": git history (the knowledge PRs, `git log -p` on the file) is the record of what a rule used to be. The files say only what is true now.
+- **One rule, one place.** When the same rule appears in two entries or two files, the diff merges them into one entry; other files refer to it.
+
+## Stale entries
+
+At intake, check what the entries name in backticks against the base branch: paths with `git cat-file -e origin/<base>:<path>` (for a glob, its folder), functions and other names with `git grep -q '<name>' origin/<base>`. An entry whose path or name no longer exists is **stale**:
+
+- tell the user in one line, and log `[event] stale entry: <entry, shortened> (<what's missing>)`;
+- never quote it into a brief as fact;
+- in the next knowledge diff, propose updating it (the new path or name, if this run found where it went) or removing it.
+
 ## Reading from the base branch
 
 Read the knowledge as the base branch has it, not as your local checkout happens to be:
@@ -118,9 +137,9 @@ If the user declines the bootstrap, run without knowledge for this orchestration
 
 | Step | Use |
 |---|---|
-| Intake | Read every file in the folder from the base branch. Tell the user which entries bear on the goal. Flag contradictions (see Precedence). |
+| Intake | Read every file in the folder from the base branch. Tell the user which entries bear on the goal. Flag contradictions (see Precedence), the rules the goal changes ([rule changes](#rule-changes)) and [stale entries](#stale-entries). |
 | Breakdown | The map's feature flows for where the change belongs; the calibration's tiers and split sizes. |
-| Briefs | **Project rules:** quote the rule entries relevant to the task (never a contradicted one). **Review checklist:** name the project's checklist file and the sections that apply; when the knowledge isn't on the base branch yet (open bootstrap PR, approved draft), quote the checklist items themselves. Write the calibration's "briefs need" items into the brief's fields, plus a matched recipe's must-haves and the learned defaults the task relies on ([workflow learning](workflow-learning.md#using-what-was-learned)). |
+| Briefs | **Project rules:** quote the rule entries relevant to the task (never a contradicted or stale one, and only the new version of a rule the goal changes). **Review checklist:** name the project's checklist file and the sections that apply; when the knowledge isn't on the base branch yet (open bootstrap PR, approved draft), quote the checklist items themselves. Write the calibration's "briefs need" items into the brief's fields, plus a matched recipe's must-haves and the learned defaults the task relies on ([workflow learning](workflow-learning.md#using-what-was-learned)). |
 | Reviews | Your own review and every `orch-specialist` pass, `deep` tasks included, check the same checklist items. |
 
 ## The project-rules skill
@@ -133,9 +152,9 @@ Only the orchestrator reads `.claude/orchestrator/`. Sessions that don't orchest
 
 ## Knowledge diff at wrap-up
 
-1. Group the retros by tag; `[domain]` points are knowledge candidates, and so are repeated `[brief]`, `[split]` and `[tier]` patterns, plus contradictions recorded at intake, plus the workflow findings from the [counts](workflow-learning.md#findings-to-proposals) (recipes, learned defaults, pre-flight checks), plus the [project-rules skill](#the-project-rules-skill) if it's missing and was never declined.
+1. Group the retros by tag; `[domain]` points are knowledge candidates, and so are repeated `[brief]`, `[split]` and `[tier]` patterns, plus contradictions recorded at intake, plus the `rule change` and `stale entry` events, plus the workflow findings from the [counts](workflow-learning.md#findings-to-proposals) (recipes, learned defaults, pre-flight checks), plus the [project-rules skill](#the-project-rules-skill) if it's missing and was never declined.
 2. Find an open knowledge PR (same `gh pr list` as in Bootstrap). If one is open, read its branch's files: you will draft against them, not against the base branch. If more than one is open, use the newest and list the others to the user, suggesting they merge or close them.
-3. Draft the **knowledge diff**: additions, edits and removals, each in the existing file whose purpose fits (see The project owns it), with its source and a one-line reason. Apply the content rules. For files with a budget header, show the line count against it.
+3. Draft the **knowledge diff**: additions, edits and removals, each in the existing file whose purpose fits (see The project owns it), with its source and a one-line reason. A changed rule, an entry this run made untrue and a stale entry are edits of the existing entry, shown as old → new, never a second entry ([rule changes](#rule-changes)). Apply the content rules. For files with a budget header, show the line count against it.
 4. Ask the user to approve or edit the diff. Change nothing before they do.
 5. Apply it:
    - **Extending an open PR** — check out its branch in its own worktree and apply the approved changes there as **edits to the existing entries**, never by writing whole files (that would undo the PR's pending changes and teammates' review commits):
@@ -156,5 +175,7 @@ Project knowledge never leaves the project. Plugin edits are separate and exist 
 | A knowledge PR is open at the next intake | Use the base branch's knowledge, plus the PR's if the base has none; mention the PR; extend it at wrap-up |
 | A file with a budget header would go over it | Propose merges or removals in the same diff |
 | Knowledge contradicts `CLAUDE.md` or the code | Flag it, record it in the ledger, follow `CLAUDE.md` or the code, fix it in the next diff |
+| The goal changes a project rule | Show `Changes rule: old → new` on the plan, quote only the new rule, edit the entry in place at wrap-up |
+| An entry names a path or function that no longer exists | Flag it as stale, don't quote it as fact, update or remove it in the next diff |
 | User declines the bootstrap | Run without knowledge; ask once, in one line, at the next fresh orchestration |
 | A drafted entry, reason or PR text contains a secret, record identifier or personal data | Drop the value, tell the user what kind of value you left out |

@@ -26,6 +26,8 @@ Every line in the ledger's Events list starts with one of these tags:
 - `[event] T<n> following recipe: <name>` — at the approval gate, per matched task;
 - `[event] assumed default: <default>` — at the approval gate, per default relied on;
 - `[event] user overrode default: <default> → <what they chose>`;
+- `[event] rule change: <old> → <new>` — at the approval gate, per project rule the goal changes ([knowledge.md](knowledge.md#rule-changes));
+- `[event] stale entry: <entry, shortened> (<what's missing>)` — at intake ([knowledge.md](knowledge.md#stale-entries));
 - `[event] skills: overlap <name> (<stage>); fit <names>` — at intake, from the skills look ([coexistence.md](coexistence.md#intake-plan-and-briefs)).
 
 Add the task id after the tag when an event belongs to one task: `[failed] T2 tests red on the PR head`.
