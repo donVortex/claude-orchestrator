@@ -24,9 +24,20 @@ grep -qxF '.orchestration/' "$common/info/exclude" 2>/dev/null || echo '.orchest
 └─ archive/<date>-<slug>/   # earlier, finished orchestrations
 ```
 
+## Task ids
+
+Task ids keep counting across the project's orchestrations, so the user's session list never shows two sessions with the same `T<n>`. A new orchestration's first task is one past the highest id in the archived ledgers and the `orch/T<n>` branches (local and on `origin`, which still count when the archive is gone); with neither, it is `T1`. Work it out after archiving the previous run, before the breakdown, and number the breakdown's tasks up from it. A resumed orchestration keeps its ids.
+
+```bash
+last=$( { grep -ho '^| T[0-9][0-9]*' "$root"/.orchestration/archive/*/ledger.md 2>/dev/null
+          git branch -a --format='%(refname:short)' | grep 'orch/T[0-9]'; } \
+        | grep -o 'T[0-9][0-9]*' | tr -d T | sort -n | tail -1)
+next=$(( ${last:-0} + 1 ))   # the first task of this orchestration is T$next
+```
+
 ## Archiving a finished orchestration
 
-Task ids restart at `T1` for every orchestration, so a new one must not reuse a finished one's files. When `ledger.md` says `Status: done`, move everything in `.orchestration/` except `archive/` into `.orchestration/archive/<YYYY-MM-DD>-<short goal slug>/` (add `-2`, `-3` if that name exists), then start the new ledger. Never delete an earlier orchestration's files.
+Each orchestration has its own ledger, reports and retros, so a new one must not overwrite a finished one's files. When `ledger.md` says `Status: done`, move everything in `.orchestration/` except `archive/` into `.orchestration/archive/<YYYY-MM-DD>-<short goal slug>/` (add `-2`, `-3` if that name exists), then start the new ledger. Never delete an earlier orchestration's files.
 
 ```bash
 dest="$root/.orchestration/archive/<YYYY-MM-DD>-<slug>"
@@ -34,7 +45,7 @@ mkdir -p "$dest"
 for f in "$root/.orchestration"/*; do [ "$(basename "$f")" = archive ] || mv "$f" "$dest/"; done
 ```
 
-Branches are not archived and would collide with the new run's `orch/T<n>`. After the move, list the finished run's branches — `git branch --list 'orch/T*'` and `git branch -r --merged origin/<base> | grep 'origin/orch/T'` — and ask the user whether to delete them locally and on the remote. Never delete without a yes. If the archived ledger shows this question was left unanswered in the previous run (or answered no), don't ask again: mention the leftover branches in one line of your next message instead, and log it as `[event]`, not `[ask-user]`.
+Branches are not archived. After the move, list the finished run's branches — `git branch --list 'orch/T*'` and `git branch -r --merged origin/<base> | grep 'origin/orch/T'` — and ask the user whether to delete them locally and on the remote. Never delete without a yes. If the archived ledger shows this question was left unanswered in the previous run (or answered no), don't ask again: mention the leftover branches in one line of your next message instead, and log it as `[event]`, not `[ask-user]`.
 
 ## Branch names
 
