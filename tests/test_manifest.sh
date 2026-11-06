@@ -19,6 +19,12 @@ assert_not_contains "$readme" 'marketplace add D:' "README has no local-path ins
 assert_contains "$attrs" '*.sh text eol=lf' "shell scripts forced to LF"
 assert_contains "$plugin" '"homepage": "https://github.com/donVortex/session-orchestrator"' "plugin homepage"
 assert_file LICENSE "LICENSE file exists"
+assert_file .claude-plugin/icon.png "directory icon exists"
+if command -v python >/dev/null 2>&1; then
+  icon=$(python -I -c "import struct,sys;d=open(sys.argv[1],'rb').read(24);w,h=struct.unpack('>II',d[16:24]);print('ok' if d[:8]==b'\x89PNG\r\n\x1a\n' and w==h and 512<=w<=2048 else 'bad %dx%d'%(w,h))" .claude-plugin/icon.png 2>&1)
+  assert_eq ok "$icon" "icon is a square PNG, 512 to 2048 px"
+  [ "$(wc -c < .claude-plugin/icon.png)" -lt 2097152 ] || fail "icon is under 2 MB"
+fi
 assert_not_contains "$(cat .claude-plugin/plugin.json README.md CONTRIBUTING.md 2>/dev/null)" "donVortex/claude-orchestrator" "no links to the old repo name"
 assert_contains "$(cat LICENSE 2>/dev/null)" "MIT License" "LICENSE is MIT, matching plugin.json"
 assert_not_contains "$readme" "repo is private" "README has no private-repo install step"
