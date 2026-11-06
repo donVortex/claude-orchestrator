@@ -6,8 +6,8 @@ This file is for working on the plugin itself. To use it, see the [README](READM
 
 1. Clone the repo and mark the checkout as a development checkout (the marker is git-ignored):
    ```bash
-   git clone https://github.com/donVortex/claude-orchestrator.git
-   cd claude-orchestrator
+   git clone https://github.com/donVortex/session-orchestrator.git
+   cd session-orchestrator
    touch .plugin-dev
    ```
 2. Install the plugin from this folder instead of from GitHub, so your edits load in new sessions:
