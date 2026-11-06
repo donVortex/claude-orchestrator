@@ -55,7 +55,7 @@ A task's branch is `orch/T<n>`. If that name is already taken (locally or on `or
 
 ```markdown
 # Orchestration: <goal>
-Started: <date> · Backend: desktop|cli · Base branch: <branch> · Status: planning|running|wrap-up|done
+Started: <date> · Backend: desktop|cli · Base branch: <branch> · Mode: full|lite · Status: planning|running|wrap-up|done
 
 | id | task | owns (files/globs) | depends | tier | placement | session/run | branch | PR | status |
 |----|------|--------------------|---------|------|-----------|-------------|--------|----|--------|

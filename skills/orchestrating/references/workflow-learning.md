@@ -79,18 +79,20 @@ At wrap-up, compare each task's counts with its recipe (or with zero if it had n
 | A subtask escalated, or a `[tier]` point says the model was too weak (the report's Subtasks table and its retro) | `Tier: <kind of subtask> in <area> is <tier>`, one tier above the one that failed | `calibration.md` → Tiers by task type |
 | A subtask passed on the first try with at most minor review findings, for the same kind of subtask in two runs (this run's Subtasks tables and the archived reports'; a `[tier]` "more than needed" point counts as one run) | `Tier: <kind of subtask> in <area> is <tier>`, one tier down, never below `fast` for subagents ([guardrail](#guardrails)) | `calibration.md` → Tiers by task type |
 | A subtask on a tier lowered by a `Tier:` entry escalated | Raise the entry back to the tier it had before | `calibration.md` → Tiers by task type |
+| The user chose lite mode for this project in two runs (`[event] mode: lite (you asked)` in this and the archived ledgers) | `Mode: lite` — every run is lite unless the user says "full" | `calibration.md` → Mode |
+| The user forced full on a project with `Mode: lite` in two runs | Remove the `Mode: lite` entry | `calibration.md` → Mode |
 | A learned default the user overrode in two runs (the `user overrode default:` lines in this and the archived ledgers) | Remove it | `calibration.md` → Learned defaults |
 
 - **Don't propose what's already there.** If an existing recipe, default, pre-flight check or brief rule already covers a finding, don't propose it again; if it's there and the problem still happened, propose a fix to that entry.
 - **Older ledgers without tags:** skip their untagged lines. Never guess a question or an answer from prose.
-- **The project's own layout wins:** if `calibration.md` lacks a section, put the entry under the closest existing heading with its kind as a prefix — `Recipe: …`, `Learned default: …`, `Pre-flight: …`, `Skill: …`, `Tier: …` — or ask the user once whether to add the section. If they say no, use prefixed entries from then on without asking again. Respect the file's own budget, or none if it has no header ([the project owns it](knowledge.md#the-project-owns-it)).
+- **The project's own layout wins:** if `calibration.md` lacks a section, put the entry under the closest existing heading with its kind as a prefix — `Recipe: …`, `Learned default: …`, `Pre-flight: …`, `Skill: …`, `Tier: …`, `Mode: …` — or ask the user once whether to add the section. If they say no, use prefixed entries from then on without asking again. Respect the file's own budget, or none if it has no header ([the project owns it](knowledge.md#the-project-owns-it)).
 - **Plugin lessons** (tooling, scripts, the skills, how other plugins coexist): in development mode they become plugin edits (including to [coexistence.md](coexistence.md)); standalone, they become project entries (a pre-flight check, a "briefs need" item) only where they help this project, and are otherwise left out (see the orchestrating skill's wrap-up).
 
 ## Using what was learned
 
 | Step | Use |
 |---|---|
-| Reading | Read entries by section **or** by prefix: a `Pre-flight:`, `Recipe:`, `Learned default:`, `Skill:` or `Tier:` entry under another heading counts the same. |
+| Reading | Read entries by section **or** by prefix: a `Pre-flight:`, `Recipe:`, `Learned default:`, `Skill:`, `Tier:` or `Mode:` entry under another heading counts the same. |
 | Intake | Run every **Pre-flight** check before planning. Fix what you can; tell the user up front what they'll need to do (e.g. `/add-dir`, trusting the folder), and log it as `[event] pre-flight: …`. |
 | Breakdown | Match tasks to **Recipes** by area **and** kind of change; a different kind of change in the same area matches nothing. Follow a recipe's split, tier and placement unless the goal needs otherwise. Give each subtask the tier hint its `Tier:` entry names, when one matches its kind of work. |
 | The plan the user approves | One line per learned default you rely on — `Assumed from project knowledge: <default>` — and per matched task — `Following recipe: <name>`; a `Skill:` entry that covers an overlapping workflow skill is shown the same way, as `Assumed from project knowledge: <entry>`. Never assume a default that decides safety, data handling, money or a destructive action ([what counts](#guardrails)), or contradicts `CLAUDE.md`, a project rule or the goal: ask or flag it instead. Log each line as its `[event]` (see Event kinds); an override as `user overrode default:`. |

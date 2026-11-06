@@ -19,6 +19,8 @@ You deliver **one task as one PR**, using subagents whose model is picked by tie
 
 Read [model-tiers.md](../orchestrating/references/model-tiers.md). Split the task into subtasks; give each its files, a tier and what it depends on, and follow the brief's tier hints (they carry the project's learned `Tier:` entries): go higher only for a reason you note in the retro, never lower.
 
+If the brief says `Mode: lite`: give no subtask `deep` unless it touches security, authentication, money, deleting data or migrations; take the small-task path whenever the task fits one subtask; and review each subtask with one combined review (spec and quality in one pass) instead of two. Escalation on failure stays as it is.
+
 - **Same batch**: subtasks whose files don't overlap and that don't depend on each other — up to `max_parallel_implementers_per_session`.
 - **Later batch**: a subtask that shares a file with, or depends on, an earlier one.
 
