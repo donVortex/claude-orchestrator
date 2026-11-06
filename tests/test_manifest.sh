@@ -12,19 +12,13 @@ attrs=$(cat .gitattributes 2>/dev/null)
 assert_contains "$plugin" '"name": "session-orchestrator"' "plugin name"
 assert_contains "$market" '"name": "session-orchestrator"' "marketplace name"
 assert_contains "$market" '"source": "./"' "plugin source is the repo root"
-assert_contains "$plugin" '"version": "0.5.6"' "plugin version 0.5.6"
+assert_contains "$plugin" '"version": "0.5.7"' "plugin version 0.5.7"
 readme=$(cat README.md 2>/dev/null)
 assert_contains "$readme" "claude plugin marketplace add donVortex/session-orchestrator" "README installs from GitHub"
 assert_not_contains "$readme" 'marketplace add D:' "README has no local-path install"
 assert_contains "$attrs" '*.sh text eol=lf' "shell scripts forced to LF"
 assert_contains "$plugin" '"homepage": "https://github.com/donVortex/session-orchestrator"' "plugin homepage"
 assert_file LICENSE "LICENSE file exists"
-assert_file .claude-plugin/icon.png "directory icon exists"
-if command -v python >/dev/null 2>&1; then
-  icon=$(python -I -c "import struct,sys;d=open(sys.argv[1],'rb').read(24);w,h=struct.unpack('>II',d[16:24]);print('ok' if d[:8]==b'\x89PNG\r\n\x1a\n' and w==h and 512<=w<=2048 else 'bad %dx%d'%(w,h))" .claude-plugin/icon.png 2>&1)
-  assert_eq ok "$icon" "icon is a square PNG, 512 to 2048 px"
-  [ "$(wc -c < .claude-plugin/icon.png)" -lt 2097152 ] || fail "icon is under 2 MB"
-fi
 assert_not_contains "$(cat .claude-plugin/plugin.json README.md CONTRIBUTING.md 2>/dev/null)" "donVortex/claude-orchestrator" "no links to the old repo name"
 assert_contains "$(cat LICENSE 2>/dev/null)" "MIT License" "LICENSE is MIT, matching plugin.json"
 assert_not_contains "$readme" "repo is private" "README has no private-repo install step"
@@ -37,9 +31,14 @@ if command -v node >/dev/null 2>&1; then
 fi
 
 if command -v claude >/dev/null 2>&1; then
-  claude plugin validate . >/dev/null 2>&1 || fail "claude plugin validate ."
+  validate=$(claude plugin validate . 2>&1) || fail "claude plugin validate ."
+  assert_not_contains "$validate" "ICON_MISSING" "directory icon present (validator)"
+  assert_contains "$validate" "These checks found nothing to report" "no plugin directory warnings"
 else
   echo "SKIP: claude plugin validate (claude CLI not on PATH)"
 fi
+
+cmd=$(cat commands/orchestrate.md 2>/dev/null)
+assert_contains "$cmd" 'argument-hint: "[lite] <goal>"' "command frontmatter: argument-hint quoted (YAML)"
 
 finish
