@@ -20,6 +20,7 @@ Canonical brief: `<$root>/.orchestration/briefs/T<n>.md`. The app may deliver `@
 - Base branch: `<branch>` (already contains: <merged dependency PRs, or "nothing extra">)
 - PR branch: `orch/T<n>` (or `orch/T<n>-<slug>` if that name was taken; see ledger.md). Your worktree folder and local branch may have other names (the app picks them, and may reuse an old folder); this PR branch is the one that counts.
 - Tier: <fast|standard|deep> — session <model> / <effort>
+- Mode: full | lite — lite: no `deep` subtasks except guarded work (security, authentication, money, deleting data, migrations); one combined review per subtask; the small-task path whenever the task fits one subtask ([lite mode](model-tiers.md#lite-mode))
 - Orchestrator: desktop | CLI mode
 - Report path: CLI mode: `<$root>/.orchestration/reports/T<n>.md` (absolute; `$root` as resolved in ledger.md). Desktop: `<notes>/T<n>-report.md` in the app's shared notes folder ([backend-desktop.md](backend-desktop.md#reports-and-permissions)). It is outside your worktree: if the write is refused, put the full report in your final message instead, and the orchestrator saves it.
 - Subtasks (files, tier hint, dependencies):

@@ -6,32 +6,98 @@ Design: [plugin](docs/superpowers/specs/2026-11-03-orchestrator-plugin-design.md
 
 ## Install
 
-Install from GitHub:
+**You need:**
+- Claude Code: the desktop app (Code tab) or the `claude` CLI;
+- `git`, and the GitHub CLI `gh`, logged in (`gh auth login`);
+- a project with a GitHub remote (every task becomes a pull request);
+- for the CLI backend only: `claude` on your PATH.
+
+**1. Add the marketplace and install the plugin** (in a terminal):
 
 ```bash
 claude plugin marketplace add donVortex/claude-orchestrator
+```
+
+```bash
 claude plugin install session-orchestrator@session-orchestrator --scope user
 ```
 
-`--scope user` makes it available in every project, in both the desktop app and the `claude` CLI on that machine. Restart the desktop app afterwards. Plugins don't load in cloud sessions (claude.ai/code).
+`--scope user` makes it available in every project, in both the desktop app and the `claude` CLI on that machine. Plugins don't load in cloud sessions (claude.ai/code).
 
-**Updates:** turn on auto-update under `/plugin` → Marketplaces → `session-orchestrator`. Machines receive a new version when the `version` in `.claude-plugin/plugin.json` changes.
+**2. Restart** the desktop app, or start a new `claude` session.
 
-Requirements: `git`, `gh` (logged in), and a GitHub remote on the project you orchestrate. The CLI backend also needs `claude` on PATH.
+**3. Check it's there:** `claude plugin list` shows `session-orchestrator`, and typing `/session-orchestrator` in a session suggests `/session-orchestrator:orchestrate`.
+
+**Updating.** Turn on auto-update once: run `claude`, type `/plugin`, open Marketplaces → `session-orchestrator` and enable auto-update. The setting is shared by the CLI and the desktop app. To update by hand instead:
+
+```bash
+claude plugin marketplace update session-orchestrator
+```
+
+```bash
+claude plugin update session-orchestrator@session-orchestrator
+```
+
+Then restart; sessions already open keep the old version.
+
+**Uninstalling:** `claude plugin uninstall session-orchestrator@session-orchestrator`. The knowledge in your projects (`.claude/orchestrator/`) stays; it belongs to the projects.
 
 ## Use
 
-```
-/session-orchestrator:orchestrate <goal>
-```
+### Your first run in a project
 
-**After the first run, it's the project's default.** Once a project has `.claude/orchestrator/` (created by the first orchestration's bootstrap), every new session there is told the project uses the orchestrator. Describe a feature ("add a refund flow") and it plans, asks for your approval and delegates, with no command needed. Questions, explanations, reviews and small one-file fixes stay normal, quick work.
+1. **Open the project:** in the desktop app, a Code session on the project's folder; in a terminal, `claude` in the repo.
+2. **Start it with a goal:**
+   ```
+   /session-orchestrator:orchestrate add a refund flow
+   ```
+   Or without a goal (`/session-orchestrator:orchestrate`) to let it learn the project first.
+3. **Project setup (first run only):** scouts read the repo, then it asks you up to 5 questions about the domain, one at a time, and shows you the drafted knowledge. Nothing is written until you approve; then it opens a knowledge PR for you to merge.
+4. **Approve the plan:** it shows the tasks as a table (what each does, which files it owns, its model tier, where it runs). Approve it or ask for changes. Nothing starts before you approve.
+5. **Work runs:**
+   - **Desktop app:** each task gets its own worker session, listed in the sidebar as `T<n> · <task>`. You can open one to watch it; you don't have to.
+   - **CLI:** workers run headless in their own git worktrees ([permissions](#cli-workers-and-permissions)).
+   - The orchestrator does small or critical tasks itself. Before the first one it asks you once to run `/add-dir <repo>-wt`, so its worktrees don't prompt for every edit.
+   - Workers that get stuck ask the orchestrator; it asks you only what it can't answer.
+6. **Reviews and merging:** each task ends in one pull request. The orchestrator reviews it (diff, tests, CI) and sends problems back to the worker. Clean PRs are batched and you're asked to merge them. **You merge; it never does.** After a merge it starts the tasks that were waiting on it.
+7. **Wrap-up:** when every task is done it shows the results, what went well or badly, and a **knowledge diff**: what it learned about the project, each change with its source. Approve it and it opens a knowledge PR.
 
-To keep a project manual, add this to its `.claude/settings.json`:
+### Every run after that
+
+- **Just describe the feature** in any new session in that project ("add CSV export"): once a project has `.claude/orchestrator/`, it plans and delegates without the command. Questions, explanations, reviews and small one-file fixes stay normal, quick work.
+- **Pick the mode** that fits the run: full or lite ([Modes](#modes-full-and-lite)).
+- **Pick up where you left off:** the run's state lives in `.orchestration/ledger.md`. When the orchestrator's context fills up or you resume its session, the plan is loaded back automatically. In a new session, run `/session-orchestrator:orchestrate` (or say "continue the orchestration") and it continues from each task's state.
+- **Task numbers keep counting** across runs (T1–T8, then T9…), so sessions in the sidebar never share a number.
+
+To keep a project manual (no orchestrator unless you run the command), add this to its `.claude/settings.json`:
 
 ```json
 { "env": { "ORCH_DEFAULT": "off" } }
 ```
+
+## Modes: full and lite
+
+**Full** (the default) puts the effort where the work needs it. Hard tasks (design, cross-cutting changes, unknown bugs, security) run on opus and get an extra specialist review. That pays off on complex products.
+
+**Lite** is for runs where speed matters more than depth: a simple codebase, small changes, a time crunch.
+
+| | Full | Lite |
+|---|---|---|
+| Models | opus for `deep` work | sonnet for everything (`deep` runs as `standard`) |
+| Tasks | PR-sized, one worker session each | as few tasks as the work allows; small ones done in the orchestrator session |
+| Reviews | spec review + quality review per subtask, specialist review of `deep` PRs | one combined review per subtask, no specialist PR review |
+| Knowledge setup | interview and drafts on a project's first run | skipped (the wrap-up mentions it) |
+
+**Turning it on**
+
+- **One run:** `/session-orchestrator:orchestrate lite: <goal>`, or say "lite" in your request.
+- **A whole project:** add a `Mode: lite` entry to `.claude/orchestrator/calibration.md`. After you choose lite twice in a project, the wrap-up proposes this entry for you.
+- **During a run:** say "lite" or "full" at any time. Tasks that haven't started switch; workers already running finish on their current model.
+- **Back to full:** say "full", for one run or mid-run. The plan always shows the mode and where it came from: `Mode: lite (from project knowledge) — say "full" to switch`.
+
+**Lite never cuts the safety net.** Work that touches security, authentication, money, deleting data or migrations keeps its normal model and the specialist review. A subtask that fails can still move up to opus once. Tests, one PR per task, your plan approval, your merges and the wrap-up learning all stay.
+
+**Tip:** the orchestrator session can't change its own model, so for lite runs start that session on sonnet. If it runs on opus, the plan reminds you once.
 
 ## Project knowledge
 

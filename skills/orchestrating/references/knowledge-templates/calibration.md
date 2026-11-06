@@ -40,6 +40,12 @@ How work in this project should be done: tiers, task sizes, what briefs must spe
 - **Use stripe-best-practices for payment endpoints**; it caught a missing idempotency key. _(T2 / PR #31)_
 -->
 
+## Mode
+
+<!-- Lite or full by default (see the plugin's lite mode). Example:
+- **Mode: lite** — small codebase, changes are low-risk; the user chose lite in two runs. _(T3 / PR #20; T6 / PR #27)_
+-->
+
 ## Pre-flight
 
 <!-- Checked at intake, before planning. Example:
