@@ -64,14 +64,46 @@ Then restart; sessions already open keep the old version.
 
 - **Just describe the feature** in any new session in that project ("add CSV export"): once a project has `.claude/orchestrator/`, it plans and delegates without the command. Questions, explanations, reviews and small one-file fixes stay normal, quick work.
 - **Pick the mode** that fits the run: full or lite ([Modes](#modes-full-and-lite)).
-- **Pick up where you left off:** the run's state lives in `.orchestration/ledger.md`. When the orchestrator's context fills up or you resume its session, the plan is loaded back automatically. In a new session, run `/session-orchestrator:orchestrate` (or say "continue the orchestration") and it continues from each task's state.
+- **Pick up where you left off:** the run's state lives in `.orchestration/ledger.md`. When the orchestrator's context fills up or you resume its session, the plan is loaded back automatically. If a run is unfinished, a new session there continues it on its own; if it doesn't, say "continue the orchestration" (or run `/session-orchestrator:orchestrate`).
 - **Task numbers keep counting** across runs (T1–T8, then T9…), so sessions in the sidebar never share a number.
 
-To keep a project manual (no orchestrator unless you run the command), add this to its `.claude/settings.json`:
+### On an existing project
 
-```json
-{ "env": { "ORCH_DEFAULT": "off" } }
-```
+The plugin is made for projects that already have code, a team and their own habits. Start exactly as in [Your first run in a project](#your-first-run-in-a-project); the first run reads the repo and asks you about it before any feature work.
+
+**What it needs from your project:**
+- a GitHub remote and `gh` logged in: every task becomes a pull request;
+- test, lint and build commands it can run. It asks if it can't find them. For CLI workers, also allow them in the project's `.claude/settings.json` ([how](#cli-workers-and-permissions)).
+
+**What it adds to your repo:** all of it through pull requests you review and merge.
+- `.claude/orchestrator/`: the project knowledge (rules, codebase map, review checklist, calibration), via a knowledge PR;
+- optionally `.claude/skills/project-rules/`, a small skill that points every session to those rules; you can decline it;
+- one `orch/T<n>` branch and one PR per task.
+
+**What stays out of git:**
+- `.orchestration/`, the working files of a run (plan, briefs, reports). It's kept out through your local `.git/info/exclude`, so your `.gitignore` isn't touched;
+- the worktrees it works in: a `<repo>-wt` folder next to your repo for tasks it does itself and for CLI workers; the desktop app creates worktrees for its worker sessions.
+
+**What it never touches:**
+- your checkout and current branch: all work happens in separate worktrees, so you can keep working while it runs;
+- `main` (or your base branch): it never pushes there and never merges; you merge the PRs;
+- your `CLAUDE.md`: it follows it, ranks it above its own knowledge, and never copies it;
+- your existing knowledge layout: if `.claude/orchestrator/` already exists, it's used as it is, and plugin updates never rewrite it.
+
+Your other skills and plugins keep working alongside it ([how](#alongside-other-skills-and-plugins)).
+
+**Working in a team:**
+- The knowledge is committed to the repo, so everyone with the plugin gets the same rules and checklist.
+- Teammates without the plugin still get the rules through the project-rules skill, if you added it.
+- Knowledge changes arrive as normal PRs, so the team reviews them like code.
+
+**Removing it:**
+- **Keep the knowledge, stop the takeover:** to keep a project manual (no orchestrator unless you run the command), add this to its `.claude/settings.json`:
+
+  ```json
+  { "env": { "ORCH_DEFAULT": "off" } }
+  ```
+- **Remove it from the project:** delete `.claude/orchestrator/` (and `.claude/skills/project-rules/`, if you added it) in a normal commit, then delete the local `.orchestration/` folder and any leftover `orch/T*` branches.
 
 ## Modes: full and lite
 
