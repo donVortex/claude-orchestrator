@@ -174,15 +174,30 @@ Found and fixed during the run:
 
 ## Tests
 
+For working on the plugin itself; you don't need these to use it.
+
+**Unit tests** check the skill files, hooks and scripts:
+
 ```bash
 bash tests/run.sh
 ```
 
-Skill behaviour evals (each case runs with and without the plugin; this costs roughly $3–4 per full run on your account). Use a Sonnet judge: the default Haiku judge splits its votes on correct answers. `--no-publish` keeps the report local.
+**Behaviour evals** check what the skills actually make Claude do. Each case in `evals/` is a scenario with graders. It runs several times with the plugin and without it, and a judge model grades the answers, so you can see whether the plugin makes a difference.
+
+Run one case (what you'll usually want after a change):
+
+```bash
+claude plugin eval . --judge-model sonnet --no-publish --case <case-name>
+```
+
+Run all cases:
 
 ```bash
 claude plugin eval . --judge-model sonnet --no-publish
 ```
+
+- `--judge-model sonnet`: the default Haiku judge sometimes fails correct answers.
+- `--no-publish`: keeps the report on your machine, in `evals/results/` (git-ignored).
 
 ## License
 

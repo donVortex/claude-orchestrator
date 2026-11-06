@@ -59,5 +59,7 @@ assert_contains "$readme" "### Your first run in a project" "README: first-run w
 assert_contains "$readme" "**You merge; it never does.**" "README: user merges"
 assert_contains "$readme" "### Every run after that" "README: later runs"
 assert_contains "$readme" "continue the orchestration" "README: how to resume"
+assert_contains "$readme" "--case <case-name>" "README: run one eval case"
+assert_not_contains "$readme" "per full run" "README: no eval cost figure"
 
 finish
