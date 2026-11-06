@@ -2,6 +2,8 @@
 
 A Claude Code plugin that turns the session you talk to into an **orchestrator**. It plans the work with you, splits it into PR-sized tasks, and runs them in **worker sessions** (desktop app sessions, or headless `claude -p` runs). Workers build with subagents whose model is picked by effort, run independent subagents in parallel, open one PR per task, and report back with a short retro. The orchestrator does critical tasks itself, reviews every PR, and leaves merging to you. Each project it works on builds up its own knowledge, so it gets better at that project with every feature.
 
+**Works in Claude Code**: the desktop app's Code tab and the `claude` CLI. It needs a local git checkout and starts other Claude Code sessions, so it doesn't run in claude.ai chat or cloud sessions.
+
 ## Install
 
 **You need:**
@@ -182,6 +184,31 @@ Workers also need your project's test, lint and build commands. Don't edit the p
 To replace the whole allowlist, point `ORCH_ALLOWLIST` at your own file.
 
 On Windows, workers use Git Bash for shell commands (the PowerShell tool is turned off for them). The launcher finds Git Bash itself; if your Git install is unusual, set `CLAUDE_CODE_GIT_BASH_PATH` to its `bash.exe`.
+
+## What it runs and sends
+
+**Hooks.** Three short scripts run when a session starts (`SessionStart`). They only read local files and print a note into the session:
+- `hooks/project-default.sh` (new or cleared session): if the project has `.claude/orchestrator/`, tells the session the project uses the orchestrator;
+- `hooks/ledger-context.sh` (after compaction or resume): if a run is in progress, prints its plan from `.orchestration/ledger.md`;
+- `hooks/plugin-mode.sh` (every start): prints the development-mode note, only in the plugin's own development checkout.
+
+**Commands it runs** (Claude runs them through its normal tools, with your usual permission prompts):
+- `git`: fetch, worktrees, branches, commits, and pushes to `orch/*` branches. Never a force push, never to your base branch;
+- `gh`: create, view and check pull requests, and list knowledge PRs;
+- your project's test, lint and build commands;
+- CLI backend only: `scripts/cli-worker.sh`, which starts each worker as `claude -p` in its own worktree.
+
+**Sessions and permissions:**
+- Desktop app: it starts worker sessions and sets each one's model and effort. The app asks you to trust the project folder; the plugin can't do that for you.
+- CLI workers run with `--permission-mode acceptEdits` and the rules in [`settings/worker-allowlist.json`](settings/worker-allowlist.json), passed only to those worker processes ([details](#cli-workers-and-permissions)).
+- It never changes your permission settings and never uses a bypass mode. When a step needs access (`/add-dir`, folder trust), it asks you to grant it.
+
+**Files it writes:**
+- `.orchestration/` in your repo (plan, briefs, reports), kept out of git through `.git/info/exclude`;
+- worktrees for tasks, and `orch/T<n>` branches with their pull requests;
+- `.claude/orchestrator/` and the optional project-rules skill, only through pull requests you approve and merge.
+
+**Network.** The only connections are your own `git` and `gh` talking to GitHub, plus Claude Code's own model calls. No telemetry: nothing is sent to the plugin's author or anyone else.
 
 ## Contributing
 
