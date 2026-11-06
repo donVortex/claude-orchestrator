@@ -50,4 +50,14 @@ assert_contains "$readme" '`Mode: lite` entry' "README: per-project switch"
 assert_contains "$readme" "During a run" "README: mid-run switch"
 assert_contains "$readme" "Lite never cuts the safety net" "README: what lite keeps"
 
+# README: install and use, step by step
+assert_contains "$readme" "**You need:**" "README: requirements"
+assert_contains "$readme" "claude plugin install session-orchestrator@session-orchestrator --scope user" "README: install command"
+assert_contains "$readme" "claude plugin update session-orchestrator@session-orchestrator" "README: manual update"
+assert_contains "$readme" "claude plugin uninstall session-orchestrator@session-orchestrator" "README: uninstall"
+assert_contains "$readme" "### Your first run in a project" "README: first-run walkthrough"
+assert_contains "$readme" "**You merge; it never does.**" "README: user merges"
+assert_contains "$readme" "### Every run after that" "README: later runs"
+assert_contains "$readme" "continue the orchestration" "README: how to resume"
+
 finish
