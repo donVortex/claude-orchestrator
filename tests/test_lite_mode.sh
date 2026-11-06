@@ -42,4 +42,12 @@ assert_contains "$learning" '`Mode: lite`' "learning: proposes Mode: lite"
 assert_contains "$learning" '`Mode: …`' "learning: Mode prefix counts under any heading"
 assert_contains "$calib" "## Mode" "calibration template has a Mode section"
 
+# README explains the modes
+readme=$(cat README.md 2>/dev/null)
+assert_contains "$readme" "## Modes: full and lite" "README: modes section"
+assert_contains "$readme" "/session-orchestrator:orchestrate lite: <goal>" "README: one-run switch"
+assert_contains "$readme" '`Mode: lite` entry' "README: per-project switch"
+assert_contains "$readme" "During a run" "README: mid-run switch"
+assert_contains "$readme" "Lite never cuts the safety net" "README: what lite keeps"
+
 finish

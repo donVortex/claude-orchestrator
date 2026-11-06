@@ -33,6 +33,30 @@ To keep a project manual, add this to its `.claude/settings.json`:
 { "env": { "ORCH_DEFAULT": "off" } }
 ```
 
+## Modes: full and lite
+
+**Full** (the default) puts the effort where the work needs it. Hard tasks (design, cross-cutting changes, unknown bugs, security) run on opus and get an extra specialist review. That pays off on complex products.
+
+**Lite** is for runs where speed matters more than depth: a simple codebase, small changes, a time crunch.
+
+| | Full | Lite |
+|---|---|---|
+| Models | opus for `deep` work | sonnet for everything (`deep` runs as `standard`) |
+| Tasks | PR-sized, one worker session each | as few tasks as the work allows; small ones done in the orchestrator session |
+| Reviews | spec review + quality review per subtask, specialist review of `deep` PRs | one combined review per subtask, no specialist PR review |
+| Knowledge setup | interview and drafts on a project's first run | skipped (the wrap-up mentions it) |
+
+**Turning it on**
+
+- **One run:** `/session-orchestrator:orchestrate lite: <goal>`, or say "lite" in your request.
+- **A whole project:** add a `Mode: lite` entry to `.claude/orchestrator/calibration.md`. After you choose lite twice in a project, the wrap-up proposes this entry for you.
+- **During a run:** say "lite" or "full" at any time. Tasks that haven't started switch; workers already running finish on their current model.
+- **Back to full:** say "full", for one run or mid-run. The plan always shows the mode and where it came from: `Mode: lite (from project knowledge) — say "full" to switch`.
+
+**Lite never cuts the safety net.** Work that touches security, authentication, money, deleting data or migrations keeps its normal model and the specialist review. A subtask that fails can still move up to opus once. Tests, one PR per task, your plan approval, your merges and the wrap-up learning all stay.
+
+**Tip:** the orchestrator session can't change its own model, so for lite runs start that session on sonnet. If it runs on opus, the plan reminds you once.
+
 ## Project knowledge
 
 Each project keeps what the orchestrator has learned about it in `.claude/orchestrator/`, committed to the project's repo: domain rules and glossary, a codebase map, a review checklist, and tier and split calibration. A healthcare team's orchestrator becomes expert in their healthcare product; an insurtech team's in theirs.
