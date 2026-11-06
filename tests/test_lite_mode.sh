@@ -59,7 +59,14 @@ assert_contains "$readme" "### Your first run in a project" "README: first-run w
 assert_contains "$readme" "**You merge; it never does.**" "README: user merges"
 assert_contains "$readme" "### Every run after that" "README: later runs"
 assert_contains "$readme" "continue the orchestration" "README: how to resume"
-assert_contains "$readme" "--case <case-name>" "README: run one eval case"
-assert_not_contains "$readme" "per full run" "README: no eval cost figure"
+contrib=$(cat CONTRIBUTING.md 2>/dev/null)
+assert_contains "$readme" "[CONTRIBUTING.md](CONTRIBUTING.md)" "README links the contributor guide"
+assert_not_contains "$readme" "## Tests" "README: no developer test section"
+assert_not_contains "$readme" "## Verified" "README: no verification log"
+assert_not_contains "$readme" ".plugin-dev" "README: no development-mode internals"
+assert_contains "$contrib" "touch .plugin-dev" "CONTRIBUTING: development setup"
+assert_contains "$contrib" "--case <case-name>" "CONTRIBUTING: run one eval case"
+assert_contains "$contrib" "## Verified runs" "CONTRIBUTING: verification log"
+assert_not_contains "$contrib" "per full run" "CONTRIBUTING: no eval cost figure"
 
 finish
