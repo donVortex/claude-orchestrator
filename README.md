@@ -13,7 +13,7 @@ A Claude Code plugin that turns the session you talk to into an **orchestrator**
 **1. Add the marketplace and install the plugin** (in a terminal):
 
 ```bash
-claude plugin marketplace add donVortex/claude-orchestrator
+claude plugin marketplace add donVortex/session-orchestrator
 ```
 
 ```bash
